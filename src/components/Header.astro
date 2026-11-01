@@ -57,6 +57,8 @@ export const megaMenuData = [
     ],
   },
 ];
+
+const currentPath = Astro.url.pathname + Astro.url.search;
 ---
 
 <header class="sticky top-0 z-40 w-full bg-white border-b border-stone-200 transition-all">
@@ -160,16 +162,23 @@ export const megaMenuData = [
                       {column.title}
                     </h4>
                     <ul class="divide-y divide-stone-100 text-xs">
-                      {column.items.map((item) => (
-                        <li class="py-2.5">
-                          <a
-                            href={item.href}
-                            class="text-stone-600 hover:text-stone-950 hover:pl-1 transition-all block tracking-wide whitespace-nowrap"
-                          >
-                            {item.label}
-                          </a>
-                        </li>
-                      ))}
+                      {column.items.map((item) => {
+                        const isActive = currentPath === item.href;
+                        return (
+                          <li class="py-2.5">
+                            <a
+                              href={item.href}
+                              class={`transition-colors block tracking-wide whitespace-nowrap ${
+                                isActive
+                                  ? 'font-bold text-stone-950'
+                                  : 'text-stone-600 hover:text-stone-950 hover:font-bold'
+                              }`}
+                            >
+                              {item.label}
+                            </a>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 ))}
@@ -239,14 +248,21 @@ export const megaMenuData = [
                   {col.title}
                 </p>
                 <div class="pl-2 space-y-1">
-                  {col.items.map((item) => (
-                    <a
-                      href={item.href}
-                      class="block py-1 text-stone-600 hover:text-stone-950 text-[11px] normal-case"
-                    >
-                      {item.label}
-                    </a>
-                  ))}
+                  {col.items.map((item) => {
+                    const isActive = currentPath === item.href;
+                    return (
+                      <a
+                        href={item.href}
+                        class={`block py-1 text-[11px] normal-case transition-colors ${
+                          isActive
+                            ? 'font-bold text-stone-950'
+                            : 'text-stone-600 hover:text-stone-950 hover:font-bold'
+                        }`}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             ))}
