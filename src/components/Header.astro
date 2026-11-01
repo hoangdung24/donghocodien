@@ -127,7 +127,7 @@ export const megaMenuData = [
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <nav class="flex items-stretch justify-center gap-8 text-xs uppercase tracking-[0.18em] font-medium text-stone-800">
         {/* WATCHES with Mega Menu Dropdown */}
-        <div id="watches-menu-wrapper" class="group relative flex items-center py-3.5">
+        <div id="watches-menu-wrapper" class="group flex items-center py-3.5">
           <a
             href="/shop"
             id="watches-menu-trigger"
@@ -140,13 +140,13 @@ export const megaMenuData = [
           {/* Mega Menu Dropdown Container with Zero Gap & Invisible Hover Bridge */}
           <div
             id="watches-mega-menu"
-            class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out absolute left-1/2 -translate-x-1/2 top-full w-full max-w-5xl z-50 pointer-events-none group-hover:pointer-events-auto before:content-[''] before:absolute before:-top-4 before:left-0 before:right-0 before:h-4 before:block"
+            class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out absolute left-1/2 -translate-x-1/2 top-full w-screen max-w-5xl px-4 sm:px-6 lg:px-8 z-50 pointer-events-none group-hover:pointer-events-auto before:content-[''] before:absolute before:-top-4 before:left-0 before:right-0 before:h-4 before:block"
           >
-            <div class="bg-white border border-stone-200 shadow-2xl p-8 sm:p-10">
+            <div class="bg-white border border-stone-200 shadow-2xl p-8 sm:p-10 w-full">
               <div class="grid grid-cols-6 gap-6">
                 {megaMenuData.map((column) => (
-                  <div class="flex flex-col">
-                    <h4 class="text-[11px] uppercase tracking-[0.2em] font-bold text-stone-900 pb-3 border-b border-stone-100 mb-2">
+                  <div class="flex flex-col min-w-0">
+                    <h4 class="text-[11px] uppercase tracking-[0.2em] font-bold text-stone-900 pb-3 border-b border-stone-100 mb-2 whitespace-nowrap">
                       {column.title}
                     </h4>
                     <ul class="divide-y divide-stone-100 text-xs">
@@ -154,7 +154,7 @@ export const megaMenuData = [
                         <li class="py-2.5">
                           <a
                             href={item.href}
-                            class="text-stone-600 hover:text-stone-950 hover:pl-1 transition-all block tracking-wide"
+                            class="text-stone-600 hover:text-stone-950 hover:pl-1 transition-all block tracking-wide whitespace-nowrap"
                           >
                             {item.label}
                           </a>
