@@ -1,106 +1,161 @@
 ---
-const year = new Date().getFullYear();
+import { Mail, Phone } from '@lucide/astro';
 ---
 
-<footer id="footer" class="border-t border-stone-200">
-  <section class="border-b border-stone-200 bg-brand-light-gray text-stone-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-300">
-        <a
-          href="/warranty-policy"
-          class="py-4 sm:py-5 px-6 text-center block hover:bg-stone-300/40 transition-colors group"
-        >
-          <h3 class="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-stone-900 group-hover:text-stone-600 transition-colors">
+<footer id="footer" class="w-full bg-white font-sans text-stone-900 border-t border-stone-200">
+  <section class="w-full">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-white">
+      <div class="bg-brand-light-gray py-2.5 text-center">
+        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-stone-950 uppercase m-0 leading-normal">
+          <a href="/warranty-policy" class="hover:text-stone-600 transition-colors block py-1">
             6 MONTHS WARRANTY
-          </h3>
-        </a>
+          </a>
+        </h3>
+      </div>
 
-        <a
-          href="/payment-and-delivery"
-          class="py-4 sm:py-5 px-6 text-center block hover:bg-stone-300/40 transition-colors group"
-        >
-          <h3 class="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-stone-900 group-hover:text-stone-600 transition-colors">
+      <div class="bg-brand-light-gray py-2.5 text-center">
+        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-stone-950 uppercase m-0 leading-normal">
+          <a href="/payment-and-delivery" class="hover:text-stone-600 transition-colors block py-1">
             SHIPPING WORLDWIDE
-          </h3>
-        </a>
+          </a>
+        </h3>
+      </div>
 
-        <a
-          href="/exchange-policy"
-          class="py-4 sm:py-5 px-6 text-center block hover:bg-stone-300/40 transition-colors group"
-        >
-          <h3 class="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-stone-900 group-hover:text-stone-600 transition-colors">
+      <div class="bg-brand-light-gray py-2.5 text-center">
+        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-stone-950 uppercase m-0 leading-normal">
+          <a href="/exchange-policy" class="hover:text-stone-600 transition-colors block py-1">
             EXCHANGE POLICY
-          </h3>
-        </a>
+          </a>
+        </h3>
       </div>
     </div>
   </section>
 
-  <div class="bg-white text-stone-800 py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-        <div class="space-y-4">
-          <img src="/images/logo.png" alt="Spacetime" class="h-10 w-auto object-contain" />
-          <p class="text-xs text-stone-500 leading-relaxed font-sans max-w-xs">
-            A dedicated atelier curating rare, authentic mechanical vintage timepieces from Switzerland and Japan for global collectors.
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 text-center">
+      <div>
+        <div class="mb-4">
+          <span class="text-lg sm:text-[19px] font-normal uppercase text-stone-950 border-b border-stone-950 pb-1.5 inline-block">
+            ABOUT US
+          </span>
+        </div>
+        <ul class="space-y-2 text-sm sm:text-base text-stone-900">
+          <li>
+            <a href="/warranty-policy" class="hover:text-stone-600 transition-colors">
+              Warranty Policy
+            </a>
+          </li>
+          <li>
+            <a href="/exchange-policy" class="hover:text-stone-600 transition-colors">
+              Exchange Policy
+            </a>
+          </li>
+          <li>
+            <a href="/payment-and-delivery" class="hover:text-stone-600 transition-colors">
+              Payment &amp; Shipping Methods
+            </a>
+          </li>
+          <li>
+            <a href="/consign-your-watch" class="hover:text-stone-600 transition-colors">
+              Consign Your Watch
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="mb-4">
+          <span class="text-lg sm:text-[19px] font-normal uppercase text-stone-950 border-b border-stone-950 pb-1.5 inline-block">
+            CONTACT
+          </span>
+        </div>
+        <div class="space-y-2 text-sm sm:text-base text-stone-900">
+          <p>
+            <strong>Email:</strong>{' '}
+            <a href="mailto:spacetime.donghocodien@gmail.com" class="hover:underline">
+              spacetime.donghocodien@gmail.com
+            </a>
+          </p>
+          <p>
+            <strong>WhatsApp:</strong>{' '}
+            <a
+              href="https://wa.me/84941625653"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:underline"
+            >
+              +84 94 162 5653
+            </a>
           </p>
         </div>
-
-        <div>
-          <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-4">
-            About Us
-          </h4>
-          <ul class="space-y-2.5 text-xs text-stone-600 uppercase tracking-wider">
-            <li><a href="/warranty-policy" class="hover:text-stone-950 transition-colors">Warranty Policy</a></li>
-            <li><a href="/exchange-policy" class="hover:text-stone-950 transition-colors">Exchange Policy</a></li>
-            <li><a href="/payment-and-delivery" class="hover:text-stone-950 transition-colors">Payment &amp; Shipping Methods</a></li>
-            <li><a href="/consign-your-watch" class="hover:text-stone-950 transition-colors">Consign Your Watch</a></li>
-            <li><a href="/privacy-policy" class="hover:text-stone-950 transition-colors">Privacy Policy</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-4">
-            Contact
-          </h4>
-          <div class="space-y-2.5 text-xs text-stone-600">
-            <p>
-              Email: <a href="mailto:spacetime.donghocodien@gmail.com" class="text-stone-900 hover:underline">spacetime.donghocodien@gmail.com</a>
-            </p>
-            <p>
-              WhatsApp: <a href="https://wa.me/84941625653" class="text-stone-900 hover:underline font-medium">+84 94 162 5653</a>
-            </p>
-            <p class="text-stone-500 pt-1">
-              Location: Ho Chi Minh City, Vietnam
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-4">
-            Follow Us
-          </h4>
-          <ul class="space-y-2.5 text-xs text-stone-600 uppercase tracking-wider">
-            <li>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="hover:text-stone-950 transition-colors">
-                Instagram &bull; @donghocodien
-              </a>
-            </li>
-            <li>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="hover:text-stone-950 transition-colors">
-                Facebook &bull; Dong Ho Co Dien
-              </a>
-            </li>
-          </ul>
-        </div>
       </div>
 
-      <div class="mt-16 pt-8 border-t border-stone-200 text-center text-xs text-stone-400 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p>&copy; {year} Spacetime - Vintage Watch (donghocodien.com). All rights reserved.</p>
-        <p class="text-[11px] text-stone-400">
-          Powered by Astro &amp; Effect Functional Architecture.
-        </p>
+      <div>
+        <div class="mb-4">
+          <span class="text-lg sm:text-[19px] font-normal uppercase text-stone-950 border-b border-stone-950 pb-1.5 inline-block">
+            FOLLOW US
+          </span>
+        </div>
+        <div class="flex items-center justify-center gap-2 mb-3">
+          <a
+            href="https://www.facebook.com/spacetime.vintagewatch"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
+            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+          </a>
+          <a
+            href="https://www.instagram.com/spacetime.vintagewatch/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+            </svg>
+          </a>
+          <a
+            href="mailto:spacetime.donghocodien@gmail.com"
+            aria-label="Send us an email"
+            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
+            <Mail class="w-4 h-4" />
+          </a>
+          <a
+            href="tel:+84941625653"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Call us"
+            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
+            <Phone class="w-4 h-4" />
+          </a>
+        </div>
+        <div>
+          <a
+            class="inline-block mt-1"
+            title="Content Protection by DMCA.com"
+            href="https://www.dmca.com/Protection/Status.aspx?ID=08160f1f-e048-492b-b3bb-004826bba1f9&refurl=https://donghocodien.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://images.dmca.com/Badges/dmca-badge-w100-5x1-02.png?ID=08160f1f-e048-492b-b3bb-004826bba1f9"
+              alt="Content Protection by DMCA.com"
+              width="100"
+              height="20"
+              class="mx-auto"
+            />
+          </a>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 </footer>
