@@ -7,17 +7,27 @@ import { getProducts, getCategories } from '../lib/services/woocommerce';
 const url = Astro.url;
 const page = Number(url.searchParams.get('page') || '1');
 const search = url.searchParams.get('search') || undefined;
+const categoryParam = url.searchParams.get('category');
+const category = categoryParam && !isNaN(Number(categoryParam)) ? Number(categoryParam) : undefined;
 
 // Fetch products & categories in parallel using pure Effect
 const [productsResult, categoriesResult] = await Effect.runPromise(
   Effect.all([
-    Effect.exit(getProducts({ page, per_page: 20, search })),
+    Effect.exit(getProducts({ page, per_page: 20, search, category })),
     Effect.exit(getCategories),
   ])
 );
 
 const products = productsResult._tag === 'Success' ? productsResult.value : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
+
+// Active Category (if filtered)
+const activeCategory = category ? categories.find((c) => c.id === category) : null;
+const pageTitle = activeCategory
+  ? `${activeCategory.name} Watches`
+  : search
+  ? `Search Results for "${search}"`
+  : 'All Watches';
 
 // Filter key brands
 const topBrands = categories.filter((c) =>
@@ -27,16 +37,24 @@ const topBrands = categories.filter((c) =>
 );
 ---
 
-<Layout title="All Watches - Timepiece Archive | Spacetime" description="Explore over 2,300+ vintage timepieces from Switzerland and Japan.">
+<Layout title={`${pageTitle} | Spacetime`} description="Explore over 2,300+ vintage timepieces from Switzerland and Japan.">
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
     {/* Page Title & Breadcrumb */}
     <div class="border-b border-stone-200 pb-8 mb-8">
       <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-2">
-        <a href="/" class="hover:text-stone-800">Home</a> / <span class="text-stone-800">Watches</span>
+        <a href="/" class="hover:text-stone-800">Home</a> / 
+        {activeCategory ? (
+          <>
+            <a href="/shop" class="hover:text-stone-800">Watches</a> / 
+            <span class="text-stone-800">{activeCategory.name}</span>
+          </>
+        ) : (
+          <span class="text-stone-800">Watches</span>
+        )}
       </nav>
 
       <h1 class="text-2xl sm:text-4xl text-stone-900 font-normal uppercase tracking-[0.15em] mb-2">
-        Watches
+        {pageTitle}
       </h1>
       <p class="text-xs text-stone-500 max-w-xl">
         Every timepiece is authenticated, regulated, and verified before acquisition.
