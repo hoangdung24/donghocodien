@@ -3,6 +3,9 @@
     "ark-ui": {
       "command": "npx",
       "args": ["-y", "@ark-ui/mcp"]
+    },
+    "astro-docs": {
+      "serverUrl": "https://mcp.docs.astro.build/mcp"
     }
   }
 }
