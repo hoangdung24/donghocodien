@@ -1,0 +1,213 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Mail, MessageCircle, Phone, MapPin, Clock, Send } from 'lucide-react';
+---
+
+<Layout
+  title="Contact Us - Boutique Concierge"
+  description="Connect with our horology specialists in Ho Chi Minh City or via WhatsApp for acquisitions, valuations, and consignments."
+>
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    {/* Breadcrumbs */}
+    <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-6">
+      <a href="/" class="hover:text-stone-800">Home</a> / <span class="text-stone-800">Contact Us</span>
+    </nav>
+
+    {/* Header */}
+    <div class="border-b border-stone-200 pb-8 mb-12">
+      <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-medium mb-2">
+        Boutique Concierge &bull; Spacetime
+      </p>
+      <h1 class="text-3xl sm:text-5xl text-stone-900 font-normal tracking-tight mb-4">
+        Contact Our Specialists
+      </h1>
+      <p class="text-sm text-stone-600 max-w-2xl leading-relaxed">
+        Whether you are seeking a specific vintage reference, inquiring about timepiece authentication, or wishing to consign a watch, our team is at your disposal worldwide.
+      </p>
+    </div>
+
+    {/* Contact Grid */}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      {/* Left: Contact Channels */}
+      <div class="space-y-8">
+        <div>
+          <h2 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-6">
+            Direct Communication Channels
+          </h2>
+
+          <div class="space-y-4">
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/84941625653"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-4 p-4 border border-stone-200 hover:border-emerald-700 bg-white hover:bg-emerald-50/30 transition-all group"
+            >
+              <div class="w-12 h-12 bg-emerald-100/70 text-emerald-800 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-800 group-hover:text-white transition-colors">
+                <MessageCircle class="w-6 h-6" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs uppercase tracking-wider font-semibold text-stone-900">
+                  WhatsApp Concierge
+                </p>
+                <p class="text-xs text-stone-500 font-mono mt-0.5">
+                  +84 94 162 5653
+                </p>
+              </div>
+              <span class="text-xs uppercase tracking-wider text-emerald-800 font-medium">
+                Chat &rarr;
+              </span>
+            </a>
+
+            {/* Email */}
+            <a
+              href="mailto:spacetime.donghocodien@gmail.com"
+              class="flex items-center gap-4 p-4 border border-stone-200 hover:border-stone-900 bg-white hover:bg-stone-50 transition-all group"
+            >
+              <div class="w-12 h-12 bg-stone-100 text-stone-800 flex items-center justify-center flex-shrink-0 group-hover:bg-stone-900 group-hover:text-white transition-colors">
+                <Mail class="w-6 h-6" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs uppercase tracking-wider font-semibold text-stone-900">
+                  Email Inquiries
+                </p>
+                <p class="text-xs text-stone-500 truncate mt-0.5">
+                  spacetime.donghocodien@gmail.com
+                </p>
+              </div>
+              <span class="text-xs uppercase tracking-wider text-stone-900 font-medium">
+                Write &rarr;
+              </span>
+            </a>
+
+            {/* Phone */}
+            <a
+              href="tel:+84941625653"
+              class="flex items-center gap-4 p-4 border border-stone-200 hover:border-stone-900 bg-white hover:bg-stone-50 transition-all group"
+            >
+              <div class="w-12 h-12 bg-stone-100 text-stone-800 flex items-center justify-center flex-shrink-0 group-hover:bg-stone-900 group-hover:text-white transition-colors">
+                <Phone class="w-6 h-6" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs uppercase tracking-wider font-semibold text-stone-900">
+                  Direct Line
+                </p>
+                <p class="text-xs text-stone-500 font-mono mt-0.5">
+                  +84 94 162 5653
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        {/* Location & Hours */}
+        <div class="p-6 bg-stone-100 border border-stone-200 space-y-4">
+          <div class="flex items-start gap-3">
+            <MapPin class="w-5 h-5 text-stone-700 mt-0.5 flex-shrink-0" />
+            <div>
+              <p class="text-xs uppercase tracking-wider font-bold text-stone-900">
+                Atelier Location
+              </p>
+              <p class="text-xs text-stone-600 mt-1 leading-relaxed">
+                Ho Chi Minh City, Vietnam (Private viewing available by prior appointment).
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 pt-3 border-t border-stone-200">
+            <Clock class="w-5 h-5 text-stone-700 mt-0.5 flex-shrink-0" />
+            <div>
+              <p class="text-xs uppercase tracking-wider font-bold text-stone-900">
+                Operating Hours
+              </p>
+              <p class="text-xs text-stone-600 mt-1 leading-relaxed">
+                Monday &ndash; Saturday: 09:30 &ndash; 19:30 (GMT+7)
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right: Message / Inquiry Form */}
+      <div class="p-8 bg-white border border-stone-200 shadow-xs">
+        <h2 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-2">
+          Send an Inquiry
+        </h2>
+        <p class="text-xs text-stone-500 mb-6">
+          We respond to all collector inquiries within 12 hours.
+        </p>
+
+        <form class="space-y-4" onSubmit="event.preventDefault(); alert('Thank you. We have received your inquiry.');">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+              Full Name *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Jean-Luc Dubois"
+              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              required
+              placeholder="name@domain.com"
+              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+              WhatsApp / Phone Number (Optional)
+            </label>
+            <input
+              type="tel"
+              placeholder="+1 (555) 012-3456"
+              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+              Subject of Inquiry
+            </label>
+            <select
+              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 transition-colors bg-white"
+            >
+              <option value="acquisition">Timepiece Acquisition</option>
+              <option value="consign">Consign a Watch</option>
+              <option value="service">Servicing &amp; Restoration</option>
+              <option value="general">General Collector Inquiry</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+              Message *
+            </label>
+            <textarea
+              rows="4"
+              required
+              placeholder="Tell us about the watch or reference you are looking for..."
+              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 transition-colors"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3.5 bg-[#191414] text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Send class="w-4 h-4" />
+            <span>Send Message</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+</Layout>

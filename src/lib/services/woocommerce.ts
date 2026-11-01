@@ -6,8 +6,10 @@ import {
   type Product,
   type ProductCategory,
 } from '../schema/product';
+import { PagesListSchema, type WpPage } from '../schema/page';
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
+const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
 
 // Typed Domain Errors
 export class NetworkError extends Schema.TaggedError<NetworkError>()('NetworkError', {
@@ -167,3 +169,56 @@ export const getCategories = Effect.gen(function* () {
   Effect.retry({ times: 2 }),
   Effect.timeout('30 seconds')
 );
+
+export class PageNotFoundError extends Schema.TaggedError<PageNotFoundError>()('PageNotFoundError', {
+  slug: Schema.String,
+}) {}
+
+// Fetch WordPress Standard Page by Slug
+export const getPageBySlug = (slug: string) =>
+  Effect.gen(function* () {
+    const cacheKey = `page:${slug}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as WpPage;
+    }
+
+    const url = `${WP_API_BASE}/pages?slug=${encodeURIComponent(slug)}`;
+
+    const response = yield* Effect.tryPromise({
+      try: () =>
+        fetch(url, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'DongHoCoDien-Headless/1.0',
+          },
+        }),
+      catch: (cause) => new NetworkError({ cause }),
+    });
+
+    if (!response.ok) {
+      return yield* new HttpError({
+        status: response.status,
+        statusText: response.statusText,
+        url,
+      });
+    }
+
+    const raw = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (cause) => new NetworkError({ cause }),
+    });
+
+    const pages = yield* Schema.decodeUnknownEffect(PagesListSchema)(raw);
+    const page = pages[0];
+
+    if (!page) {
+      return yield* new PageNotFoundError({ slug });
+    }
+
+    cache.set(cacheKey, { data: page, timestamp: Date.now() });
+    return page;
+  }).pipe(
+    Effect.retry({ times: 2 }),
+    Effect.timeout('30 seconds')
+  );
