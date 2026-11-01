@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog } from '@ark-ui/react/dialog';
-import { ShoppingBag, X, MessageCircle, Phone, ArrowRight } from 'lucide-react';
+import { ShoppingBag, X, MessageCircle, Mail, Phone, ArrowRight } from 'lucide-react';
 import type { Product } from '../schema/product';
 
 interface CartDrawerProps {
@@ -14,7 +14,7 @@ export function CartDrawer({ product }: CartDrawerProps) {
     <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
       <Dialog.Trigger className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-stone-900 text-stone-50 font-serif text-sm tracking-widest uppercase hover:bg-stone-800 transition-colors shadow-sm cursor-pointer">
         <ShoppingBag className="w-4 h-4" />
-        Liên hệ sở hữu / Đặt hàng
+        Acquire / Inquire Timepiece
       </Dialog.Trigger>
 
       <Dialog.Backdrop className="fixed inset-0 bg-stone-950/40 backdrop-blur-xs z-50 transition-opacity" />
@@ -24,7 +24,7 @@ export function CartDrawer({ product }: CartDrawerProps) {
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-stone-200">
             <Dialog.Title className="font-serif text-xl text-stone-900">
-              Yêu cầu tư vấn & Đặt hàng
+              Collector Inquiries &amp; Orders
             </Dialog.Title>
             <Dialog.CloseTrigger className="p-2 text-stone-400 hover:text-stone-800 rounded-full transition-colors">
               <X className="w-5 h-5" />
@@ -32,7 +32,7 @@ export function CartDrawer({ product }: CartDrawerProps) {
           </div>
 
           <Dialog.Description className="text-xs text-stone-500 mt-2">
-            Đồng Hồ Cổ Điển — Chuyên gia sưu tập đồng hồ cổ Thụy Sỹ & Nhật Bản.
+            Dong Ho Co Dien — Specialist dealers in rare Swiss and Japanese vintage horology.
           </Dialog.Description>
 
           {/* Product Summary */}
@@ -50,65 +50,86 @@ export function CartDrawer({ product }: CartDrawerProps) {
                   {product.name}
                 </p>
                 <p className="text-sm font-semibold text-amber-900 mt-1">
-                  {product.prices.price} {product.prices.currency_symbol}
+                  ${product.prices.price} {product.prices.currency_code}
                 </p>
                 {product.sku && (
-                  <p className="text-xs text-stone-400 mt-0.5">SKU: {product.sku}</p>
+                  <p className="text-xs text-stone-400 mt-0.5">Ref: {product.sku}</p>
                 )}
               </div>
             </div>
           )}
 
-          {/* Direct channels */}
+          {/* Global Communication Channels */}
           <div className="space-y-3 my-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Kênh liên hệ trực tiếp nhanh:
+              Direct Collector Channels:
             </p>
             <a
-              href={`https://zalo.me/0901234567?text=${encodeURIComponent(
-                product ? `Tôi quan tâm đến: ${product.name} (${product.permalink})` : 'Tôi muốn được tư vấn đồng hồ cổ điển'
+              href={`https://wa.me/84901234567?text=${encodeURIComponent(
+                product ? `Hello, I am inquiring about the ${product.name} (${product.permalink})` : 'Hello, I would like to inquire about a vintage timepiece.'
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between w-full px-4 py-3 bg-blue-600 text-white font-medium text-sm rounded-none hover:bg-blue-700 transition-colors"
+              className="flex items-center justify-between w-full px-4 py-3 bg-emerald-700 text-white font-medium text-sm rounded-none hover:bg-emerald-800 transition-colors"
             >
               <span className="flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />
-                Chat nhanh qua Zalo
+                Message via WhatsApp
               </span>
               <ArrowRight className="w-4 h-4" />
             </a>
 
             <a
-              href="tel:0901234567"
+              href={`mailto:contact@donghocodien.com?subject=${encodeURIComponent(
+                product ? `Inquiry: ${product.name}` : 'Vintage Watch Inquiry'
+              )}`}
               className="flex items-center justify-between w-full px-4 py-3 border border-stone-300 text-stone-800 font-medium text-sm hover:bg-stone-50 transition-colors"
             >
               <span className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                Gọi Hotline tư vấn
+                <Mail className="w-4 h-4" />
+                Email Specialist
               </span>
-              <span className="font-mono text-xs text-stone-500">090 123 4567</span>
+              <span className="text-xs text-stone-500">contact@donghocodien.com</span>
+            </a>
+
+            <a
+              href="tel:+84901234567"
+              className="flex items-center justify-between w-full px-4 py-3 border border-stone-200 text-stone-700 font-medium text-sm hover:bg-stone-50 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                International Call
+              </span>
+              <span className="font-mono text-xs text-stone-500">+84 90 123 4567</span>
             </a>
           </div>
 
-          {/* Quick inquiry form */}
+          {/* Inquiry form */}
           <form className="mt-4 pt-4 border-t border-stone-200 space-y-3 flex-1" onSubmit={(e) => e.preventDefault()}>
             <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Hoặc để lại số điện thoại:
+              Or Request an Acquisition Quote:
             </p>
             <div>
-              <label className="block text-xs text-stone-600 mb-1">Họ tên của bạn</label>
+              <label className="block text-xs text-stone-600 mb-1">Your Full Name</label>
               <input
                 type="text"
-                placeholder="Nguyễn Văn A"
+                placeholder="Arthur Pendelton"
                 className="w-full px-3 py-2 text-sm border border-stone-300 focus:outline-none focus:border-stone-900"
               />
             </div>
             <div>
-              <label className="block text-xs text-stone-600 mb-1">Số điện thoại</label>
+              <label className="block text-xs text-stone-600 mb-1">Email / Phone</label>
               <input
-                type="tel"
-                placeholder="0912 345 678"
+                type="text"
+                placeholder="arthur@example.com"
+                className="w-full px-3 py-2 text-sm border border-stone-300 focus:outline-none focus:border-stone-900"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-stone-600 mb-1">Shipping Destination Country</label>
+              <input
+                type="text"
+                placeholder="United States / United Kingdom / Singapore..."
                 className="w-full px-3 py-2 text-sm border border-stone-300 focus:outline-none focus:border-stone-900"
               />
             </div>
@@ -116,7 +137,7 @@ export function CartDrawer({ product }: CartDrawerProps) {
               type="submit"
               className="w-full py-3 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors"
             >
-              Gửi thông tin tư vấn
+              Submit Inquiry
             </button>
           </form>
         </Dialog.Content>

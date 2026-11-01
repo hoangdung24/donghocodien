@@ -12,7 +12,7 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
   if (!images || images.length === 0) {
     return (
       <div className="aspect-[4/5] bg-stone-100 flex items-center justify-center text-stone-400 font-serif">
-        Chưa có hình ảnh
+        No images available
       </div>
     );
   }

@@ -19,7 +19,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
           <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
             <Clock className="w-4 h-4 text-stone-500" />
-            Thông số kỹ thuật & Chi tiết
+            Technical Specifications &amp; Details
           </span>
           <Accordion.ItemIndicator>
             <ChevronDown className="w-4 h-4 text-stone-500 transition-transform duration-300 data-[state=open]:rotate-180" />
@@ -28,10 +28,10 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         <Accordion.ItemContent className="pt-4 text-sm text-stone-700 leading-relaxed font-sans">
           {sku && (
             <p className="mb-3 text-xs uppercase tracking-widest text-stone-500">
-              Mã sản phẩm (SKU): <span className="font-mono text-stone-800">{sku}</span>
+              Reference / SKU: <span className="font-mono text-stone-800">{sku}</span>
             </p>
           )}
-          {/* Render the WordPress spec table cleanly */}
+          {/* Render the spec table cleanly */}
           <div
             className="prose prose-stone prose-sm max-w-none [&_table]:w-full [&_table]:border-collapse [&_td]:py-2 [&_td]:border-b [&_td]:border-stone-100 [&_td:first-child]:font-medium [&_td:first-child]:text-stone-900 [&_td:first-child]:w-1/3"
             dangerouslySetInnerHTML={{ __html: descriptionHtml }}
@@ -44,7 +44,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
           <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-stone-500" />
-            Cam kết chính hãng & Bảo hành
+            Authenticity &amp; Mechanical Warranty
           </span>
           <Accordion.ItemIndicator>
             <ChevronDown className="w-4 h-4 text-stone-500 transition-transform duration-300 data-[state=open]:rotate-180" />
@@ -52,22 +52,22 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         </Accordion.ItemTrigger>
         <Accordion.ItemContent className="pt-3 text-sm text-stone-600 leading-relaxed space-y-2">
           <p>
-            Mỗi chiếc đồng hồ tại <strong>Đồng Hồ Cổ Điển</strong> đều được tuyển chọn kỹ lưỡng, kiểm định cơ cấu máy móc và tính nguyên bản trước khi đến tay nhà sưu tầm.
+            Every timepiece at <strong>Dong Ho Co Dien</strong> is rigorously inspected, authenticated, and verified for mechanical health prior to being offered to international collectors.
           </p>
           <ul className="list-disc pl-5 space-y-1 text-xs text-stone-600">
-            <li>Cam kết 100% nguyên bản chính hãng trọn đời.</li>
-            <li>Bảo dưỡng, căn chỉnh sai số trước khi giao hàng.</li>
-            <li>Bảo hành kỹ thuật từ 6 đến 12 tháng tùy dòng máy.</li>
+            <li>Guaranteed 100% authentic and original components for life.</li>
+            <li>Fully demagnetized, timed, and serviced by master watchmakers.</li>
+            <li>Complimentary mechanical warranty included.</li>
           </ul>
         </Accordion.ItemContent>
       </Accordion.Item>
 
-      {/* Shipping & Returns */}
+      {/* Worldwide Shipping & Customs */}
       <Accordion.Item value="shipping" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
           <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
             <RefreshCw className="w-4 h-4 text-stone-500" />
-            Giao hàng & Đổi trả
+            Worldwide Express Shipping &amp; Returns
           </span>
           <Accordion.ItemIndicator>
             <ChevronDown className="w-4 h-4 text-stone-500 transition-transform duration-300 data-[state=open]:rotate-180" />
@@ -75,7 +75,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         </Accordion.ItemTrigger>
         <Accordion.ItemContent className="pt-3 text-sm text-stone-600 leading-relaxed">
           <p>
-            Giao hàng hỏa tốc bảo hiểm toàn quốc. Quý khách được đồng kiểm tra hàng trước khi nhận. Hỗ trợ quay đầu và giao lưu nâng cấp dòng máy cho các nhà sưu tầm.
+            We ship globally via FedEx International Priority / DHL Express with full insurance coverage. All packages require adult signature upon delivery. We provide a 7-day inspection period upon receipt.
           </p>
         </Accordion.ItemContent>
       </Accordion.Item>

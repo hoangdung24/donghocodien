@@ -11,7 +11,7 @@ interface Props {
 
 const {
   title,
-  description = 'Đồng Hồ Cổ Điển — Chuyên tuyển chọn và lưu giữ những cỗ máy thời gian cổ điển từ Thụy Sỹ và Nhật Bản.',
+  description = 'Dong Ho Co Dien — Curating rare, authentic vintage timepieces from Switzerland and Japan for global collectors.',
   image = 'https://donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',
 } = Astro.props;
 
@@ -19,7 +19,7 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://donghocodien.com');
 ---
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,22 +27,22 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://donghocodien.com');
     <meta name="generator" content={Astro.generator} />
 
     {/* Primary Meta Tags */}
-    <title>{title} | Đồng Hồ Cổ Điển</title>
-    <meta name="title" content={`${title} | Đồng Hồ Cổ Điển`} />
+    <title>{title} | Dong Ho Co Dien</title>
+    <meta name="title" content={`${title} | Dong Ho Co Dien`} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
     {/* Open Graph / Facebook */}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={`${title} | Đồng Hồ Cổ Điển`} />
+    <meta property="og:title" content={`${title} | Dong Ho Co Dien`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
 
     {/* Twitter */}
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={`${title} | Đồng Hồ Cổ Điển`} />
+    <meta property="twitter:title" content={`${title} | Dong Ho Co Dien`} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={image} />
 

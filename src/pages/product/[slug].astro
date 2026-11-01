@@ -48,9 +48,9 @@ const primaryBrand = product.categories.find((c) =>
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
     {/* Breadcrumbs */}
     <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-stone-500 mb-8 font-sans">
-      <a href="/" class="hover:text-stone-900 transition-colors">Trang chủ</a>
+      <a href="/" class="hover:text-stone-900 transition-colors">Home</a>
       <span>/</span>
-      <a href="/shop" class="hover:text-stone-900 transition-colors">Bộ sưu tập</a>
+      <a href="/shop" class="hover:text-stone-900 transition-colors">Collection</a>
       {primaryBrand && (
         <>
           <span>/</span>
@@ -95,7 +95,7 @@ const primaryBrand = product.categories.find((c) =>
             </span>
           )}
           <span class="text-xs text-stone-500 font-mono">
-            {product.is_in_stock ? 'Có sẵn tại boutique' : 'Đã bán'}
+            {product.is_in_stock ? 'In Stock & Ready to Ship' : 'Sold / Reserved'}
           </span>
         </div>
 
@@ -103,11 +103,11 @@ const primaryBrand = product.categories.find((c) =>
         <div class="py-4 space-y-2 text-xs text-stone-600 font-sans">
           <div class="flex items-center gap-2">
             <Check class="w-4 h-4 text-emerald-700" />
-            <span>Đã kiểm định cơ chế máy móc & độ nguyên bản</span>
+            <span>Authenticated &amp; mechanically verified by master horologist</span>
           </div>
           <div class="flex items-center gap-2">
             <Shield class="w-4 h-4 text-emerald-700" />
-            <span>Bảo hành kỹ thuật & hỗ trợ quay đầu trọn đời</span>
+            <span>Worldwide insured delivery via FedEx / DHL Express</span>
           </div>
         </div>
 
