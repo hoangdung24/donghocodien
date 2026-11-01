@@ -1,0 +1,152 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ShieldCheck, Compass, Clock, Award, MapPin, Mail, Phone, ArrowRight } from 'lucide-react';
+---
+
+<Layout
+  title="About Us | Spacetime - Vintage Watch Atelier"
+  description="Discover the story and curatorial philosophy of Spacetime, specialists in authentic vintage Swiss and Japanese mechanical timepieces."
+>
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-6 font-sans">
+      <a href="/" class="hover:text-stone-800 transition-colors">Home</a> / 
+      <span class="text-stone-800 font-medium">About Us</span>
+    </nav>
+
+    <div class="border-b border-stone-200 pb-8 mb-12">
+      <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-medium mb-2">
+        Atelier &bull; Curatorial Philosophy &bull; Spacetime
+      </p>
+      <h1 class="text-3xl sm:text-5xl text-stone-900 font-normal tracking-tight uppercase font-heading">
+        About Spacetime
+      </h1>
+      <p class="text-sm text-stone-600 max-w-2xl leading-relaxed mt-3">
+        Specialist atelier curating rare, authentic vintage mechanical timepieces from Switzerland and Japan for global collectors.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-16">
+      <div class="lg:col-span-7 space-y-5 text-stone-700 font-sans leading-relaxed text-sm">
+        <h2 class="text-xl sm:text-2xl font-serif text-stone-900 tracking-wide uppercase">
+          A Mission to Bring Timeless Elegance to Every Wrist
+        </h2>
+
+        <p>
+          Vintage mechanical watches have long marked deep imprints across human history—spanning decades and centuries—evoking the artistry, craftsmanship, and nostalgia of golden eras in horology.
+        </p>
+
+        <p>
+          Born with the mission to deliver timeless sophistication to discerning collectors worldwide, <strong class="text-stone-950">Spacetime</strong> represents two precious dimensions we all treasure: <em class="font-serif">Now</em> and <em class="font-serif">Here</em>. With every passing second measured by a fine mechanical escapement, we are reminded to live fully in the present moment—no matter the time, no matter the journey.
+        </p>
+
+        <p>
+          Whether traveling across continents, building a legacy, or expressing your distinct individual style, Spacetime is with you throughout life's defining moments: here, now, and on your wrist.
+        </p>
+      </div>
+
+      <div class="lg:col-span-5">
+        <div class="aspect-[4/5] overflow-hidden bg-stone-100 border border-stone-200 shadow-lg">
+          <img
+            src="/images/brand-story.jpg"
+            alt="Spacetime Vintage Timepiece Atelier"
+            class="w-full h-full object-cover"
+            loading="eager"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-b border-stone-200 py-12 mb-16">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <h2 class="text-xs uppercase tracking-[0.25em] font-bold text-stone-900 mb-2">
+          The Spacetime Standard
+        </h2>
+        <p class="text-xs text-stone-500">
+          Our commitments to transparency, authentication, and preservation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-stone-50 border border-stone-200/80 space-y-3 text-center sm:text-left">
+          <div class="w-10 h-10 bg-white border border-stone-200 flex items-center justify-center text-stone-800 mx-auto sm:mx-0">
+            <ShieldCheck class="w-5 h-5 text-emerald-800" />
+          </div>
+          <h3 class="text-sm font-serif font-bold uppercase tracking-wider text-stone-900">
+            100% Lifetime Authenticity
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Every vintage reference is thoroughly vetted, dissembled, and verified for period-correct movement and component originality.
+          </p>
+        </div>
+
+        <div class="p-6 bg-stone-50 border border-stone-200/80 space-y-3 text-center sm:text-left">
+          <div class="w-10 h-10 bg-white border border-stone-200 flex items-center justify-center text-stone-800 mx-auto sm:mx-0">
+            <Award class="w-5 h-5 text-amber-800" />
+          </div>
+          <h3 class="text-sm font-serif font-bold uppercase tracking-wider text-stone-900">
+            Master Watchmaker Servicing
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            All acquisitions undergo timing regulation, ultrasonic case sanitation, and demagnetization prior to global catalog listing.
+          </p>
+        </div>
+
+        <div class="p-6 bg-stone-50 border border-stone-200/80 space-y-3 text-center sm:text-left">
+          <div class="w-10 h-10 bg-white border border-stone-200 flex items-center justify-center text-stone-800 mx-auto sm:mx-0">
+            <Compass class="w-5 h-5 text-stone-800" />
+          </div>
+          <h3 class="text-sm font-serif font-bold uppercase tracking-wider text-stone-900">
+            Global Insured Express
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Complimentary insured priority courier via FedEx &amp; DHL Express to collectors across the Americas, Europe, Asia, and Oceania.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white border border-stone-200 p-8 sm:p-10 shadow-xs mb-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900">
+            Atelier Boutique &amp; Inquiries
+          </h3>
+          <div class="space-y-2 text-xs text-stone-600 leading-relaxed">
+            <div class="flex items-start gap-2.5">
+              <MapPin class="w-4 h-4 text-stone-700 mt-0.5 flex-shrink-0" />
+              <span>Luxcity, 528 Huynh Tan Phat, District 7, Ho Chi Minh City, Vietnam (Private viewing by appointment).</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Clock class="w-4 h-4 text-stone-700 flex-shrink-0" />
+              <span>Monday &ndash; Saturday: 09:30 &ndash; 19:30 (GMT+7)</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Phone class="w-4 h-4 text-stone-700 flex-shrink-0" />
+              <span>WhatsApp / Hotline: <a href="https://wa.me/84941625653" class="text-stone-900 font-mono font-medium hover:underline">+84 94 162 5653</a></span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Mail class="w-4 h-4 text-stone-700 flex-shrink-0" />
+              <span>Email: <a href="mailto:spacetime.donghocodien@gmail.com" class="text-stone-900 hover:underline">spacetime.donghocodien@gmail.com</a></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 md:justify-end">
+          <a
+            href="/shop"
+            class="px-6 py-3.5 bg-brand-dark text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition-colors inline-flex items-center justify-center gap-2"
+          >
+            <span>Explore Collection</span>
+            <ArrowRight class="w-4 h-4" />
+          </a>
+          <a
+            href="/consign-your-watch"
+            class="px-6 py-3.5 border border-stone-300 text-stone-800 text-xs uppercase tracking-[0.2em] font-medium hover:border-stone-900 hover:bg-stone-50 transition-colors inline-flex items-center justify-center"
+          >
+            <span>Consign a Watch</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
