@@ -103,3 +103,13 @@ Agents should consult these specialized skill guidelines before modifying releva
 ## 7. Code Cleanliness & Commenting Policy
 - **No Code Comments**: Do not write comments in code (`//`, `/* */`, `{/* ... */}`, `<!-- ... -->`). Code must be clean, self-documenting, and concise without explanatory narrative or section labels.
 
+---
+
+## 8. Project Discovery & Architectural Navigation (`graphify-out/`)
+- **First Stop for Codebase Discovery**: When exploring codebase structure, relationships, call chains, data flows, or cross-cutting abstractions, ALWAYS check `graphify-out/` before manual crawling:
+  - `graphify-out/GRAPH_REPORT.md`: Architectural summary, community clusters, god nodes, and cohesion scores.
+  - `graphify-out/graph.json`: Pre-computed knowledge graph of all symbols, types, dependencies, and imports.
+  - `graphify-out/graph.html`: Visual interactive map of the architecture.
+- **Fast Graph Queries**: Use `/graphify query "<question>"` to trace paths, explore communities, or understand cross-module interactions without reading every file sequentially.
+
+
