@@ -7,12 +7,23 @@ import { getProducts, getCategories } from '../lib/services/woocommerce';
 const url = Astro.url;
 const page = Number(url.searchParams.get('page') || '1');
 const search = url.searchParams.get('search') || undefined;
-const categoryParam = url.searchParams.get('category');
-const category = categoryParam && !isNaN(Number(categoryParam)) ? Number(categoryParam) : undefined;
+const rawCategory = url.searchParams.get('category') || url.searchParams.get('status');
+
+const slugToIdMap: Record<string, number> = {
+  consignment: 1102,
+  archive: 214,
+  'out-of-stock': 214,
+};
+
+const categoryId = rawCategory
+  ? !isNaN(Number(rawCategory))
+    ? Number(rawCategory)
+    : slugToIdMap[rawCategory.toLowerCase()]
+  : undefined;
 
 const [productsResult, categoriesResult] = await Effect.runPromise(
   Effect.all([
-    Effect.exit(getProducts({ page, per_page: 20, search, category })),
+    Effect.exit(getProducts({ page, per_page: 20, search, category: categoryId })),
     Effect.exit(getCategories),
   ])
 );
@@ -20,9 +31,11 @@ const [productsResult, categoriesResult] = await Effect.runPromise(
 const products = productsResult._tag === 'Success' ? productsResult.value : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 
-const activeCategory = category ? categories.find((c) => c.id === category) : null;
+const activeCategory = categoryId ? categories.find((c) => c.id === categoryId) : null;
 const pageTitle = activeCategory
-  ? `${activeCategory.name} Watches`
+  ? activeCategory.id === 214
+    ? 'Archive Watches'
+    : `${activeCategory.name} Watches`
   : search
   ? `Search Results for "${search}"`
   : 'All Watches';
