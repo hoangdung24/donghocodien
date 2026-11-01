@@ -1,0 +1,148 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WatchCard from '../components/WatchCard.astro';
+import { Effect } from 'effect';
+import { getProducts } from '../lib/services/woocommerce';
+import { ArrowRight, Clock, ShieldCheck, Award, Truck } from 'lucide-react';
+
+// Fetch live watches via Effect pipeline
+const productsResult = await Effect.runPromiseExit(getProducts({ per_page: 9 }));
+
+const products = productsResult._tag === 'Success' ? productsResult.value : [];
+const hasError = productsResult._tag === 'Failure';
+
+const curatedBrands = [
+  { name: 'Omega', count: '100+ mẫu', slug: 'omega' },
+  { name: 'Cartier Tank', count: 'Biểu tượng', slug: 'cartier' },
+  { name: 'Rolex', count: 'Kinh điển', slug: 'rolex' },
+  { name: 'Seiko Vintage', count: 'King & Grand', slug: 'seiko' },
+  { name: 'Longines', count: 'Thanh lịch', slug: 'longines' },
+  { name: 'Zenith', count: 'Độ chính xác', slug: 'zenith' },
+];
+---
+
+<Layout title="Tuyển Tập Đồng Hồ Cổ Điển Thụy Sỹ & Nhật Bản">
+  {/* Editorial Hero */}
+  <section class="relative border-b border-stone-200 bg-gradient-to-b from-stone-100/60 to-stone-50 py-20 sm:py-28">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <p class="text-xs uppercase tracking-[0.3em] text-amber-900 font-medium">
+        Curated Vintage Timepieces &amp; Horology
+      </p>
+
+      <h1 class="font-serif text-4xl sm:text-6xl text-stone-950 font-normal tracking-tight leading-[1.15]">
+        Lưu giữ những giá trị thời gian <br class="hidden sm:inline" />
+        <span class="italic font-normal">vượt qua mọi thời đại.</span>
+      </h1>
+
+      <p class="max-w-2xl mx-auto text-stone-600 text-sm sm:text-base leading-relaxed font-sans">
+        Không gian tuyển chọn các cỗ máy cơ khí cổ điển nguyên bản từ những thương hiệu Thụy Sỹ và Nhật Bản lừng danh: Omega, Cartier, Rolex, Seiko, Jaeger-LeCoultre...
+      </p>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/shop"
+          class="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 font-serif text-xs uppercase tracking-widest hover:bg-stone-800 transition-colors shadow-sm"
+        >
+          Khám phá bộ sưu tập
+        </a>
+        <a
+          href="/consign-your-watch"
+          class="w-full sm:w-auto px-8 py-3.5 border border-stone-300 text-stone-800 font-serif text-xs uppercase tracking-widest hover:bg-stone-100 transition-colors"
+        >
+          Ký gửi đồng hồ
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {/* Pillars of Trust */}
+  <section class="border-b border-stone-200 bg-white py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div class="flex flex-col items-center p-3">
+          <ShieldCheck class="w-6 h-6 text-amber-800 mb-2" />
+          <h4 class="font-serif text-sm font-semibold text-stone-900">100% Nguyên Bản</h4>
+          <p class="text-xs text-stone-500 mt-1">Giám định cơ chế máy và vỏ nghiêm ngặt</p>
+        </div>
+        <div class="flex flex-col items-center p-3">
+          <Clock class="w-6 h-6 text-amber-800 mb-2" />
+          <h4 class="font-serif text-sm font-semibold text-stone-900">Bảo Hành Kỹ Thuật</h4>
+          <p class="text-xs text-stone-500 mt-1">Lau dầu, căn chỉnh trước khi bàn giao</p>
+        </div>
+        <div class="flex flex-col items-center p-3">
+          <Truck class="w-6 h-6 text-amber-800 mb-2" />
+          <h4 class="font-serif text-sm font-semibold text-stone-900">Giao Hàng Bảo Hiểm</h4>
+          <p class="text-xs text-stone-500 mt-1">Đồng kiểm tra hàng trước thanh toán</p>
+        </div>
+        <div class="flex flex-col items-center p-3">
+          <Award class="w-6 h-6 text-amber-800 mb-2" />
+          <h4 class="font-serif text-sm font-semibold text-stone-900">Hỗ Trợ Giao Lưu</h4>
+          <p class="text-xs text-stone-500 mt-1">Đổi dòng, lên đời cỗ máy linh hoạt</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Curated Products Section */}
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-stone-200 pb-6 gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-amber-900 font-medium mb-1">
+          Tuyển chọn mới về
+        </p>
+        <h2 class="font-serif text-3xl sm:text-4xl text-stone-900 font-normal">
+          Bộ Sưu Tập Đồng Hồ Mới Nhất
+        </h2>
+      </div>
+
+      <a
+        href="/shop"
+        class="inline-flex items-center gap-2 text-xs font-sans uppercase tracking-widest text-stone-700 hover:text-amber-900 font-medium transition-colors"
+      >
+        Xem tất cả 2.300+ sản phẩm <ArrowRight class="w-4 h-4" />
+      </a>
+    </div>
+
+    {hasError && (
+      <div class="p-6 bg-red-50 border border-red-200 text-red-700 text-sm">
+        Đang có gián đoạn kết nối tới máy chủ WooCommerce. Vui lòng tải lại trang.
+      </div>
+    )}
+
+    {products.length > 0 && (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {products.map((watch) => (
+          <WatchCard product={watch} />
+        ))}
+      </div>
+    )}
+  </section>
+
+  {/* Brand Facets */}
+  <section class="bg-stone-100 border-t border-b border-stone-200 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <h2 class="font-serif text-3xl text-stone-900 font-normal">
+          Thương Hiệu Được Yêu Thích
+        </h2>
+        <p class="text-xs text-stone-600 mt-2">
+          Lựa chọn theo nhà chế tác lừng danh của làng đồng hồ thế giới.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {curatedBrands.map((b) => (
+          <a
+            href={`/shop?brand=${b.slug}`}
+            class="p-6 bg-white border border-stone-200 text-center hover:border-stone-900 hover:shadow-md transition-all group"
+          >
+            <h3 class="font-serif text-lg text-stone-900 group-hover:text-amber-900 transition-colors">
+              {b.name}
+            </h3>
+            <span class="text-[11px] text-stone-400 block mt-1">{b.count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

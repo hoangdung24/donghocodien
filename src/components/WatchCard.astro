@@ -1,0 +1,98 @@
+---
+import type { Product } from '../lib/schema/product';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+
+// Find brand category if available
+const brandCategory = product.categories.find((c) =>
+  ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines'].some(
+    (b) => c.name.toLowerCase().includes(b.toLowerCase())
+  )
+) || product.categories[0];
+
+const mainImage = product.images[0]?.src || '/placeholder-watch.jpg';
+const hoverImage = product.images[1]?.src || mainImage;
+
+// Clean up HTML entities in title like &#8216; or &#8217;
+function cleanTitle(title: string) {
+  return title
+    .replace(/&#8216;/g, '‘')
+    .replace(/&#8217;/g, '’')
+    .replace(/&#8211;/g, '–')
+    .replace(/&#038;/g, '&')
+    .replace(/&amp;/g, '&');
+}
+
+const cleanName = cleanTitle(product.name);
+---
+
+<article class="group relative flex flex-col border border-stone-200/80 bg-white transition-all duration-300 hover:border-stone-900/40 hover:shadow-lg">
+  {/* Image Container with hover crossfade */}
+  <a href={`/product/${product.slug}`} class="relative block aspect-[4/5] overflow-hidden bg-stone-50">
+    <img
+      src={mainImage}
+      alt={cleanName}
+      loading="lazy"
+      class="h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+    />
+    <img
+      src={hoverImage}
+      alt={`${cleanName} - góc nhìn khác`}
+      loading="lazy"
+      class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+    />
+
+    {/* Status badge */}
+    <div class="absolute top-3 left-3 flex flex-col gap-1">
+      {product.on_sale && (
+        <span class="bg-amber-900/90 text-amber-50 text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
+          Ưu đãi
+        </span>
+      )}
+      {!product.is_in_stock && (
+        <span class="bg-stone-800 text-stone-200 text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
+          Đã bán
+        </span>
+      )}
+    </div>
+  </a>
+
+  {/* Content Details */}
+  <div class="flex flex-1 flex-col p-5">
+    {brandCategory && (
+      <span class="text-[11px] font-sans uppercase tracking-widest text-stone-500 mb-1">
+        {cleanTitle(brandCategory.name)}
+      </span>
+    )}
+
+    <h3 class="font-serif text-base text-stone-900 leading-snug tracking-tight mb-2 line-clamp-2">
+      <a href={`/product/${product.slug}`} class="hover:text-amber-900 transition-colors">
+        {cleanName}
+      </a>
+    </h3>
+
+    <div class="mt-auto pt-3 border-t border-stone-100 flex items-baseline justify-between">
+      <div class="flex items-baseline gap-2">
+        <span class="font-serif text-lg font-medium text-stone-900">
+          ${product.prices.price}
+        </span>
+        {product.on_sale && product.prices.regular_price && (
+          <span class="text-xs text-stone-400 line-through">
+            ${product.prices.regular_price}
+          </span>
+        )}
+      </div>
+
+      <a
+        href={`/product/${product.slug}`}
+        class="text-xs uppercase tracking-widest text-stone-500 hover:text-stone-900 font-medium transition-colors"
+      >
+        Chi tiết &rarr;
+      </a>
+    </div>
+  </div>
+</article>
