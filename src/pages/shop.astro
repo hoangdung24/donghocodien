@@ -8,11 +8,11 @@ const url = Astro.url;
 const page = Number(url.searchParams.get('page') || '1');
 const search = url.searchParams.get('search') || undefined;
 
-// Fetch products & categories in parallel
+// Fetch products & categories in parallel using pure Effect
 const [productsResult, categoriesResult] = await Effect.runPromise(
   Effect.all([
-    Effect.runPromiseExit(getProducts({ page, per_page: 20, search })),
-    Effect.runPromiseExit(getCategories),
+    Effect.exit(getProducts({ page, per_page: 20, search })),
+    Effect.exit(getCategories),
   ])
 );
 
