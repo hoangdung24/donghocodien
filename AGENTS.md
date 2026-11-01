@@ -22,6 +22,9 @@ Guidelines for AI agents working on **donghocodien.com** (Spacetime Vintage Watc
   - No untyped `catch (e: any)` blocks.
   - Use `Effect.retry` and `Effect.timeout` for resilient remote requests.
 - **UI Components**: **Ark UI (`@ark-ui/react v5+`)** based on Zag.js state machines (Carousel, Accordion, Dialog/Drawer).
+- **Icon Packages**:
+  - In Astro templates (`*.astro`): Strictly use `@lucide/astro` (zero client JS overhead).
+  - In React components (`*.tsx`): Use `lucide-react`.
 - **Styling**: **Tailwind CSS v4** with CSS-first `@theme` in `src/styles/global.css`.
 - **Typography**: Signature font `elle-futura-book` bundled in `public/fonts/`. Never replace with generic default sans-serif.
 
