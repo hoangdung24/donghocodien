@@ -7,6 +7,7 @@ import { Effect } from 'effect';
 import { getProductBySlug } from '../../lib/services/woocommerce';
 import { Check, Shield } from 'lucide-react';
 import { formatApproxVND } from '../../lib/utils/currency';
+import { sanitizeWordPressHtml } from '../../lib/utils/html';
 
 const { slug } = Astro.params;
 
@@ -34,6 +35,8 @@ function cleanTitle(title: string) {
 }
 
 const cleanName = cleanTitle(product.name);
+const cleanDescription = await sanitizeWordPressHtml(product.description || '');
+const cleanShortDescription = await sanitizeWordPressHtml(product.short_description || '');
 const primaryBrand = product.categories.find((c) =>
   ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines'].some(
     (b) => c.name.toLowerCase().includes(b.toLowerCase())
@@ -123,14 +126,14 @@ const primaryBrand = product.categories.find((c) =>
         </div>
 
         {/* Brand story / short description */}
-        {product.short_description && (
+        {cleanShortDescription && (
           <div class="pt-4 text-xs text-stone-600 leading-relaxed italic border-t border-stone-100">
-            <div set:html={product.short_description} />
+            <div set:html={cleanShortDescription} />
           </div>
         )}
 
         {/* Technical Specs Accordion (Ark UI) */}
-        <WatchSpecs client:visible descriptionHtml={product.description} sku={product.sku} />
+        <WatchSpecs client:visible descriptionHtml={cleanDescription} sku={product.sku} />
       </div>
     </div>
   </main>

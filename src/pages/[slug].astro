@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { Effect } from 'effect';
 import { getPageBySlug, getPostBySlug } from '../lib/services/woocommerce';
+import { sanitizeWordPressHtml } from '../lib/utils/html';
 
 const { slug } = Astro.params;
 
@@ -56,6 +57,7 @@ function cleanTitle(title: string) {
 }
 
 const cleanItemTitle = cleanTitle(contentItem.title);
+const cleanHtmlContent = await sanitizeWordPressHtml(contentItem.content);
 const formattedDate = contentItem.date
   ? new Date(contentItem.date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -110,7 +112,7 @@ const formattedDate = contentItem.date
     {/* WordPress HTML Content rendered cleanly */}
     <article
       class="prose prose-stone max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:tracking-wide prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm sm:prose-p:text-base prose-p:leading-relaxed prose-p:text-stone-700 prose-img:rounded-none prose-img:shadow-sm prose-table:w-full prose-table:border-collapse prose-td:py-2.5 prose-td:border-b prose-td:border-stone-100"
-      set:html={contentItem.content}
+      set:html={cleanHtmlContent}
     />
   </main>
 </Layout>
