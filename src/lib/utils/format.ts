@@ -16,3 +16,17 @@ export function calculateDiscountPercentage(regularPrice: number, salePrice: num
   const discount = ((regularPrice - salePrice) / regularPrice) * 100;
   return Math.round(discount);
 }
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
+/**
+ * Formats a Date object in the exact style of donghocodien.com live header ("Nov 01 16:21:34")
+ */
+export function formatHeaderClock(date: Date): string {
+  const month = MONTH_NAMES[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${month} ${day} ${hours}:${minutes}:${seconds}`;
+}

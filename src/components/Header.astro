@@ -1,5 +1,6 @@
 ---
 import { Search, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
+import { formatHeaderClock } from '../lib/utils/format';
 
 // Mega Menu Data replicating exact structure from donghocodien.com
 export const megaMenuData = [
@@ -62,8 +63,8 @@ export const megaMenuData = [
   {/* Tier 1: Top Brand Bar */}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
     <div class="flex items-center justify-between">
-      {/* Left: Instagram & Mobile Toggle */}
-      <div class="flex items-center gap-3 flex-1 justify-start">
+      {/* Left: Live Clock, Instagram & Mobile Toggle */}
+      <div class="flex items-center gap-3 sm:gap-4 flex-1 justify-start">
         <button
           type="button"
           id="mobile-menu-toggle"
@@ -72,6 +73,15 @@ export const megaMenuData = [
         >
           <Menu class="w-6 h-6" />
         </button>
+
+        {/* Live Horological Clock matching donghocodien.com */}
+        <span
+          id="header-live-clock"
+          class="hidden sm:inline-block text-xs font-mono tracking-wider text-stone-700 select-none font-light"
+        >
+          {formatHeaderClock(new Date())}
+        </span>
+
         <a
           href="https://instagram.com"
           target="_blank"
@@ -269,6 +279,17 @@ export const megaMenuData = [
 </header>
 
 <script>
+  import { formatHeaderClock } from '../lib/utils/format';
+
+  // Live ticking clock (e.g. Nov 01 16:21:34)
+  const clockEl = document.getElementById('header-live-clock');
+  if (clockEl) {
+    const tick = () => {
+      clockEl.textContent = formatHeaderClock(new Date());
+    };
+    setInterval(tick, 1000);
+  }
+
   // Mobile drawer controls
   const toggleBtn = document.getElementById('mobile-menu-toggle');
   const closeBtn = document.getElementById('mobile-menu-close');
