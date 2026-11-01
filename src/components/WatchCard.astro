@@ -32,7 +32,7 @@ const cleanName = cleanTitle(product.name);
 
 <article class="group relative flex flex-col bg-white overflow-hidden transition-all duration-300">
   {/* Watch Image Box with Aspect Ratio 300/375 & Fade-to-back Hover */}
-  <a href={`/product/${product.slug}`} class="relative block aspect-[300/375] overflow-hidden bg-[#fbfbfb]">
+  <a href={`/product/${product.slug}`} class="relative block aspect-[300/375] overflow-hidden bg-brand-surface">
     <img
       src={mainImage}
       alt={cleanName}
@@ -49,12 +49,12 @@ const cleanName = cleanTitle(product.name);
     {/* Badges */}
     <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
       {product.on_sale && (
-        <span class="bg-[#dc3232] text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
+        <span class="bg-brand-badge-sale text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
           Sale
         </span>
       )}
       {!product.is_in_stock && (
-        <span class="bg-[#191414] text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
+        <span class="bg-brand-dark text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
           Sold
         </span>
       )}

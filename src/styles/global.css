@@ -19,6 +19,8 @@
   --color-brand-light-gray: #e4e4e4;
   --color-brand-border: #e0e0e0;
   --color-brand-badge-sale: #dc3232;
+  --color-brand-surface: #fbfbfb;
+  --color-brand-surface-subtle: #fafafa;
 }
 
 :root {

@@ -111,7 +111,7 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
                     {/* Sale Badge */}
                     {product.on_sale && (
                       <div className="absolute top-3 left-3 z-10">
-                        <span className="bg-[#dc3232] text-white text-[10px] uppercase font-sans tracking-widest px-2.5 py-0.5 font-medium shadow-xs">
+                        <span className="bg-brand-badge-sale text-white text-[10px] uppercase font-sans tracking-widest px-2.5 py-0.5 font-medium shadow-xs">
                           {discountPct > 0 ? `-${discountPct}%` : 'Sale'}
                         </span>
                       </div>
