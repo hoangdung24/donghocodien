@@ -1,7 +1,7 @@
 import { Schema } from 'effect';
 
 export const ProductImageSchema = Schema.Struct({
-  id: Schema.Number,
+  id: Schema.Finite,
   src: Schema.String,
   thumbnail: Schema.optional(Schema.String),
   name: Schema.optional(Schema.String),
@@ -21,7 +21,7 @@ export const ProductPricesSchema = Schema.Struct({
 export type ProductPrices = Schema.Schema.Type<typeof ProductPricesSchema>;
 
 export const ProductCategorySchema = Schema.Struct({
-  id: Schema.Number,
+  id: Schema.Finite,
   name: Schema.String,
   slug: Schema.String,
   link: Schema.optional(Schema.String),
@@ -29,7 +29,7 @@ export const ProductCategorySchema = Schema.Struct({
 export type ProductCategory = Schema.Schema.Type<typeof ProductCategorySchema>;
 
 export const ProductSchema = Schema.Struct({
-  id: Schema.Number,
+  id: Schema.Finite,
   name: Schema.String,
   slug: Schema.String,
   permalink: Schema.String,

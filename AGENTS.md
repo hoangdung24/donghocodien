@@ -15,7 +15,8 @@ Guidelines for AI agents working on **donghocodien.com** (Spacetime Vintage Watc
 
 ## 2. Technology Stack & Architectural Invariants
 - **Framework**: **Astro (v7+)** configured with `@astrojs/node` in `server` / hybrid mode.
-- **Functional Programming**: **Effect (v4)** for pure functional data fetching:
+- **Functional Programming**: **Effect (v4)** with **`@effect/tsgo`**:
+  - Diagnostic engine: Run `pnpm check:effect` to catch Effect anti-patterns (floating effects, missing yields, schema finite numbers, lazy indirection).
   - Use `Schema.decodeUnknownEffect` (or `Schema.decodeUnknownSync`) to decode API data.
   - Model domain errors explicitly with tagged errors (`HttpError`, `NetworkError`, `ProductNotFoundError`).
   - No untyped `catch (e: any)` blocks.
@@ -69,6 +70,9 @@ pnpm install
 
 # Run unit tests (Vitest)
 pnpm test
+
+# Run Effect-TS diagnostics (powered by @effect/tsgo)
+pnpm check:effect
 
 # Typecheck and build SSR production bundle
 pnpm build

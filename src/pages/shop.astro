@@ -12,7 +12,7 @@ const search = url.searchParams.get('search') || undefined;
 const [productsResult, categoriesResult] = await Effect.runPromise(
   Effect.all([
     Effect.runPromiseExit(getProducts({ page, per_page: 20, search })),
-    Effect.runPromiseExit(getCategories()),
+    Effect.runPromiseExit(getCategories),
   ])
 );
 

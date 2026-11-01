@@ -15,7 +15,7 @@ export class NetworkError extends Schema.TaggedError<NetworkError>()('NetworkErr
 }) {}
 
 export class HttpError extends Schema.TaggedError<HttpError>()('HttpError', {
-  status: Schema.Number,
+  status: Schema.Finite,
   statusText: Schema.String,
   url: Schema.String,
 }) {}
@@ -135,36 +135,35 @@ export const getProductBySlug = (slug: string) =>
     Effect.timeout('30 seconds')
   );
 
-// Fetch Categories List
-export const getCategories = () =>
-  Effect.gen(function* () {
-    const url = `${API_BASE}/products/categories?per_page=100`;
+// Fetch Categories List (Effect is already lazy)
+export const getCategories = Effect.gen(function* () {
+  const url = `${API_BASE}/products/categories?per_page=100`;
 
-    const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(url, {
-          headers: {
-            Accept: 'application/json',
-          },
-        }),
-      catch: (cause) => new NetworkError({ cause }),
+  const response = yield* Effect.tryPromise({
+    try: () =>
+      fetch(url, {
+        headers: {
+          Accept: 'application/json',
+        },
+      }),
+    catch: (cause) => new NetworkError({ cause }),
+  });
+
+  if (!response.ok) {
+    return yield* new HttpError({
+      status: response.status,
+      statusText: response.statusText,
+      url,
     });
+  }
 
-    if (!response.ok) {
-      return yield* new HttpError({
-        status: response.status,
-        statusText: response.statusText,
-        url,
-      });
-    }
+  const raw = yield* Effect.tryPromise({
+    try: () => response.json(),
+    catch: (cause) => new NetworkError({ cause }),
+  });
 
-    const raw = yield* Effect.tryPromise({
-      try: () => response.json(),
-      catch: (cause) => new NetworkError({ cause }),
-    });
-
-    return yield* Schema.decodeUnknownEffect(Schema.Array(ProductCategorySchema))(raw);
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('10 seconds')
-  );
+  return yield* Schema.decodeUnknownEffect(Schema.Array(ProductCategorySchema))(raw);
+}).pipe(
+  Effect.retry({ times: 2 }),
+  Effect.timeout('30 seconds')
+);
