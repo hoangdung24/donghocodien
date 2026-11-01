@@ -1,5 +1,6 @@
 ---
 import type { Product } from '../lib/schema/product';
+import { formatApproxVND } from '../lib/utils/currency';
 
 interface Props {
   product: Product;
@@ -74,15 +75,20 @@ const cleanName = cleanTitle(product.name);
       </a>
     </h3>
 
-    <div class="mt-auto flex items-baseline justify-center sm:justify-start gap-2 pt-1">
-      <span class="text-sm sm:text-base font-semibold text-stone-950">
-        ${product.prices.price}
-      </span>
-      {product.on_sale && product.prices.regular_price && (
-        <span class="text-xs text-stone-400 line-through">
-          ${product.prices.regular_price}
+    <div class="mt-auto flex flex-col items-center sm:items-start pt-1 font-serif">
+      <div class="flex items-baseline gap-2">
+        {product.on_sale && product.prices.regular_price && (
+          <span class="text-xs text-stone-400 line-through">
+            ${product.prices.regular_price}
+          </span>
+        )}
+        <span class="text-sm sm:text-base font-semibold text-stone-950">
+          ${product.prices.price}
         </span>
-      )}
+      </div>
+      <span class="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
+        {formatApproxVND(product.prices.price)}
+      </span>
     </div>
   </div>
 </article>

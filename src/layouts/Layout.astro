@@ -60,5 +60,20 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://donghocodien.com');
       <slot />
     </div>
     <Footer />
+
+    {/* Client-side currency exchange rate sync with 6-hour local cache */}
+    <script>
+      import { getClientExchangeRate, formatApproxVND } from '../lib/utils/currency';
+
+      getClientExchangeRate().then((rate) => {
+        if (!rate || rate <= 0) return;
+        document.querySelectorAll<HTMLElement>('.approximate-vnd').forEach((el) => {
+          const usd = Number(el.dataset.usdPrice);
+          if (usd && !isNaN(usd)) {
+            el.textContent = formatApproxVND(usd, rate);
+          }
+        });
+      });
+    </script>
   </body>
 </html>

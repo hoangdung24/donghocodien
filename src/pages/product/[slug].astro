@@ -6,6 +6,7 @@ import { CartDrawer } from '../../components/CartDrawer';
 import { Effect } from 'effect';
 import { getProductBySlug } from '../../lib/services/woocommerce';
 import { Check, Shield } from 'lucide-react';
+import { formatApproxVND } from '../../lib/utils/currency';
 
 const { slug } = Astro.params;
 
@@ -85,17 +86,22 @@ const primaryBrand = product.categories.find((c) =>
         </h1>
 
         {/* Price display */}
-        <div class="flex items-baseline gap-4 pb-6 border-b border-stone-200">
-          <span class="font-serif text-3xl font-medium text-stone-900">
-            ${product.prices.price}
-          </span>
-          {product.on_sale && product.prices.regular_price && (
-            <span class="text-base text-stone-400 line-through">
-              ${product.prices.regular_price}
+        <div class="flex flex-col pb-6 border-b border-stone-200">
+          <div class="flex items-baseline gap-4">
+            <span class="font-serif text-3xl font-medium text-stone-900">
+              ${product.prices.price}
             </span>
-          )}
-          <span class="text-xs text-stone-500 font-mono">
-            {product.is_in_stock ? 'In Stock & Ready to Ship' : 'Sold / Reserved'}
+            {product.on_sale && product.prices.regular_price && (
+              <span class="text-base text-stone-400 line-through">
+                ${product.prices.regular_price}
+              </span>
+            )}
+            <span class="text-xs text-stone-500 font-mono ml-auto">
+              {product.is_in_stock ? 'In Stock & Ready to Ship' : 'Sold / Reserved'}
+            </span>
+          </div>
+          <span class="text-xs text-stone-400 font-sans tracking-tight mt-1.5 approximate-vnd" data-usd-price={product.prices.price}>
+            {formatApproxVND(product.prices.price)}
           </span>
         </div>
 
