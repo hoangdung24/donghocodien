@@ -99,15 +99,8 @@ export const megaMenuData = [
         </a>
       </div>
 
-      {/* Right: Language, Cart Counter Box, Search */}
+      {/* Right: Cart Counter Box, Search */}
       <div class="flex items-center gap-4 sm:gap-5 flex-1 justify-end">
-        {/* Language Switcher */}
-        <div class="text-[11px] uppercase tracking-wider text-stone-600 font-sans hidden sm:block">
-          <span class="hover:text-stone-900 cursor-pointer">VI</span>
-          <span class="mx-1 text-stone-300">|</span>
-          <span class="font-bold text-stone-900">EN</span>
-        </div>
-
         {/* Cart Counter [ 0 ] */}
         <a
           href="/cart"
@@ -130,21 +123,25 @@ export const megaMenuData = [
   </div>
 
   {/* Tier 2: Main Navigation Bar with Mega Menu */}
-  <div class="border-t border-stone-100 hidden lg:block relative">
+  <div class="border-t border-stone-100 hidden lg:block relative" id="tier2-nav-container">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav class="flex items-center justify-center gap-8 py-3.5 text-xs uppercase tracking-[0.18em] font-medium text-stone-800">
+      <nav class="flex items-stretch justify-center gap-8 text-xs uppercase tracking-[0.18em] font-medium text-stone-800">
         {/* WATCHES with Mega Menu Dropdown */}
-        <div class="group py-2">
+        <div id="watches-menu-wrapper" class="group relative flex items-center py-3.5">
           <a
             href="/shop"
-            class="inline-flex items-center gap-1 hover:text-stone-500 transition-colors cursor-pointer"
+            id="watches-menu-trigger"
+            class="inline-flex items-center gap-1 hover:text-stone-500 transition-colors cursor-pointer py-1"
           >
             <span>Watches</span>
-            <ChevronDown class="w-3.5 h-3.5 text-stone-400 group-hover:rotate-180 transition-transform duration-200" />
+            <ChevronDown id="watches-chevron" class="w-3.5 h-3.5 text-stone-400 group-hover:rotate-180 transition-transform duration-200" />
           </a>
 
-          {/* Mega Menu Dropdown Container */}
-          <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out absolute left-1/2 -translate-x-1/2 top-full w-full max-w-5xl z-50 pt-2 pointer-events-none group-hover:pointer-events-auto">
+          {/* Mega Menu Dropdown Container with Zero Gap & Invisible Hover Bridge */}
+          <div
+            id="watches-mega-menu"
+            class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out absolute left-1/2 -translate-x-1/2 top-full w-full max-w-5xl z-50 pointer-events-none group-hover:pointer-events-auto before:content-[''] before:absolute before:-top-4 before:left-0 before:right-0 before:h-4 before:block"
+          >
             <div class="bg-white border border-stone-200 shadow-2xl p-8 sm:p-10">
               <div class="grid grid-cols-6 gap-6">
                 {megaMenuData.map((column) => (
@@ -171,19 +168,19 @@ export const megaMenuData = [
           </div>
         </div>
 
-        <a href="/consign-your-watch" class="hover:text-stone-500 transition-colors py-2">
+        <a href="/consign-your-watch" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
           Consignment
         </a>
-        <a href="/blog" class="hover:text-stone-500 transition-colors py-2">
+        <a href="/blog" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
           Articles
         </a>
-        <a href="/about-us" class="hover:text-stone-500 transition-colors py-2">
+        <a href="/about-us" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
           About Us
         </a>
-        <a href="/shop?status=archive" class="hover:text-stone-500 transition-colors py-2">
+        <a href="/shop?status=archive" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
           Archives
         </a>
-        <a href="/consign-your-watch" class="hover:text-stone-500 transition-colors py-2">
+        <a href="/consign-your-watch" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
           Consign Your Watch
         </a>
       </nav>
@@ -272,6 +269,7 @@ export const megaMenuData = [
 </header>
 
 <script>
+  // Mobile drawer controls
   const toggleBtn = document.getElementById('mobile-menu-toggle');
   const closeBtn = document.getElementById('mobile-menu-close');
   const drawer = document.getElementById('mobile-drawer');
@@ -279,6 +277,37 @@ export const megaMenuData = [
   const watchesToggle = document.getElementById('mobile-watches-toggle');
   const watchesContent = document.getElementById('mobile-watches-content');
   const watchesIcon = document.getElementById('mobile-watches-icon');
+
+  // Desktop Mega Menu controls with hover grace period
+  const watchesWrapper = document.getElementById('watches-menu-wrapper');
+  const watchesMegaMenu = document.getElementById('watches-mega-menu');
+  const watchesChevron = document.getElementById('watches-chevron');
+  let closeTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function showMegaMenu() {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+    watchesMegaMenu?.classList.remove('invisible', 'opacity-0', 'pointer-events-none');
+    watchesMegaMenu?.classList.add('visible', 'opacity-100', 'pointer-events-auto');
+    watchesChevron?.classList.add('rotate-180');
+  }
+
+  function scheduleHideMegaMenu() {
+    if (closeTimer) clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => {
+      watchesMegaMenu?.classList.remove('visible', 'opacity-100', 'pointer-events-auto');
+      watchesMegaMenu?.classList.add('invisible', 'opacity-0', 'pointer-events-none');
+      watchesChevron?.classList.remove('rotate-180');
+      closeTimer = null;
+    }, 280);
+  }
+
+  watchesWrapper?.addEventListener('mouseenter', showMegaMenu);
+  watchesWrapper?.addEventListener('mouseleave', scheduleHideMegaMenu);
+  watchesMegaMenu?.addEventListener('mouseenter', showMegaMenu);
+  watchesMegaMenu?.addEventListener('mouseleave', scheduleHideMegaMenu);
 
   function openMenu() {
     drawer?.classList.remove('opacity-0', 'pointer-events-none');
