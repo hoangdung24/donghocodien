@@ -5,6 +5,7 @@ This document preserves the agreed technical architecture and decisions for conv
 ---
 
 ## 1. Selected Stack
+- **Target Audience & Language**: Global international collectors — **English** is the primary storefront language.
 - **Backend / CMS**: WordPress + WooCommerce on current hosting/cPanel (`https://donghocodien.com`).
 - **Frontend**: [Astro](https://astro.build/) (SSR / Hybrid mode for optimal SEO & sub-second page loads).
 - **Language**: TypeScript (Strict mode).

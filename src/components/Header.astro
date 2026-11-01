@@ -1,66 +1,155 @@
 ---
-import { Search, ShoppingBag, Menu } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 ---
 
-<header class="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-stone-50/95 backdrop-blur-md">
+<header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-xs transition-all">
   {/* Top Announcement Bar */}
-  <div class="border-b border-stone-200/60 bg-stone-900 text-stone-200 py-1.5 px-4 text-center text-xs tracking-widest uppercase font-sans">
-    <span>Curated Authentic Vintage Swiss &amp; Japanese Timepieces — Worldwide Insured Delivery</span>
+  <div class="bg-stone-900 text-stone-200 py-2 px-4 text-center text-[11px] sm:text-xs tracking-[0.2em] uppercase font-sans">
+    <span>Worldwide Insured Express Delivery &bull; 6 Months Warranty &bull; 100% Authentic</span>
   </div>
 
-  {/* Main Header */}
+  {/* Main Header Container */}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-20">
-      {/* Mobile Menu trigger */}
-      <div class="flex items-center md:hidden">
-        <button type="button" aria-label="Open menu" class="p-2 text-stone-700 hover:text-stone-950">
+    <div class="flex items-center justify-between h-20 sm:h-24">
+      {/* Mobile Menu Button */}
+      <div class="flex items-center lg:hidden flex-1">
+        <button
+          type="button"
+          id="mobile-menu-toggle"
+          aria-label="Open navigation menu"
+          class="p-2 text-stone-800 hover:text-stone-950 cursor-pointer"
+        >
           <Menu class="w-6 h-6" />
         </button>
       </div>
 
-      {/* Brand Logo */}
-      <div class="flex-1 text-center md:text-left md:flex-initial">
-        <a href="/" class="inline-block group">
-          <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 block group-hover:text-amber-900 transition-colors">
-            DONG HO CO DIEN
-          </span>
-          <span class="block text-[10px] uppercase tracking-[0.25em] text-stone-500 text-center md:text-left mt-0.5">
-            Vintage Watches &amp; Horology
-          </span>
+      {/* Left Navigation (Desktop) */}
+      <nav class="hidden lg:flex items-center gap-7 flex-1 justify-start">
+        <a href="/shop" class="text-xs uppercase tracking-[0.18em] text-stone-800 hover:text-stone-500 font-medium transition-colors">
+          Watches
+        </a>
+        <a href="/shop?category=brand" class="text-xs uppercase tracking-[0.18em] text-stone-800 hover:text-stone-500 font-medium transition-colors">
+          Brands
+        </a>
+        <a href="/consign-your-watch" class="text-xs uppercase tracking-[0.18em] text-stone-800 hover:text-stone-500 font-medium transition-colors">
+          Consignment
+        </a>
+      </nav>
+
+      {/* Centered Brand Logo */}
+      <div class="flex-shrink-0 flex items-center justify-center">
+        <a href="/" class="block transition-opacity hover:opacity-85" title="Spacetime - Vintage Watch">
+          <img
+            src="/images/logo.png"
+            alt="Spacetime - Vintage Watch"
+            class="h-10 sm:h-12 w-auto object-contain"
+          />
         </a>
       </div>
 
-      {/* Desktop Navigation */}
-      <nav class="hidden md:flex items-center gap-8">
-        <a href="/shop" class="text-sm font-sans tracking-wider uppercase text-stone-700 hover:text-amber-900 transition-colors">
-          Collection
+      {/* Right Navigation (Desktop) */}
+      <nav class="hidden lg:flex items-center gap-7 flex-1 justify-end">
+        <a href="/maintain" class="text-xs uppercase tracking-[0.18em] text-stone-800 hover:text-stone-500 font-medium transition-colors">
+          Restoration
         </a>
-        <a href="/about-us" class="text-sm font-sans tracking-wider uppercase text-stone-700 hover:text-amber-900 transition-colors">
-          About
+        <a href="/about-us" class="text-xs uppercase tracking-[0.18em] text-stone-800 hover:text-stone-500 font-medium transition-colors">
+          About Us
         </a>
-        <a href="/consign-your-watch" class="text-sm font-sans tracking-wider uppercase text-stone-700 hover:text-amber-900 transition-colors">
-          Consignment
-        </a>
-        <a href="/maintain" class="text-sm font-sans tracking-wider uppercase text-stone-700 hover:text-amber-900 transition-colors">
-          Restoration &amp; Care
-        </a>
-        <a href="/blog" class="text-sm font-sans tracking-wider uppercase text-stone-700 hover:text-amber-900 transition-colors">
-          Journal
-        </a>
-        <a href="/contact-us" class="text-sm font-sans tracking-wider uppercase text-stone-700 hover:text-amber-900 transition-colors">
+        <a href="/contact-us" class="text-xs uppercase tracking-[0.18em] text-stone-800 hover:text-stone-500 font-medium transition-colors">
           Contact
         </a>
       </nav>
 
-      {/* Quick Actions */}
-      <div class="flex items-center gap-4">
-        <a href="/shop?search=true" aria-label="Search collection" class="p-2 text-stone-700 hover:text-stone-950 transition-colors">
+      {/* Action Icons (Search & Bag) */}
+      <div class="flex items-center gap-3 justify-end flex-1 lg:flex-initial lg:pl-6">
+        <a href="/shop?search=true" aria-label="Search Timepieces" class="p-2 text-stone-700 hover:text-stone-950 transition-colors">
           <Search class="w-5 h-5" />
         </a>
-        <a href="/cart" aria-label="Cart" class="p-2 text-stone-700 hover:text-stone-950 transition-colors relative">
+        <a href="/cart" aria-label="Cart / Acquisition" class="p-2 text-stone-700 hover:text-stone-950 transition-colors relative">
           <ShoppingBag class="w-5 h-5" />
         </a>
       </div>
     </div>
   </div>
+
+  {/* Mobile Drawer (Responsive Slide-in) */}
+  <div
+    id="mobile-drawer"
+    class="fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none"
+  >
+    <div
+      id="mobile-drawer-content"
+      class="fixed inset-y-0 left-0 w-4/5 max-w-sm bg-white shadow-2xl p-6 flex flex-col transform -translate-x-full transition-transform duration-300 ease-out"
+    >
+      <div class="flex items-center justify-between pb-6 border-b border-stone-200">
+        <img src="/images/logo.png" alt="Spacetime" class="h-8 w-auto object-contain" />
+        <button
+          type="button"
+          id="mobile-menu-close"
+          aria-label="Close menu"
+          class="p-2 text-stone-500 hover:text-stone-900 cursor-pointer"
+        >
+          <X class="w-5 h-5" />
+        </button>
+      </div>
+
+      <nav class="flex flex-col py-6 space-y-5 text-sm uppercase tracking-[0.18em] font-sans">
+        <a href="/shop" class="text-stone-800 hover:text-stone-500 py-1 border-b border-stone-100">
+          All Watches
+        </a>
+        <a href="/shop?category=brand" class="text-stone-800 hover:text-stone-500 py-1 border-b border-stone-100">
+          Curated Brands
+        </a>
+        <a href="/consign-your-watch" class="text-stone-800 hover:text-stone-500 py-1 border-b border-stone-100">
+          Consign Your Watch
+        </a>
+        <a href="/maintain" class="text-stone-800 hover:text-stone-500 py-1 border-b border-stone-100">
+          Maintenance &amp; Service
+        </a>
+        <a href="/blog" class="text-stone-800 hover:text-stone-500 py-1 border-b border-stone-100">
+          Journal &amp; Articles
+        </a>
+        <a href="/about-us" class="text-stone-800 hover:text-stone-500 py-1 border-b border-stone-100">
+          About Us
+        </a>
+        <a href="/contact-us" class="text-stone-800 hover:text-stone-500 py-1">
+          Contact Concierge
+        </a>
+      </nav>
+
+      <div class="mt-auto pt-6 border-t border-stone-200 text-xs text-stone-500 space-y-2">
+        <p>WhatsApp: <a href="https://wa.me/84941625653" class="text-stone-900 font-medium">+84 94 162 5653</a></p>
+        <p>Email: <a href="mailto:spacetime.donghocodien@gmail.com" class="text-stone-900 font-medium">spacetime.donghocodien@gmail.com</a></p>
+      </div>
+    </div>
+  </div>
 </header>
+
+<script>
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('mobile-menu-close');
+  const drawer = document.getElementById('mobile-drawer');
+  const drawerContent = document.getElementById('mobile-drawer-content');
+
+  function openMenu() {
+    drawer?.classList.remove('opacity-0', 'pointer-events-none');
+    drawer?.classList.add('opacity-100');
+    drawerContent?.classList.remove('-translate-x-full');
+    drawerContent?.classList.add('translate-x-0');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    drawer?.classList.add('opacity-0', 'pointer-events-none');
+    drawer?.classList.remove('opacity-100');
+    drawerContent?.classList.add('-translate-x-full');
+    drawerContent?.classList.remove('translate-x-0');
+    document.body.style.overflow = '';
+  }
+
+  toggleBtn?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+  drawer?.addEventListener('click', (e) => {
+    if (e.target === drawer) closeMenu();
+  });
+</script>

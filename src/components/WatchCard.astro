@@ -7,9 +7,9 @@ interface Props {
 
 const { product } = Astro.props;
 
-// Find brand category if available
-const brandCategory = product.categories.find((c) =>
-  ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines'].some(
+// Find brand or primary category
+const primaryCategory = product.categories.find((c) =>
+  ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines', 'Universal Geneve', 'Tudor'].some(
     (b) => c.name.toLowerCase().includes(b.toLowerCase())
   )
 ) || product.categories[0];
@@ -29,69 +29,60 @@ function cleanTitle(title: string) {
 const cleanName = cleanTitle(product.name);
 ---
 
-<article class="group relative flex flex-col border border-stone-200/80 bg-white transition-all duration-300 hover:border-stone-900/40 hover:shadow-lg">
-  {/* Image Container with hover crossfade */}
-  <a href={`/product/${product.slug}`} class="relative block aspect-[4/5] overflow-hidden bg-stone-50">
+<article class="group relative flex flex-col bg-white overflow-hidden transition-all duration-300">
+  {/* Watch Image Box with Aspect Ratio 300/375 & Fade-to-back Hover */}
+  <a href={`/product/${product.slug}`} class="relative block aspect-[300/375] overflow-hidden bg-[#fbfbfb]">
     <img
       src={mainImage}
       alt={cleanName}
       loading="lazy"
-      class="h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+      class="h-full w-full object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0"
     />
     <img
       src={hoverImage}
       alt={`${cleanName} alternate angle`}
       loading="lazy"
-      class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100"
     />
 
-    {/* Status badge */}
-    <div class="absolute top-3 left-3 flex flex-col gap-1">
+    {/* Badges */}
+    <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
       {product.on_sale && (
-        <span class="bg-amber-900/90 text-amber-50 text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
-          Special Offer
+        <span class="bg-[#dc3232] text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
+          Sale
         </span>
       )}
       {!product.is_in_stock && (
-        <span class="bg-stone-800 text-stone-200 text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
+        <span class="bg-[#191414] text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
           Sold
         </span>
       )}
     </div>
   </a>
 
-  {/* Content Details */}
-  <div class="flex flex-1 flex-col p-5">
-    {brandCategory && (
-      <span class="text-[11px] font-sans uppercase tracking-widest text-stone-500 mb-1">
-        {cleanTitle(brandCategory.name)}
-      </span>
+  {/* Timepiece Meta Information */}
+  <div class="flex flex-1 flex-col pt-3 pb-4 text-center sm:text-left px-1">
+    {primaryCategory && (
+      <p class="text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-stone-400 mb-1 truncate">
+        {cleanTitle(primaryCategory.name)}
+      </p>
     )}
 
-    <h3 class="font-serif text-base text-stone-900 leading-snug tracking-tight mb-2 line-clamp-2">
-      <a href={`/product/${product.slug}`} class="hover:text-amber-900 transition-colors">
+    <h3 class="text-xs sm:text-sm text-stone-900 leading-snug tracking-normal mb-1.5 line-clamp-2">
+      <a href={`/product/${product.slug}`} class="hover:text-stone-500 transition-colors">
         {cleanName}
       </a>
     </h3>
 
-    <div class="mt-auto pt-3 border-t border-stone-100 flex items-baseline justify-between">
-      <div class="flex items-baseline gap-2">
-        <span class="font-serif text-lg font-medium text-stone-900">
-          ${product.prices.price}
+    <div class="mt-auto flex items-baseline justify-center sm:justify-start gap-2 pt-1">
+      <span class="text-sm sm:text-base font-semibold text-stone-950">
+        ${product.prices.price}
+      </span>
+      {product.on_sale && product.prices.regular_price && (
+        <span class="text-xs text-stone-400 line-through">
+          ${product.prices.regular_price}
         </span>
-        {product.on_sale && product.prices.regular_price && (
-          <span class="text-xs text-stone-400 line-through">
-            ${product.prices.regular_price}
-          </span>
-        )}
-      </div>
-
-      <a
-        href={`/product/${product.slug}`}
-        class="text-xs uppercase tracking-widest text-stone-500 hover:text-stone-900 font-medium transition-colors"
-      >
-        View Timepiece &rarr;
-      </a>
+      )}
     </div>
   </div>
 </article>

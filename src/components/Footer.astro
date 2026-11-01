@@ -2,72 +2,111 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-stone-900 text-stone-300 border-t border-stone-800 mt-24">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-      {/* Brand Column */}
-      <div class="md:col-span-1 space-y-4">
-        <h3 class="font-serif text-2xl text-stone-100 tracking-wide font-bold">
-          DONG HO CO DIEN
-        </h3>
-        <p class="text-xs text-stone-400 leading-relaxed font-sans">
-          A dedicated sanctuary for discerning collectors passionate about mechanical craftsmanship and timeless horological heritage.
-        </p>
-        <p class="text-xs text-amber-500 font-mono">
-          Showroom &amp; Authentication Atelier in Ho Chi Minh City
-        </p>
-      </div>
+<footer id="footer" class="mt-20 border-t border-stone-200">
+  {/* The 3 Signature Feature Blocks from donghocodien.com */}
+  <section class="border-b border-stone-200 bg-[#e4e4e4] text-stone-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-300">
+        <a
+          href="/warranty-policy"
+          class="py-4 sm:py-5 px-6 text-center block hover:bg-stone-300/40 transition-colors group"
+        >
+          <h3 class="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-stone-900 group-hover:text-stone-600 transition-colors">
+            6 MONTHS WARRANTY
+          </h3>
+        </a>
 
-      {/* Navigation */}
-      <div>
-        <h4 class="font-serif text-sm uppercase tracking-widest text-stone-200 mb-4">
-          Discover
-        </h4>
-        <ul class="space-y-2 text-xs text-stone-400">
-          <li><a href="/shop" class="hover:text-stone-100 transition-colors">All Timepieces</a></li>
-          <li><a href="/shop?filter=omega" class="hover:text-stone-100 transition-colors">Vintage Omega</a></li>
-          <li><a href="/shop?filter=cartier" class="hover:text-stone-100 transition-colors">Cartier Tank</a></li>
-          <li><a href="/shop?filter=rolex" class="hover:text-stone-100 transition-colors">Vintage Rolex</a></li>
-          <li><a href="/blog" class="hover:text-stone-100 transition-colors">Collector's Journal</a></li>
-        </ul>
-      </div>
+        <a
+          href="/payment-and-delivery"
+          class="py-4 sm:py-5 px-6 text-center block hover:bg-stone-300/40 transition-colors group"
+        >
+          <h3 class="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-stone-900 group-hover:text-stone-600 transition-colors">
+            SHIPPING WORLDWIDE
+          </h3>
+        </a>
 
-      {/* Customer Service & Policies */}
-      <div>
-        <h4 class="font-serif text-sm uppercase tracking-widest text-stone-200 mb-4">
-          Client Care &amp; Terms
-        </h4>
-        <ul class="space-y-2 text-xs text-stone-400">
-          <li><a href="/warranty-policy" class="hover:text-stone-100 transition-colors">Warranty &amp; Guarantee</a></li>
-          <li><a href="/refund_returns" class="hover:text-stone-100 transition-colors">Returns &amp; Exchanges</a></li>
-          <li><a href="/payment-and-delivery" class="hover:text-stone-100 transition-colors">Worldwide Shipping &amp; Payment</a></li>
-          <li><a href="/terms-and-conditions" class="hover:text-stone-100 transition-colors">Terms of Service</a></li>
-          <li><a href="/privacy-policy" class="hover:text-stone-100 transition-colors">Privacy Policy</a></li>
-        </ul>
-      </div>
-
-      {/* Boutique & Contact */}
-      <div class="space-y-3">
-        <h4 class="font-serif text-sm uppercase tracking-widest text-stone-200 mb-4">
-          Boutique Concierge
-        </h4>
-        <p class="text-xs text-stone-400 leading-relaxed">
-          WhatsApp / Call: <a href="https://wa.me/84901234567" class="text-stone-200 hover:underline">+84 90 123 4567</a>
-        </p>
-        <p class="text-xs text-stone-400 leading-relaxed">
-          Email: <a href="mailto:contact@donghocodien.com" class="text-stone-200 hover:underline">contact@donghocodien.com</a>
-        </p>
-        <p class="text-xs text-stone-400 leading-relaxed">
-          Visiting Hours: 09:30 – 19:30 (Mon – Sat, GMT+7)
-        </p>
+        <a
+          href="/exchange-policy"
+          class="py-4 sm:py-5 px-6 text-center block hover:bg-stone-300/40 transition-colors group"
+        >
+          <h3 class="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-stone-900 group-hover:text-stone-600 transition-colors">
+            EXCHANGE POLICY
+          </h3>
+        </a>
       </div>
     </div>
+  </section>
 
-    <div class="mt-12 pt-8 border-t border-stone-800 text-center text-xs text-stone-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p>&copy; {year} donghocodien.com. All rights reserved.</p>
-      <p class="text-[11px] text-stone-400">
-        Engineered with Astro &amp; Effect Functional Architecture.
-      </p>
+  {/* Main Footer Content */}
+  <div class="bg-white text-stone-800 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        {/* Brand & Mission */}
+        <div class="space-y-4">
+          <img src="/images/logo.png" alt="Spacetime" class="h-10 w-auto object-contain" />
+          <p class="text-xs text-stone-500 leading-relaxed font-sans max-w-xs">
+            A dedicated atelier curating rare, authentic mechanical vintage timepieces from Switzerland and Japan for global collectors.
+          </p>
+        </div>
+
+        {/* About & Policies */}
+        <div>
+          <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-4">
+            About Us
+          </h4>
+          <ul class="space-y-2.5 text-xs text-stone-600 uppercase tracking-wider">
+            <li><a href="/warranty-policy" class="hover:text-stone-950 transition-colors">Warranty Policy</a></li>
+            <li><a href="/exchange-policy" class="hover:text-stone-950 transition-colors">Exchange Policy</a></li>
+            <li><a href="/payment-and-delivery" class="hover:text-stone-950 transition-colors">Payment &amp; Shipping Methods</a></li>
+            <li><a href="/consign-your-watch" class="hover:text-stone-950 transition-colors">Consign Your Watch</a></li>
+            <li><a href="/privacy-policy" class="hover:text-stone-950 transition-colors">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        {/* Contact info from live site */}
+        <div>
+          <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-4">
+            Contact
+          </h4>
+          <div class="space-y-2.5 text-xs text-stone-600">
+            <p>
+              Email: <a href="mailto:spacetime.donghocodien@gmail.com" class="text-stone-900 hover:underline">spacetime.donghocodien@gmail.com</a>
+            </p>
+            <p>
+              WhatsApp: <a href="https://wa.me/84941625653" class="text-stone-900 hover:underline font-medium">+84 94 162 5653</a>
+            </p>
+            <p class="text-stone-500 pt-1">
+              Location: Ho Chi Minh City, Vietnam
+            </p>
+          </div>
+        </div>
+
+        {/* Follow us & Social */}
+        <div>
+          <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-stone-900 mb-4">
+            Follow Us
+          </h4>
+          <ul class="space-y-2.5 text-xs text-stone-600 uppercase tracking-wider">
+            <li>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="hover:text-stone-950 transition-colors">
+                Instagram &bull; @donghocodien
+              </a>
+            </li>
+            <li>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="hover:text-stone-950 transition-colors">
+                Facebook &bull; Dong Ho Co Dien
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-16 pt-8 border-t border-stone-200 text-center text-xs text-stone-400 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>&copy; {year} Spacetime - Vintage Watch (donghocodien.com). All rights reserved.</p>
+        <p class="text-[11px] text-stone-400">
+          Powered by Astro &amp; Effect Functional Architecture.
+        </p>
+      </div>
     </div>
   </div>
 </footer>
