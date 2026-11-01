@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Schema } from 'effect';
 
-// Seam: Page Schema
 export const PageSchema = Schema.Struct({
   id: Schema.Finite,
   slug: Schema.String,

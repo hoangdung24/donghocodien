@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog } from '@ark-ui/react/dialog';
 import { ShoppingBag, X, MessageCircle, Mail, Phone, ArrowRight } from 'lucide-react';
-import type { Product } from '../schema/product';
+import type { Product } from '../lib/schema/product';
 
 interface CartDrawerProps {
   product?: Product;
@@ -21,7 +21,6 @@ export function CartDrawer({ product }: CartDrawerProps) {
 
       <Dialog.Positioner className="fixed inset-y-0 right-0 z-50 w-full max-w-md flex">
         <Dialog.Content className="w-full bg-white h-full shadow-2xl flex flex-col border-l border-stone-200 p-6 overflow-y-auto">
-          {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-stone-200">
             <Dialog.Title className="font-serif text-xl text-stone-900">
               Collector Inquiries &amp; Orders
@@ -35,7 +34,6 @@ export function CartDrawer({ product }: CartDrawerProps) {
             Dong Ho Co Dien — Specialist dealers in rare Swiss and Japanese vintage horology.
           </Dialog.Description>
 
-          {/* Product Summary */}
           {product && (
             <div className="my-6 p-4 bg-stone-50 border border-stone-200 flex gap-4 items-center">
               {product.images[0] && (
@@ -59,7 +57,6 @@ export function CartDrawer({ product }: CartDrawerProps) {
             </div>
           )}
 
-          {/* Global Communication Channels */}
           <div className="space-y-3 my-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
               Direct Collector Channels:
@@ -104,7 +101,6 @@ export function CartDrawer({ product }: CartDrawerProps) {
             </a>
           </div>
 
-          {/* Inquiry form */}
           <form className="mt-4 pt-4 border-t border-stone-200 space-y-3 flex-1" onSubmit={(e) => e.preventDefault()}>
             <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
               Or Request an Acquisition Quote:

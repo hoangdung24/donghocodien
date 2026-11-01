@@ -10,7 +10,6 @@ const search = url.searchParams.get('search') || undefined;
 const categoryParam = url.searchParams.get('category');
 const category = categoryParam && !isNaN(Number(categoryParam)) ? Number(categoryParam) : undefined;
 
-// Fetch products & categories in parallel using pure Effect
 const [productsResult, categoriesResult] = await Effect.runPromise(
   Effect.all([
     Effect.exit(getProducts({ page, per_page: 20, search, category })),
@@ -21,7 +20,6 @@ const [productsResult, categoriesResult] = await Effect.runPromise(
 const products = productsResult._tag === 'Success' ? productsResult.value : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 
-// Active Category (if filtered)
 const activeCategory = category ? categories.find((c) => c.id === category) : null;
 const pageTitle = activeCategory
   ? `${activeCategory.name} Watches`
@@ -29,7 +27,6 @@ const pageTitle = activeCategory
   ? `Search Results for "${search}"`
   : 'All Watches';
 
-// Filter key brands
 const topBrands = categories.filter((c) =>
   ['Omega', 'Rolex', 'Cartier', 'Seiko', 'Longines', 'Edox', 'Eterna', 'Zenith', 'Tissot', 'Universal Geneve'].some(
     (b) => c.name.toLowerCase() === b.toLowerCase()
@@ -39,7 +36,6 @@ const topBrands = categories.filter((c) =>
 
 <Layout title={`${pageTitle} | Spacetime`} description="Explore over 2,300+ vintage timepieces from Switzerland and Japan.">
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-    {/* Page Title & Breadcrumb */}
     <div class="border-b border-stone-200 pb-8 mb-8">
       <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-2">
         <a href="/" class="hover:text-stone-800">Home</a> / 
@@ -60,7 +56,6 @@ const topBrands = categories.filter((c) =>
         Every timepiece is authenticated, regulated, and verified before acquisition.
       </p>
 
-      {/* Brand Filters */}
       {topBrands.length > 0 && (
         <div class="flex flex-wrap gap-2 mt-6">
           <a
@@ -81,7 +76,6 @@ const topBrands = categories.filter((c) =>
       )}
     </div>
 
-    {/* Responsive 4-Column Grid */}
     {products.length === 0 ? (
       <div class="py-24 text-center text-xs uppercase tracking-widest text-stone-400">
         No timepieces found matching this criteria.
@@ -94,7 +88,6 @@ const topBrands = categories.filter((c) =>
       </div>
     )}
 
-    {/* Pagination */}
     <div class="mt-16 pt-8 border-t border-stone-200 flex items-center justify-between">
       {page > 1 ? (
         <a

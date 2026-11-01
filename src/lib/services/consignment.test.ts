@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Effect, Cause } from 'effect';
-import { submitConsignment, ConsignmentPayload, ConsignmentError } from './consignment';
+import { submitConsignment, type ConsignmentPayload, ConsignmentError } from './consignment';
 
 describe('Consignment Service', () => {
   const samplePayload: ConsignmentPayload = {

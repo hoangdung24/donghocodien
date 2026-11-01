@@ -1,13 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
 import { formatUSD, calculateDiscountPercentage } from '../lib/utils/format';
-import {
-  formatApproxVND,
-  getClientExchangeRate,
-  DEFAULT_USD_TO_VND_RATE,
-} from '../lib/utils/currency';
+import { formatApproxVND, getClientExchangeRate, DEFAULT_USD_TO_VND_RATE } from '../lib/utils/currency';
 
 interface ProductCarouselProps {
   products: Product[];
@@ -17,16 +13,19 @@ function cleanTitle(title: string) {
   return title
     .replace(/&#8216;/g, '‘')
     .replace(/&#8217;/g, '’')
+    .replace(/&#8220;/g, '“')
+    .replace(/&#8221;/g, '”')
     .replace(/&#8211;/g, '–')
     .replace(/&#038;/g, '&')
     .replace(/&amp;/g, '&');
 }
 
-export default function ProductCarousel({ products }: ProductCarouselProps) {
+export function ProductCarousel({ products }: ProductCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'start',
     containScroll: 'trimSnaps',
+    dragFree: false,
   });
 
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
@@ -34,7 +33,6 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
   const [exchangeRate, setExchangeRate] = useState<number>(DEFAULT_USD_TO_VND_RATE);
 
   useEffect(() => {
-    // Fetch live rate with local cache revalidated every 6 hours
     getClientExchangeRate().then((rate) => {
       if (rate > 0) setExchangeRate(rate);
     });
@@ -62,7 +60,6 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
 
   return (
     <div className="relative group/carousel">
-      {/* Embla Viewport */}
       <div className="overflow-hidden px-1" ref={emblaRef}>
         <div className="flex -ml-4 sm:-ml-6 py-2 touch-pan-y">
           {products.map((product) => {
@@ -70,7 +67,9 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
             const secondaryImage = product.images[1]?.src;
             const price = product.prices.price;
             const regularPrice = product.prices.regular_price || price;
-            const discountPct = product.on_sale ? calculateDiscountPercentage(regularPrice, price) : 0;
+            const numPrice = parseFloat(price) || 0;
+            const numRegularPrice = parseFloat(regularPrice) || numPrice;
+            const discountPct = product.on_sale ? calculateDiscountPercentage(numRegularPrice, numPrice) : 0;
             const title = cleanTitle(product.name);
             const brandCategory = product.categories.find(
               (c) => ['Omega', 'Rolex', 'Cartier', 'Patek Philippe', 'Universal Geneve', 'Seiko', 'Eterna', 'Tavannes', 'Edox'].includes(c.name)
@@ -82,13 +81,11 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
                 className="flex-[0_0_80%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4 sm:pl-6"
               >
                 <article className="group/card flex flex-col h-full bg-white text-center sm:text-left transition-all duration-300">
-                  {/* Image Container with 4:5 Aspect Ratio */}
                   <a
                     href={`/product/${product.slug}`}
                     className="relative block aspect-[4/5] w-full overflow-hidden bg-stone-100"
                     title={title}
                   >
-                    {/* Primary Image */}
                     <img
                       src={primaryImage}
                       alt={title}
@@ -98,7 +95,6 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
                       loading="lazy"
                     />
 
-                    {/* Secondary Image on Hover */}
                     {secondaryImage && (
                       <img
                         src={secondaryImage}
@@ -108,7 +104,6 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
                       />
                     )}
 
-                    {/* Sale Badge */}
                     {product.on_sale && (
                       <div className="absolute top-3 left-3 z-10">
                         <span className="bg-brand-badge-sale text-white text-[10px] uppercase font-sans tracking-widest px-2.5 py-0.5 font-medium shadow-xs">
@@ -118,7 +113,6 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
                     )}
                   </a>
 
-                  {/* Product Details (Centered serif style matching Flatsome original) */}
                   <div className="flex flex-col flex-1 pt-4 pb-2 text-center px-2">
                     {brandCategory && (
                       <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">
@@ -137,7 +131,7 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
 
                     <div className="mt-auto flex flex-col items-center justify-center pt-2 font-serif">
                       <div className="flex items-baseline justify-center gap-2">
-                        {product.on_sale && regularPrice > price && (
+                        {product.on_sale && numRegularPrice > numPrice && (
                           <span className="text-xs text-stone-400 line-through">
                             {formatUSD(regularPrice)}
                           </span>
@@ -158,7 +152,6 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
         </div>
       </div>
 
-      {/* Prev / Next Carousel Navigation Arrows */}
       <button
         type="button"
         onClick={scrollPrev}
@@ -189,3 +182,5 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
     </div>
   );
 }
+
+export default ProductCarousel;

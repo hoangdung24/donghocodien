@@ -26,27 +26,23 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://donghocodien.com');
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    {/* Primary Meta Tags */}
     <title>{title} | Dong Ho Co Dien</title>
     <meta name="title" content={`${title} | Dong Ho Co Dien`} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
-    {/* Open Graph / Facebook */}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={`${title} | Dong Ho Co Dien`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
 
-    {/* Twitter */}
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={`${title} | Dong Ho Co Dien`} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={image} />
 
-    {/* Web Fonts */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -61,7 +57,6 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://donghocodien.com');
     </div>
     <Footer />
 
-    {/* Client-side currency exchange rate sync with 6-hour local cache */}
     <script>
       import { getClientExchangeRate, formatApproxVND } from '../lib/utils/currency';
 

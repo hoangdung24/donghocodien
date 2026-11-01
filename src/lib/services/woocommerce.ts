@@ -14,9 +14,8 @@ const PostsListSchema = Schema.Array(PostSchema);
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
 
-// Typed Domain Errors
 export class NetworkError extends Schema.TaggedError<NetworkError>()('NetworkError', {
-  cause: Schema.Defect,
+  message: Schema.String,
 }) {}
 
 export class HttpError extends Schema.TaggedError<HttpError>()('HttpError', {
@@ -29,7 +28,6 @@ export class ProductNotFoundError extends Schema.TaggedError<ProductNotFoundErro
   slug: Schema.String,
 }) {}
 
-// Fetch Products List
 export interface GetProductsParams {
   page?: number;
   per_page?: number;
@@ -63,7 +61,7 @@ export const getProducts = (params: GetProductsParams = {}) =>
             'User-Agent': 'DongHoCoDien-Headless/1.0',
           },
         }),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     if (!response.ok) {
@@ -76,7 +74,7 @@ export const getProducts = (params: GetProductsParams = {}) =>
 
     const raw = yield* Effect.tryPromise({
       try: () => response.json(),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     const products = yield* Schema.decodeUnknownEffect(ProductsListSchema)(raw);
@@ -87,10 +85,8 @@ export const getProducts = (params: GetProductsParams = {}) =>
     Effect.timeout('30 seconds')
   );
 
-// Fetch Single Product by Slug
-// In-memory cache for fast subsequent page loads
 const cache = new Map<string, { data: unknown; timestamp: number }>();
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 export const getProductBySlug = (slug: string) =>
   Effect.gen(function* () {
@@ -110,7 +106,7 @@ export const getProductBySlug = (slug: string) =>
             'User-Agent': 'DongHoCoDien-Headless/1.0',
           },
         }),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     if (!response.ok) {
@@ -123,7 +119,7 @@ export const getProductBySlug = (slug: string) =>
 
     const raw = yield* Effect.tryPromise({
       try: () => response.json(),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     const products = yield* Schema.decodeUnknownEffect(ProductsListSchema)(raw);
@@ -140,7 +136,6 @@ export const getProductBySlug = (slug: string) =>
     Effect.timeout('30 seconds')
   );
 
-// Fetch Categories List (Effect is already lazy)
 export const getCategories = Effect.gen(function* () {
   const url = `${API_BASE}/products/categories?per_page=100`;
 
@@ -151,7 +146,7 @@ export const getCategories = Effect.gen(function* () {
           Accept: 'application/json',
         },
       }),
-    catch: (cause) => new NetworkError({ cause }),
+    catch: (cause) => new NetworkError({ message: String(cause) }),
   });
 
   if (!response.ok) {
@@ -164,7 +159,7 @@ export const getCategories = Effect.gen(function* () {
 
   const raw = yield* Effect.tryPromise({
     try: () => response.json(),
-    catch: (cause) => new NetworkError({ cause }),
+    catch: (cause) => new NetworkError({ message: String(cause) }),
   });
 
   return yield* Schema.decodeUnknownEffect(Schema.Array(ProductCategorySchema))(raw);
@@ -177,7 +172,6 @@ export class PageNotFoundError extends Schema.TaggedError<PageNotFoundError>()('
   slug: Schema.String,
 }) {}
 
-// Fetch WordPress Standard Page by Slug
 export const getPageBySlug = (slug: string) =>
   Effect.gen(function* () {
     const cacheKey = `page:${slug}`;
@@ -196,7 +190,7 @@ export const getPageBySlug = (slug: string) =>
             'User-Agent': 'DongHoCoDien-Headless/1.0',
           },
         }),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     if (!response.ok) {
@@ -209,7 +203,7 @@ export const getPageBySlug = (slug: string) =>
 
     const raw = yield* Effect.tryPromise({
       try: () => response.json(),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     const pages = yield* Schema.decodeUnknownEffect(PagesListSchema)(raw);
@@ -235,7 +229,6 @@ export interface GetPostsParams {
   page?: number;
 }
 
-// Fetch WordPress Posts List with embedded media
 export const getPosts = (params: GetPostsParams = {}) =>
   Effect.gen(function* () {
     const { per_page = 10, page = 1 } = params;
@@ -261,7 +254,7 @@ export const getPosts = (params: GetPostsParams = {}) =>
             'User-Agent': 'DongHoCoDien-Headless/1.0',
           },
         }),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     if (!response.ok) {
@@ -274,7 +267,7 @@ export const getPosts = (params: GetPostsParams = {}) =>
 
     const raw = yield* Effect.tryPromise({
       try: () => response.json(),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
@@ -285,7 +278,6 @@ export const getPosts = (params: GetPostsParams = {}) =>
     Effect.timeout('30 seconds')
   );
 
-// Fetch WordPress Post by Slug
 export const getPostBySlug = (slug: string) =>
   Effect.gen(function* () {
     const cacheKey = `post:${slug}`;
@@ -304,7 +296,7 @@ export const getPostBySlug = (slug: string) =>
             'User-Agent': 'DongHoCoDien-Headless/1.0',
           },
         }),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     if (!response.ok) {
@@ -317,7 +309,7 @@ export const getPostBySlug = (slug: string) =>
 
     const raw = yield* Effect.tryPromise({
       try: () => response.json(),
-      catch: (cause) => new NetworkError({ cause }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
     const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);

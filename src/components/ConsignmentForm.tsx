@@ -148,7 +148,6 @@ export function ConsignmentForm() {
         </div>
       )}
 
-      {/* Row 1: Name */}
       <div>
         <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
           Your Full Name *
@@ -164,7 +163,6 @@ export function ConsignmentForm() {
         />
       </div>
 
-      {/* Row 2: Email & Phone */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
@@ -196,7 +194,6 @@ export function ConsignmentForm() {
         </div>
       </div>
 
-      {/* Row 3: Brand & Model */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
@@ -228,7 +225,6 @@ export function ConsignmentForm() {
         </div>
       </div>
 
-      {/* Row 4: Expected Price */}
       <div>
         <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
           Expected Price (USD or VND) *
@@ -244,7 +240,6 @@ export function ConsignmentForm() {
         />
       </div>
 
-      {/* Row 5: Description */}
       <div>
         <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
           Timepiece Condition &amp; Details
@@ -259,7 +254,6 @@ export function ConsignmentForm() {
         />
       </div>
 
-      {/* Row 6: Image Upload */}
       <div>
         <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
           Watch Photograph (Max 4MB)
@@ -308,7 +302,6 @@ export function ConsignmentForm() {
         </div>
       </div>
 
-      {/* Submit Action */}
       <div className="pt-2 flex flex-col sm:flex-row gap-3">
         <button
           type="submit"

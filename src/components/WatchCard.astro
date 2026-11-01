@@ -8,7 +8,6 @@ interface Props {
 
 const { product } = Astro.props;
 
-// Find brand or primary category
 const primaryCategory = product.categories.find((c) =>
   ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines', 'Universal Geneve', 'Tudor'].some(
     (b) => c.name.toLowerCase().includes(b.toLowerCase())
@@ -31,7 +30,6 @@ const cleanName = cleanTitle(product.name);
 ---
 
 <article class="group relative flex flex-col bg-white overflow-hidden transition-all duration-300">
-  {/* Watch Image Box with Aspect Ratio 300/375 & Fade-to-back Hover */}
   <a href={`/product/${product.slug}`} class="relative block aspect-[300/375] overflow-hidden bg-brand-surface">
     <img
       src={mainImage}
@@ -46,7 +44,6 @@ const cleanName = cleanTitle(product.name);
       class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100"
     />
 
-    {/* Badges */}
     <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
       {product.on_sale && (
         <span class="bg-brand-badge-sale text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
@@ -61,7 +58,6 @@ const cleanName = cleanTitle(product.name);
     </div>
   </a>
 
-  {/* Timepiece Meta Information */}
   <div class="flex flex-1 flex-col pt-3 pb-4 text-center sm:text-left px-1">
     {primaryCategory && (
       <p class="text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-stone-400 mb-1 truncate">

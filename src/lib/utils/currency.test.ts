@@ -8,11 +8,8 @@ import {
 
 describe('formatApproxVND', () => {
   it('calculates and formats approximate VND with dot thousand separators', () => {
-    // 1800 * 25777.78 ~ 46,400,000
     expect(formatApproxVND(1800, 25777.7778)).toBe('Approx. VND 46.400.000');
-    // 1400 * 25785.71 ~ 36,100,000
     expect(formatApproxVND(1400, 25785.7143)).toBe('Approx. VND 36.100.000');
-    // 1200 * 25833.33 ~ 31,000,000
     expect(formatApproxVND(1200, 25833.3333)).toBe('Approx. VND 31.000.000');
   });
 

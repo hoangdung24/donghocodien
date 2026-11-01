@@ -1,15 +1,12 @@
 export const DEFAULT_USD_TO_VND_RATE = 25800;
 export const EXCHANGE_RATE_CACHE_KEY = 'spacetime_usd_vnd_rate';
-export const EXCHANGE_RATE_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+export const EXCHANGE_RATE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 export interface CachedExchangeRate {
   rate: number;
   timestamp: number;
 }
 
-/**
- * Checks if a cached exchange rate timestamp has exceeded the TTL (6 hours)
- */
 export function isExchangeRateExpired(
   cachedTimestamp: number,
   currentTimestamp: number = Date.now(),
@@ -21,27 +18,19 @@ export function isExchangeRateExpired(
   return currentTimestamp - cachedTimestamp >= ttlMs;
 }
 
-/**
- * Formats approximate VND amount matching live site ("Approx. VND 46.400.000")
- */
 export function formatApproxVND(
-  usdAmount: number,
+  usdAmount: number | string,
   rate: number = DEFAULT_USD_TO_VND_RATE
 ): string {
+  const num = typeof usdAmount === 'string' ? parseFloat(usdAmount) : usdAmount;
+  if (isNaN(num)) return 'Approx. VND 0';
   const effectiveRate = rate > 0 ? rate : DEFAULT_USD_TO_VND_RATE;
-  const rawVnd = usdAmount * effectiveRate;
-  // Round to nearest 100,000 VND matching live luxury watch pricing convention
+  const rawVnd = num * effectiveRate;
   const roundedVnd = Math.round(rawVnd / 100000) * 100000;
-  
-  // Format with dot thousand separator (vi-VN standard: 46.400.000)
   const formattedNumber = roundedVnd.toLocaleString('vi-VN');
   return `Approx. VND ${formattedNumber}`;
 }
 
-/**
- * Retrieves the USD to VND exchange rate from localStorage or fetches from Open Exchange API
- * Caches in localStorage and revalidates every 6 hours
- */
 export async function getClientExchangeRate(): Promise<number> {
   if (typeof window === 'undefined') {
     return DEFAULT_USD_TO_VND_RATE;
@@ -56,7 +45,6 @@ export async function getClientExchangeRate(): Promise<number> {
       }
     }
   } catch (err) {
-    // Ignore localStorage parse error and proceed to refresh
   }
 
   try {
@@ -79,7 +67,6 @@ export async function getClientExchangeRate(): Promise<number> {
     console.warn('Unable to refresh exchange rate, falling back to local/default rate:', err);
   }
 
-  // Fallback to existing stale cache if available, otherwise default constant
   try {
     const staleCache = window.localStorage.getItem(EXCHANGE_RATE_CACHE_KEY);
     if (staleCache) {
@@ -87,7 +74,6 @@ export async function getClientExchangeRate(): Promise<number> {
       if (parsed?.rate > 0) return parsed.rate;
     }
   } catch {
-    // fallback
   }
 
   return DEFAULT_USD_TO_VND_RATE;

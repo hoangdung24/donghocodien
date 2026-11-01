@@ -14,7 +14,6 @@
   --font-sans: 'elle-futura-book', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-serif: 'elle-futura-book', Georgia, serif;
 
-  /* Live site colors */
   --color-brand-dark: #191414;
   --color-brand-gray: #444444;
   --color-brand-light-gray: #e4e4e4;
@@ -42,7 +41,6 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   letter-spacing: 0.05em;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

@@ -69,7 +69,6 @@ export default function HeroCarousel() {
 
   return (
     <div className="relative w-full overflow-hidden bg-stone-950 text-white select-none group/hero">
-      {/* Embla Viewport */}
       <div className="overflow-hidden w-full cursor-grab active:cursor-grabbing" ref={emblaRef}>
         <div className="flex touch-pan-y">
           {HERO_SLIDES.map((slide, index) => (
@@ -77,7 +76,6 @@ export default function HeroCarousel() {
               key={slide.id}
               className="relative flex-[0_0_100%] min-w-0 h-[480px] sm:h-[580px] lg:h-[660px]"
             >
-              {/* Slide Background Image */}
               <img
                 src={slide.image}
                 alt={slide.alt}
@@ -85,7 +83,6 @@ export default function HeroCarousel() {
                 loading={index === 0 ? 'eager' : 'lazy'}
               />
 
-              {/* Flatsome-inspired Translucent Caption Box */}
               <div className="absolute inset-0 flex items-center justify-start p-6 sm:p-12 lg:p-20 bg-gradient-to-r from-black/60 via-black/30 to-transparent">
                 <div className="max-w-md sm:max-w-lg bg-black/65 backdrop-blur-xs p-6 sm:p-8 border border-white/10 shadow-2xl">
                   <p className="text-base sm:text-xl lg:text-2xl text-stone-100 font-serif leading-relaxed mb-6 font-light">
@@ -104,7 +101,6 @@ export default function HeroCarousel() {
         </div>
       </div>
 
-      {/* Prev / Next Navigation Arrows */}
       <button
         type="button"
         onClick={scrollPrev}
@@ -123,7 +119,6 @@ export default function HeroCarousel() {
         <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
-      {/* Slide Dots Indicator */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10">
         {scrollSnaps.map((_, index) => (
           <button

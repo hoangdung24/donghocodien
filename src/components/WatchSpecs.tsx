@@ -14,7 +14,6 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
       multiple
       className="w-full divide-y divide-stone-200 border-t border-b border-stone-200 my-8"
     >
-      {/* Specifications */}
       <Accordion.Item value="specs" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
           <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
@@ -31,7 +30,6 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
               Reference / SKU: <span className="font-mono text-stone-800">{sku}</span>
             </p>
           )}
-          {/* Render the spec table cleanly */}
           <div
             className="prose prose-stone prose-sm max-w-none [&_table]:w-full [&_table]:border-collapse [&_td]:py-2 [&_td]:border-b [&_td]:border-stone-100 [&_td:first-child]:font-medium [&_td:first-child]:text-stone-900 [&_td:first-child]:w-1/3"
             dangerouslySetInnerHTML={{ __html: descriptionHtml }}
@@ -39,7 +37,6 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         </Accordion.ItemContent>
       </Accordion.Item>
 
-      {/* Authenticity Guarantee */}
       <Accordion.Item value="authenticity" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
           <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
@@ -62,7 +59,6 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
         </Accordion.ItemContent>
       </Accordion.Item>
 
-      {/* Worldwide Shipping & Customs */}
       <Accordion.Item value="shipping" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
           <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">

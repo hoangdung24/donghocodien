@@ -16,7 +16,7 @@ describe('Product Schema Seam (Effect v4)', () => {
   });
 
   it('fails gracefully when required fields are missing', () => {
-    const invalidProduct = { id: 123 }; // Missing name, slug, prices, etc.
+    const invalidProduct = { id: 123 };
 
     expect(() => Schema.decodeUnknownSync(ProductSchema)(invalidProduct)).toThrow();
   });

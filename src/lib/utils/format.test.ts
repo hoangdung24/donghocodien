@@ -15,9 +15,7 @@ describe('formatUSD', () => {
 
 describe('calculateDiscountPercentage', () => {
   it('calculates the correct integer discount percentage', () => {
-    // 1500 regular, 1100 sale -> 27%
     expect(calculateDiscountPercentage(1500, 1100)).toBe(27);
-    // 1200 regular, 1000 sale -> 17%
     expect(calculateDiscountPercentage(1200, 1000)).toBe(17);
   });
 
@@ -29,13 +27,12 @@ describe('calculateDiscountPercentage', () => {
 
 describe('formatHeaderClock', () => {
   it('formats dates in "MMM DD HH:mm:ss" format matching live site', () => {
-    // Test with specific date: Nov 1, 2026 16:21:34
     const testDate = new Date(2026, 10, 1, 16, 21, 34);
     expect(formatHeaderClock(testDate)).toBe('Nov 01 16:21:34');
   });
 
   it('pads single-digit days, hours, minutes, and seconds with leading zero', () => {
-    const testDate = new Date(2026, 0, 5, 8, 4, 9); // Jan 05 08:04:09
+    const testDate = new Date(2026, 0, 5, 8, 4, 9);
     expect(formatHeaderClock(testDate)).toBe('Jan 05 08:04:09');
   });
 });

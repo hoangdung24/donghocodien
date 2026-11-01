@@ -71,6 +71,9 @@ pnpm install
 # Run unit tests (Vitest)
 pnpm test
 
+# Typecheck TypeScript files
+pnpm exec tsc --noEmit
+
 # Run Effect-TS diagnostics (powered by @effect/tsgo)
 pnpm check:effect
 
@@ -94,3 +97,9 @@ Agents should consult these specialized skill guidelines before modifying releva
 - `ponytail`: Smallest complete change, strict YAGNI, clean diffs.
 - `agent-browser`: Programmatic browser verification and interaction testing.
 - `graphify`: Knowledge graph queries on codebase architecture.
+
+---
+
+## 7. Code Cleanliness & Commenting Policy
+- **No Code Comments**: Do not write comments in code (`//`, `/* */`, `{/* ... */}`, `<!-- ... -->`). Code must be clean, self-documenting, and concise without explanatory narrative or section labels.
+
