@@ -7,6 +7,9 @@ import {
   type ProductCategory,
 } from '../schema/product';
 import { PagesListSchema, type WpPage } from '../schema/page';
+import { PostSchema, type Post } from '../schema/post';
+
+const PostsListSchema = Schema.Array(PostSchema);
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
@@ -218,6 +221,114 @@ export const getPageBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: page, timestamp: Date.now() });
     return page;
+  }).pipe(
+    Effect.retry({ times: 2 }),
+    Effect.timeout('30 seconds')
+  );
+
+export class PostNotFoundError extends Schema.TaggedError<PostNotFoundError>()('PostNotFoundError', {
+  slug: Schema.String,
+}) {}
+
+export interface GetPostsParams {
+  per_page?: number;
+  page?: number;
+}
+
+// Fetch WordPress Posts List with embedded media
+export const getPosts = (params: GetPostsParams = {}) =>
+  Effect.gen(function* () {
+    const { per_page = 10, page = 1 } = params;
+    const cacheKey = `posts:${page}:${per_page}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as Post[];
+    }
+
+    const query = new URLSearchParams({
+      per_page: String(per_page),
+      page: String(page),
+      _embed: '1',
+    });
+
+    const url = `${WP_API_BASE}/posts?${query.toString()}`;
+
+    const response = yield* Effect.tryPromise({
+      try: () =>
+        fetch(url, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'DongHoCoDien-Headless/1.0',
+          },
+        }),
+      catch: (cause) => new NetworkError({ cause }),
+    });
+
+    if (!response.ok) {
+      return yield* new HttpError({
+        status: response.status,
+        statusText: response.statusText,
+        url,
+      });
+    }
+
+    const raw = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (cause) => new NetworkError({ cause }),
+    });
+
+    const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
+    cache.set(cacheKey, { data: posts, timestamp: Date.now() });
+    return posts;
+  }).pipe(
+    Effect.retry({ times: 2 }),
+    Effect.timeout('30 seconds')
+  );
+
+// Fetch WordPress Post by Slug
+export const getPostBySlug = (slug: string) =>
+  Effect.gen(function* () {
+    const cacheKey = `post:${slug}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as Post;
+    }
+
+    const url = `${WP_API_BASE}/posts?slug=${encodeURIComponent(slug)}&_embed=1`;
+
+    const response = yield* Effect.tryPromise({
+      try: () =>
+        fetch(url, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'DongHoCoDien-Headless/1.0',
+          },
+        }),
+      catch: (cause) => new NetworkError({ cause }),
+    });
+
+    if (!response.ok) {
+      return yield* new HttpError({
+        status: response.status,
+        statusText: response.statusText,
+        url,
+      });
+    }
+
+    const raw = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (cause) => new NetworkError({ cause }),
+    });
+
+    const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
+    const post = posts[0];
+
+    if (!post) {
+      return yield* new PostNotFoundError({ slug });
+    }
+
+    cache.set(cacheKey, { data: post, timestamp: Date.now() });
+    return post;
   }).pipe(
     Effect.retry({ times: 2 }),
     Effect.timeout('30 seconds')

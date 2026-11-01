@@ -3,37 +3,73 @@ import Layout from '../layouts/Layout.astro';
 import HeroCarousel from '../components/HeroCarousel';
 import ProductCarousel from '../components/ProductCarousel';
 import { Effect } from 'effect';
-import { getProducts } from '../lib/services/woocommerce';
+import { getProducts, getPosts } from '../lib/services/woocommerce';
 
-// Fetch live products for the "SHOP NOW" carousel
-const productsResult = await Effect.runPromiseExit(getProducts({ per_page: 12 }));
+// Fetch live products & latest articles in parallel via pure Effect
+const [productsResult, postsResult] = await Effect.runPromise(
+  Effect.all([
+    Effect.exit(getProducts({ per_page: 12 })),
+    Effect.exit(getPosts({ per_page: 3 })),
+  ])
+);
+
 const products = productsResult._tag === 'Success' ? productsResult.value : [];
-const hasError = productsResult._tag === 'Failure';
+const livePosts = postsResult._tag === 'Success' ? postsResult.value : [];
+const hasProductError = productsResult._tag === 'Failure';
 
-// Featured editorial articles matching live site
-const featuredArticles = [
+function cleanTitle(title: string) {
+  return title
+    .replace(/&#8216;/g, '‘')
+    .replace(/&#8217;/g, '’')
+    .replace(/&#8220;/g, '“')
+    .replace(/&#8221;/g, '”')
+    .replace(/&#8211;/g, '–')
+    .replace(/&#038;/g, '&')
+    .replace(/&amp;/g, '&');
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).toUpperCase();
+}
+
+// Fallback curated articles pointing directly to valid slugs
+const fallbackArticles = [
   {
     title: '“LES MUST DE CARTIER!” – ORIGIN & POWER',
-    href: '/blog',
-    date: 'December 27, 2021',
+    href: '/les-must-de-cartier-nguon-goc-suc-manh',
+    date: 'DECEMBER 27, 2021',
     image: '/images/articles/article-cartier.jpg',
     alt: 'Les Must de Cartier Vintage Timepiece',
   },
   {
     title: 'JLC REVERSO – ORIGIN AND HISTORY OF EXISTENCE',
-    href: '/blog',
-    date: 'November 22, 2021',
+    href: '/jlc-reverso-nguon-goc-va-lich-su-ton-tai',
+    date: 'NOVEMBER 22, 2021',
     image: '/images/articles/article-reverso.jpg',
     alt: 'Jaeger-LeCoultre Reverso Vintage Watch',
   },
   {
     title: 'WHY YOU SHOULD LOVE VINTAGE WATCHES',
-    href: '/blog',
-    date: 'November 19, 2021',
+    href: '/tai-sao-ban-nen-mua-dong-ho-co-dien',
+    date: 'NOVEMBER 19, 2021',
     image: '/images/articles/article-why-vintage.jpg',
     alt: 'Vintage Mechanical Watch Movement and Patina',
   },
 ];
+
+const articles = livePosts.length > 0
+  ? livePosts.map((post, idx) => ({
+      title: cleanTitle(post.title.rendered),
+      href: `/${post.slug}`,
+      date: formatDate(post.date),
+      image: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || fallbackArticles[idx]?.image || '/images/brand-story.jpg',
+      alt: cleanTitle(post.title.rendered),
+    }))
+  : fallbackArticles;
 ---
 
 <Layout
@@ -105,7 +141,7 @@ const featuredArticles = [
         </p>
       </div>
 
-      {hasError && (
+      {hasProductError && (
         <div class="p-6 bg-red-50 border border-red-200 text-red-700 text-xs text-center max-w-lg mx-auto">
           Temporary latency connecting to WooCommerce API. Please refresh the page.
         </div>
@@ -146,7 +182,7 @@ const featuredArticles = [
 
       {/* 3 Editorial Article Cards */}
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
-        {featuredArticles.map((article) => (
+        {articles.map((article) => (
           <article class="flex flex-col bg-white border border-stone-200 shadow-xs hover:shadow-md transition-shadow duration-300 group">
             {/* Article Image Container */}
             <a
