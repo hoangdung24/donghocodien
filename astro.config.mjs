@@ -10,6 +10,7 @@ export default defineConfig({
   adapter: cloudflare({
     compatibilityDate: "2026-10-30",
   }),
+  session: false,
   integrations: [react()],
   image: {
     domains: ["donghocodien.com"],

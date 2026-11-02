@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "astro build && node -e \"const fs=require('fs');let d=JSON.parse(fs.readFileSync('dist/server/wrangler.json','utf8'));if(d.assets&&d.assets.binding==='ASSETS')d.assets.binding='ASTRO_ASSETS';fs.writeFileSync('dist/server/wrangler.json',JSON.stringify(d,null,2))\" && rm -f dist/server/wrangler.json .wrangler/deploy/config.json && npx wrangler pages deploy dist",
+    "deploy": "astro build && wrangler deploy",
     "astro": "astro",
     "test": "vitest run",
     "check:effect": "effect-tsgo diagnostics --project tsconfig.json",
@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@ark-ui/react": "^5.40.0",
-    "@astrojs/node": "^11.1.9",
     "@astrojs/react": "^7.1.2",
     "@lucide/astro": "^1.66.0",
     "@tailwindcss/typography": "^0.5.20",

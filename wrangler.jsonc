@@ -1,8 +1,7 @@
 {
-  "$schema": "https://developers.cloudflare.com/pages/platform/wrangler/configuration/",
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
   "name": "donghocodien",
   "compatibility_date": "2026-10-30",
-  "pages_build_output_dir": "dist",
   "observability": {
     "enabled": true
   }
