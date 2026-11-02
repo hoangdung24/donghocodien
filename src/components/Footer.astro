@@ -2,28 +2,28 @@
 import { Mail, Phone } from '@lucide/astro';
 ---
 
-<footer id="footer" class="w-full bg-white font-sans text-stone-900 border-t border-stone-200">
+<footer id="footer" class="w-full bg-white font-sans text-stone-900 border-t border-brand-border">
   <section class="w-full">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-white">
-      <div class="bg-brand-light-gray py-2.5 text-center">
-        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-stone-950 uppercase m-0 leading-normal">
-          <a href="/warranty-policy" class="hover:text-stone-600 transition-colors block py-1">
+    <div class="grid grid-cols-1 md:grid-cols-3 border-y border-brand-border bg-white">
+      <div class="bg-brand-light-gray py-4 text-center border-r border-brand-border md:border-r-0 md:border-b border-b-0 md:border-b-0 last:md:border-r-0">
+        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-brand-dark uppercase m-0 leading-normal">
+          <a href="/warranty-policy" class="hover:text-brand-gray transition-colors block py-4">
             6 MONTHS WARRANTY
           </a>
         </h3>
       </div>
 
-      <div class="bg-brand-light-gray py-2.5 text-center">
-        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-stone-950 uppercase m-0 leading-normal">
-          <a href="/payment-and-delivery" class="hover:text-stone-600 transition-colors block py-1">
+      <div class="bg-brand-light-gray py-4 text-center border-r border-brand-border md:border-r-0 md:border-b border-b-0 last:md:border-r-0">
+        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-brand-dark uppercase m-0 leading-normal">
+          <a href="/payment-and-delivery" class="hover:text-brand-gray transition-colors block py-4">
             SHIPPING WORLDWIDE
           </a>
         </h3>
       </div>
 
-      <div class="bg-brand-light-gray py-2.5 text-center">
-        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-stone-950 uppercase m-0 leading-normal">
-          <a href="/exchange-policy" class="hover:text-stone-600 transition-colors block py-1">
+      <div class="bg-brand-light-gray py-4 text-center">
+        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-brand-dark uppercase m-0 leading-normal">
+          <a href="/exchange-policy" class="hover:text-brand-gray transition-colors block py-4">
             EXCHANGE POLICY
           </a>
         </h3>
@@ -35,28 +35,28 @@ import { Mail, Phone } from '@lucide/astro';
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 text-center">
       <div>
         <div class="mb-4">
-          <span class="text-lg sm:text-[19px] font-normal uppercase text-stone-950 border-b border-stone-950 pb-1.5 inline-block">
+          <span class="text-base sm:text-lg font-normal uppercase text-brand-dark border-b border-brand-dark pb-1.5 inline-block">
             ABOUT US
           </span>
         </div>
         <ul class="space-y-2 text-sm sm:text-base text-stone-900">
           <li>
-            <a href="/warranty-policy" class="hover:text-stone-600 transition-colors">
+            <a href="/warranty-policy" class="hover:text-brand-gray transition-colors">
               Warranty Policy
             </a>
           </li>
           <li>
-            <a href="/exchange-policy" class="hover:text-stone-600 transition-colors">
+            <a href="/exchange-policy" class="hover:text-brand-gray transition-colors">
               Exchange Policy
             </a>
           </li>
           <li>
-            <a href="/payment-and-delivery" class="hover:text-stone-600 transition-colors">
+            <a href="/payment-and-delivery" class="hover:text-brand-gray transition-colors">
               Payment &amp; Shipping Methods
             </a>
           </li>
           <li>
-            <a href="/consign-your-watch" class="hover:text-stone-600 transition-colors">
+            <a href="/consign-your-watch" class="hover:text-brand-gray transition-colors">
               Consign Your Watch
             </a>
           </li>
@@ -65,7 +65,7 @@ import { Mail, Phone } from '@lucide/astro';
 
       <div>
         <div class="mb-4">
-          <span class="text-lg sm:text-[19px] font-normal uppercase text-stone-950 border-b border-stone-950 pb-1.5 inline-block">
+          <span class="text-base sm:text-lg font-normal uppercase text-brand-dark border-b border-brand-dark pb-1.5 inline-block">
             CONTACT
           </span>
         </div>
@@ -92,7 +92,7 @@ import { Mail, Phone } from '@lucide/astro';
 
       <div>
         <div class="mb-4">
-          <span class="text-lg sm:text-[19px] font-normal uppercase text-stone-950 border-b border-stone-950 pb-1.5 inline-block">
+          <span class="text-base sm:text-lg font-normal uppercase text-brand-dark border-b border-brand-dark pb-1.5 inline-block">
             FOLLOW US
           </span>
         </div>
@@ -102,7 +102,7 @@ import { Mail, Phone } from '@lucide/astro';
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center hover:opacity-80 transition-opacity"
           >
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -113,7 +113,7 @@ import { Mail, Phone } from '@lucide/astro';
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center hover:opacity-80 transition-opacity"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
@@ -124,7 +124,7 @@ import { Mail, Phone } from '@lucide/astro';
           <a
             href="mailto:spacetime.donghocodien@gmail.com"
             aria-label="Send us an email"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center hover:opacity-80 transition-opacity"
           >
             <Mail class="w-4 h-4" />
           </a>
@@ -133,7 +133,7 @@ import { Mail, Phone } from '@lucide/astro';
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Call us"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center hover:opacity-80 transition-opacity"
           >
             <Phone class="w-4 h-4" />
           </a>

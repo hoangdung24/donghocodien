@@ -24,6 +24,7 @@ export const ProductCategorySchema = Schema.Struct({
   id: Schema.Finite,
   name: Schema.String,
   slug: Schema.String,
+  parent: Schema.optional(Schema.Finite),
   link: Schema.optional(Schema.String),
 });
 export type ProductCategory = Schema.Schema.Type<typeof ProductCategorySchema>;

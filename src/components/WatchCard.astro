@@ -72,19 +72,40 @@ const cleanName = cleanTitle(product.name);
     </h3>
 
     <div class="mt-auto flex flex-col items-center sm:items-start pt-1 font-serif">
-      <div class="flex items-baseline gap-2">
-        {product.on_sale && product.prices.regular_price && (
-          <span class="text-xs text-stone-400 line-through">
-            ${product.prices.regular_price}
+      {Number(product.prices.price) > 0 ? (
+        <>
+          <div class="flex items-baseline gap-2">
+            {product.on_sale && product.prices.regular_price && (
+              <span class="text-xs text-stone-400 line-through">
+                ${product.prices.regular_price}
+              </span>
+            )}
+            <span class="text-sm sm:text-base font-semibold text-stone-950">
+              ${product.prices.price}
+            </span>
+          </div>
+          <span class="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
+            {formatApproxVND(product.prices.price)}
           </span>
-        )}
-        <span class="text-sm sm:text-base font-semibold text-stone-950">
-          ${product.prices.price}
+
+          {product.is_in_stock ? (
+            <a
+              href={`?add-to-cart=${product.id}`}
+              class="mt-3 block text-[10px] sm:text-[11px] uppercase tracking-widest border border-brand-dark bg-brand-dark text-white px-4 py-1.5 font-medium hover:bg-white hover:text-brand-dark transition-colors"
+            >
+              ADD TO CART
+            </a>
+          ) : (
+            <span class="mt-3 block text-[10px] sm:text-[11px] uppercase tracking-widest border border-brand-dark bg-brand-dark text-white px-4 py-1.5 font-medium">
+              Sold
+            </span>
+          )}
+        </>
+      ) : (
+        <span class="text-sm sm:text-base font-semibold text-stone-950 uppercase">
+          PRICE ON REQUEST
         </span>
-      </div>
-      <span class="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
-        {formatApproxVND(product.prices.price)}
-      </span>
+      )}
     </div>
   </div>
 </article>

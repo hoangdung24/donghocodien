@@ -22,6 +22,7 @@ Guidelines for AI agents working on **donghocodien.com** (Spacetime Vintage Watc
   - No untyped `catch (e: any)` blocks.
   - Use `Effect.retry` and `Effect.timeout` for resilient remote requests.
 - **UI Components**: **Ark UI (`@ark-ui/react v5+`)** based on Zag.js state machines (Carousel, Accordion, Dialog/Drawer).
+  - Before implementing any new component, check `@src/components/` whether an Ark UI component already exists for that pattern (Carousel, Accordion, Dialog/Drawer, etc.). If it exists, reuse it; do not duplicate.
 - **Icon Packages**:
   - In Astro templates (`*.astro`): Strictly use `@lucide/astro` (zero client JS overhead).
   - In React components (`*.tsx`): Use `lucide-react`.

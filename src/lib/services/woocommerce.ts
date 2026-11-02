@@ -136,33 +136,63 @@ export const getProductBySlug = (slug: string) =>
     Effect.timeout('30 seconds')
   );
 
+const MAX_CATEGORY_PAGES = 5;
+
 export const getCategories = Effect.gen(function* () {
-  const url = `${API_BASE}/products/categories?per_page=100`;
+  const cacheKey = 'categories:all';
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data as ProductCategory[];
+  }
 
-  const response = yield* Effect.tryPromise({
-    try: () =>
-      fetch(url, {
-        headers: {
-          Accept: 'application/json',
-        },
-      }),
-    catch: (cause) => new NetworkError({ message: String(cause) }),
-  });
+  const fetchCategoryPage = (page: number) =>
+    Effect.tryPromise({
+      try: () =>
+        fetch(`${API_BASE}/products/categories?per_page=100&page=${page}`, {
+          headers: {
+            Accept: 'application/json',
+          },
+        }),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
+    });
 
-  if (!response.ok) {
+  const decodePage = (raw: unknown) =>
+    Schema.decodeUnknownEffect(Schema.Array(ProductCategorySchema))(raw);
+
+  const firstResponse = yield* fetchCategoryPage(1);
+  if (!firstResponse.ok) {
     return yield* new HttpError({
-      status: response.status,
-      statusText: response.statusText,
-      url,
+      status: firstResponse.status,
+      statusText: firstResponse.statusText,
+      url: firstResponse.url,
     });
   }
 
-  const raw = yield* Effect.tryPromise({
-    try: () => response.json(),
+  const totalPages = Number(firstResponse.headers.get('x-wp-totalpages') || '1');
+  const firstRaw = yield* Effect.tryPromise({
+    try: () => firstResponse.json(),
     catch: (cause) => new NetworkError({ message: String(cause) }),
   });
+  const categories = [...(yield* decodePage(firstRaw))];
 
-  return yield* Schema.decodeUnknownEffect(Schema.Array(ProductCategorySchema))(raw);
+  for (let page = 2; page <= Math.min(totalPages, MAX_CATEGORY_PAGES); page++) {
+    const response = yield* fetchCategoryPage(page);
+    if (!response.ok) {
+      return yield* new HttpError({
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+      });
+    }
+    const raw = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
+    });
+    categories.push(...(yield* decodePage(raw)));
+  }
+
+  cache.set(cacheKey, { data: categories, timestamp: Date.now() });
+  return categories;
 }).pipe(
   Effect.retry({ times: 2 }),
   Effect.timeout('30 seconds')
