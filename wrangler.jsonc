@@ -3,6 +3,6 @@
   "name": "donghocodien",
   "compatibility_date": "2026-10-30",
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }
