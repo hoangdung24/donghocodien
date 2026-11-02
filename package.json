@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "astro build && npx wrangler pages deploy dist",
+    "deploy": "astro build && node -e \"const fs=require('fs');let d=JSON.parse(fs.readFileSync('dist/server/wrangler.json','utf8'));if(d.assets&&d.assets.binding==='ASSETS')d.assets.binding='ASTRO_ASSETS';fs.writeFileSync('dist/server/wrangler.json',JSON.stringify(d,null,2))\" && rm -f dist/server/wrangler.json .wrangler/deploy/config.json && npx wrangler pages deploy dist",
     "astro": "astro",
     "test": "vitest run",
     "check:effect": "effect-tsgo diagnostics --project tsconfig.json",
