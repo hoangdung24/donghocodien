@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "deploy": "astro build && rm -f dist/server/wrangler.json .wrangler/deploy/config.json && npx wrangler pages deploy dist",
     "astro": "astro",
     "test": "vitest run",
     "check:effect": "effect-tsgo diagnostics --project tsconfig.json",
