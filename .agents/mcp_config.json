@@ -6,6 +6,9 @@
     },
     "astro-docs": {
       "serverUrl": "https://mcp.docs.astro.build/mcp"
+    },
+    "cloudflare-api": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }
