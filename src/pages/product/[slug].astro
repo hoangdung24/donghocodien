@@ -4,17 +4,10 @@ import { WatchGallery } from '../../components/WatchGallery';
 import { WatchSpecs } from '../../components/WatchSpecs';
 import { CartDrawer } from '../../components/CartDrawer';
 import { Effect } from 'effect';
-import { getProducts, getProductBySlug } from '../../lib/services/woocommerce';
+import { getProductBySlug } from '../../lib/services/woocommerce';
 import { Check, Shield } from '@lucide/astro';
 import { formatApproxVND } from '../../lib/utils/currency';
 import { sanitizeWordPressHtml } from '../../lib/utils/html';
-
-export async function getStaticPaths() {
-  const products = await Effect.runPromise(getProducts({ per_page: 100 }));
-  return products.map((product) => ({
-    params: { slug: product.slug },
-  }));
-}
 
 const { slug } = Astro.params;
 
