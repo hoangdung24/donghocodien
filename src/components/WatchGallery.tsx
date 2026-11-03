@@ -30,7 +30,7 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
               <img
                 src={image.src}
                 alt={image.alt || `${title} - ảnh ${index + 1}`}
-                className="w-full h-full object-contain p-4 transition-transform duration-500 hover:scale-105"
+                className="w-full h-full object-contain p-4"
                 loading={index === 0 ? 'eager' : 'lazy'}
               />
             </div>

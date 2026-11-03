@@ -32,7 +32,7 @@ export function AddToCartButton({ product, stockText, stockClass }: AddToCartBut
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-stone-900">Availability:</span>
-        <span className={`font-medium ${stockClass || (product.is_in_stock ? 'text-emerald-700' : 'text-stone-500')}`}>
+        <span className={`font-medium ${stockClass || (product.is_in_stock ? 'text-green-700' : 'text-stone-500')}`}>
           {stockText || (product.is_in_stock ? 'In stock' : 'Out of stock')}
         </span>
       </div>

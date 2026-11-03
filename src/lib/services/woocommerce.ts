@@ -137,6 +137,56 @@ export const getProductBySlug = (slug: string) =>
   );
 
 const MAX_CATEGORY_PAGES = 5;
+const IN_STOCK_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+// Fetch true in-stock counts per category from WP custom endpoint
+export const getInStockCategoryCounts = Effect.gen(function* () {
+  const cacheKey = 'categories:in-stock-counts';
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < IN_STOCK_CACHE_TTL_MS) {
+    return cached.data as Map<number, number>;
+  }
+
+  const response = yield* Effect.tryPromise({
+    try: () => fetch('https://donghocodien.com/wp-json/spacetime/v1/categories-with-stock?per_page=200', {
+      headers: { Accept: 'application/json' },
+    }),
+    catch: (cause) => new NetworkError({ message: String(cause) }),
+  });
+
+  if (!response.ok) {
+    return yield* new HttpError({
+      status: response.status,
+      statusText: response.statusText,
+      url: response.url,
+    });
+  }
+
+  const raw = yield* Effect.tryPromise({
+    try: () => response.json(),
+    catch: (cause) => new NetworkError({ message: String(cause) }),
+  });
+
+  // Decode: array of { id, in_stock_count, ... }
+  const categories = yield* Schema.decodeUnknownEffect(
+    Schema.Array(Schema.Struct({
+      id: Schema.Finite,
+      in_stock_count: Schema.Finite,
+    }))
+  )(raw);
+
+  // Build Map
+  const inStockCounts = new Map<number, number>();
+  for (const cat of categories) {
+    inStockCounts.set(cat.id, cat.in_stock_count);
+  }
+
+  cache.set(cacheKey, { data: inStockCounts, timestamp: Date.now() });
+  return inStockCounts;
+}).pipe(
+  Effect.retry({ times: 1 }),
+  Effect.timeout('30 seconds')
+);
 
 export const getCategories = Effect.gen(function* () {
   const cacheKey = 'categories:all';

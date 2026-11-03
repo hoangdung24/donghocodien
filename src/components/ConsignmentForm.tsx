@@ -93,7 +93,7 @@ export function ConsignmentForm() {
   if (status === 'success') {
     return (
       <div className="bg-stone-50 border border-stone-200 p-8 sm:p-10 text-center space-y-5 animate-fade-in">
-        <div className="w-14 h-14 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto">
+        <div className="w-14 h-14 bg-green-100 text-green-800 rounded-full flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-8 h-8" />
         </div>
         <div className="space-y-2">
@@ -109,7 +109,7 @@ export function ConsignmentForm() {
             href={getWhatsAppLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-800 text-white text-xs uppercase tracking-wider hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-green-800 text-white text-xs uppercase tracking-wider hover:bg-green-700 transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Send Extra Photos on WhatsApp</span>
@@ -306,7 +306,7 @@ export function ConsignmentForm() {
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className="flex-1 py-3.5 bg-brand-dark text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className="flex-1 py-3.5 bg-black text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {status === 'submitting' ? (
             <>
@@ -325,7 +325,7 @@ export function ConsignmentForm() {
           href={getWhatsAppLink()}
           target="_blank"
           rel="noopener noreferrer"
-          className="px-5 py-3.5 border border-emerald-700 text-emerald-800 hover:bg-emerald-50 text-xs uppercase tracking-wider font-medium flex items-center justify-center gap-2 transition-colors"
+          className="px-5 py-3.5 border border-green-700 text-green-800 hover:bg-green-50 text-xs uppercase tracking-wider font-medium flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-4 h-4" />
           <span>Consign via WhatsApp</span>

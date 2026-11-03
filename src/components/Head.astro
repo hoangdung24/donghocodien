@@ -1,0 +1,181 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: 'website' | 'product' | 'article';
+  product?: {
+    name: string;
+    brand: string;
+    sku: string;
+    price: number;
+    currency: string;
+    availability: 'in_stock' | 'out_of_stock';
+    url: string;
+    image: string;
+  };
+  article?: {
+    title: string;
+    author: string;
+    publishedTime: string;
+    modifiedTime: string;
+    section: string;
+    tags: string[];
+  };
+}
+
+const {
+  title = 'Spacetime - Vintage Watch | Authentic Swiss & Japanese Timepieces',
+  description = 'Dong Ho Co Dien — Curating rare, authentic vintage timepieces from Switzerland and Japan for global collectors.',
+  image = '/og-banner.jpg',
+  url = Astro.url.pathname,
+  type = 'website',
+  product,
+  article,
+} = Astro.props;
+
+const canonicalURL = new URL(url, Astro.site);
+const ogImageURL = new URL(image, Astro.site);
+const siteName = 'Spacetime - Vintage Watch';
+const twitterHandle = '@spacetime_vintage';
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+<meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageURL} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:locale" content="en_US" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={twitterHandle} />
+<meta name="twitter:url" content={canonicalURL} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageURL} />
+<meta name="twitter:image:alt" content={title} />
+
+<!-- Additional Meta Tags -->
+<meta name="theme-color" content="#1a1a1a" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Product Schema (JSON-LD) -->
+{product && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "brand": { "@type": "Brand", "name": product.brand },
+    "sku": product.sku,
+    "image": product.image,
+    "description": description,
+    "offers": {
+      "@type": "Offer",
+      "url": new URL(product.url, Astro.site).href,
+      "priceCurrency": product.currency,
+      "price": product.price,
+      "availability": product.availability === 'in_stock'
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Spacetime Vintage Watch",
+        "url": "https://donghocodien.com"
+      }
+    }
+  })} />
+)}
+
+<!-- Article Schema (JSON-LD) -->
+{article && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.title,
+    "author": { "@type": "Person", "name": article.author },
+    "datePublished": article.publishedTime,
+    "dateModified": article.modifiedTime,
+    "articleSection": article.section,
+    "keywords": article.tags.join(', '),
+    "publisher": {
+      "@type": "Organization",
+      "name": "Spacetime Vintage Watch",
+      "logo": { "@type": "ImageObject", "url": "https://donghocodien.com/og-banner.jpg" }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonicalURL.href
+    }
+  })} />
+)}
+
+<!-- Organization Schema (JSON-LD) - on homepage -->
+{Astro.url.pathname === '/' && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Spacetime Vintage Watch",
+    "legalName": "Dong Ho Co Dien",
+    "url": "https://donghocodien.com",
+    "logo": "https://donghocodien.com/og-banner.jpg",
+    "description": "Curating rare, authentic vintage timepieces from Switzerland and Japan for global collectors.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+84-94-162-5653",
+      "contactType": "customer service",
+      "availableLanguage": ["English", "Vietnamese"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ho Chi Minh City",
+      "addressCountry": "VN"
+    },
+    "sameAs": [
+      "https://www.facebook.com/spacetime.vintagewatch",
+      "https://www.instagram.com/spacetime.vintagewatch/"
+    ]
+  })} />
+)}
+
+<!-- Breadcrumb Schema (JSON-LD) - for product pages -->
+{type === 'product' && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://donghocodien.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Collection", "item": "https://donghocodien.com/shop" },
+      { "@type": "ListItem", "position": 3, "name": product?.brand || "Product", "item": canonicalURL.href }
+    ]
+  })} />
+)}
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="alternate icon" href="/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
+<link rel="icon" type="image/png" sizes="128x128" href="/favicon-128.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0F0F0F" media="(prefers-color-scheme: dark)" />

@@ -60,7 +60,7 @@ Red (Failing Test) ➔ Green (Minimal Implementation) ➔ Refactor
 - **Card Aspect Ratio**: Strictly `300/375` (4:5 portrait) with `image-fade_in_back` hover transitions.
 - **Three Signature Feature Blocks**: Must be preserved in the footer:
   - `6 MONTHS WARRANTY` &rarr; `/warranty-policy`
-  - `SHIPPING WORLDWIDE` &rarr; `/payment-and-delivery`
+  - `SHIPPING WORLDWIDE` &rarr; `/payment-shipping-methods`
   - `EXCHANGE POLICY` &rarr; `/exchange-policy`
 - **Contact Channels**: WhatsApp (`+84 94 162 5653`) and Email (`spacetime.donghocodien@gmail.com`).
 

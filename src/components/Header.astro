@@ -2,6 +2,7 @@
 import { Search, ShoppingBag, Menu, X, ChevronDown } from '@lucide/astro';
 import { formatHeaderClock } from '../lib/utils/format';
 import { CartDrawer } from './CartDrawer';
+import { CONTACT } from '../lib/constants';
 
 export const megaMenuData = [
   {
@@ -69,14 +70,14 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           type="button"
           id="mobile-menu-toggle"
           aria-label="Open navigation menu"
-          class="p-1.5 text-stone-800 lg:hidden cursor-pointer"
+          class="p-1.5 text-black lg:hidden cursor-pointer"
         >
           <Menu class="w-6 h-6" />
         </button>
 
         <span
           id="header-live-clock"
-          class="hidden sm:inline-block text-xs font-mono tracking-wider text-stone-700 select-none font-light"
+          class="hidden sm:inline-block text-xs font-mono tracking-wider text-stone-500 select-none font-light"
         >
           {formatHeaderClock(new Date())}
         </span>
@@ -86,7 +87,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Instagram @donghocodien"
-          class="hidden sm:inline-flex p-1.5 text-stone-800 hover:text-stone-500 transition-colors"
+          class="hidden sm:inline-flex p-1.5 text-black hover:text-stone-500 transition-colors"
         >
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
@@ -98,10 +99,10 @@ const currentPath = Astro.url.pathname + Astro.url.search;
 
       <div class="text-center flex-initial">
         <a href="/" class="inline-block group py-1" title="Spacetime - Vintage Watch">
-          <span class="block text-xl sm:text-2xl font-normal tracking-[0.38em] text-stone-950 font-serif leading-none">
+          <span class="block text-xl sm:text-2xl font-normal tracking-[0.38em] text-black font-serif leading-none">
             SPACETIME
           </span>
-          <span class="block text-[10px] sm:text-[11px] font-normal tracking-[0.32em] text-stone-800 mt-2 uppercase leading-none">
+          <span class="block text-[10px] sm:text-[11px] font-normal tracking-[0.32em] text-stone-600 mt-2 uppercase leading-none">
             VINTAGE WATCH
           </span>
         </a>
@@ -113,7 +114,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
         <a
           href="/shop?search=true"
           aria-label="Search"
-          class="p-1.5 text-stone-800 hover:text-stone-500 transition-colors"
+          class="p-1.5 text-black hover:text-stone-500 transition-colors"
         >
           <Search class="w-4 h-4" />
         </a>
@@ -123,12 +124,12 @@ const currentPath = Astro.url.pathname + Astro.url.search;
 
   <div class="border-t border-stone-100 hidden lg:block relative" id="tier2-nav-container">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav class="flex items-stretch justify-center gap-8 text-xs uppercase tracking-[0.18em] font-medium text-stone-800">
+      <nav class="flex items-stretch justify-center gap-8 text-xs uppercase tracking-[0.18em] font-medium text-stone-700">
         <div id="watches-menu-wrapper" class="group flex items-center py-3.5">
           <a
             href="/shop"
             id="watches-menu-trigger"
-            class="inline-flex items-center gap-1 hover:text-stone-500 transition-colors cursor-pointer py-1"
+            class="inline-flex items-center gap-1 hover:text-black transition-colors cursor-pointer py-1"
           >
             <span>Watches</span>
             <ChevronDown id="watches-chevron" class="w-3.5 h-3.5 text-stone-400 group-hover:rotate-180 transition-transform duration-200" />
@@ -142,7 +143,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
               <div class="grid grid-cols-6 gap-6">
                 {megaMenuData.map((column) => (
                   <div class="flex flex-col min-w-0">
-                    <h4 class="text-[11px] uppercase tracking-[0.2em] font-bold text-stone-900 pb-3 border-b border-stone-100 mb-2 whitespace-nowrap">
+                    <h4 class="text-[11px] uppercase tracking-[0.2em] font-bold text-black pb-3 border-b border-stone-100 mb-2 whitespace-nowrap">
                       {column.title}
                     </h4>
                     <ul class="divide-y divide-stone-100 text-xs">
@@ -154,8 +155,8 @@ const currentPath = Astro.url.pathname + Astro.url.search;
                               href={item.href}
                               class={`transition-colors block tracking-wide whitespace-nowrap ${
                                 isActive
-                                  ? 'font-bold text-stone-950'
-                                  : 'text-stone-600 hover:text-stone-950 hover:font-bold'
+                                  ? 'font-bold text-black'
+                                  : 'text-stone-600 hover:text-black hover:font-bold'
                               }`}
                             >
                               {item.label}
@@ -171,10 +172,10 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           </div>
         </div>
 
-        <a href="/shop?category=214" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
+        <a href="/shop?category=214" class="flex items-center hover:text-black transition-colors py-3.5">
           Archives
         </a>
-        <a href="/about-us" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
+        <a href="/about-us" class="flex items-center hover:text-black transition-colors py-3.5">
           About Us
         </a>
       </nav>
@@ -183,21 +184,21 @@ const currentPath = Astro.url.pathname + Astro.url.search;
 
   <div
     id="mobile-drawer"
-    class="fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden"
+    class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden"
   >
     <div
       id="mobile-drawer-content"
       class="fixed inset-y-0 left-0 w-4/5 max-w-md bg-white shadow-2xl p-6 flex flex-col transform -translate-x-full transition-transform duration-300 ease-out overflow-y-auto"
     >
       <div class="flex items-center justify-between pb-4 border-b border-stone-200">
-        <span class="text-sm tracking-[0.25em] font-serif font-bold text-stone-900">
+        <span class="text-sm tracking-[0.25em] font-serif font-bold text-black">
           SPACETIME
         </span>
         <button
           type="button"
           id="mobile-menu-close"
           aria-label="Close menu"
-          class="p-2 text-stone-500 hover:text-stone-900 cursor-pointer"
+          class="p-2 text-stone-500 hover:text-black cursor-pointer"
         >
           <X class="w-5 h-5" />
         </button>
@@ -208,7 +209,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           <button
             type="button"
             id="mobile-watches-toggle"
-            class="flex items-center justify-between w-full py-2 font-bold text-stone-900 cursor-pointer"
+            class="flex items-center justify-between w-full py-2 font-bold text-black cursor-pointer"
           >
             <span>Watches</span>
             <ChevronDown id="mobile-watches-icon" class="w-4 h-4 text-stone-400 transition-transform duration-200" />
@@ -228,8 +229,8 @@ const currentPath = Astro.url.pathname + Astro.url.search;
                         href={item.href}
                         class={`block py-1 text-[11px] normal-case transition-colors ${
                           isActive
-                            ? 'font-bold text-stone-950'
-                            : 'text-stone-600 hover:text-stone-950 hover:font-bold'
+                            ? 'font-bold text-black'
+                            : 'text-stone-600 hover:text-black hover:font-bold'
                         }`}
                       >
                         {item.label}
@@ -242,17 +243,17 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           </div>
         </div>
 
-        <a href="/shop?category=214" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
+        <a href="/shop?category=214" class="block py-2 text-stone-800 hover:text-black border-b border-stone-100">
           Archives
         </a>
-        <a href="/about-us" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
+        <a href="/about-us" class="block py-2 text-stone-800 hover:text-black border-b border-stone-100">
           About Us
         </a>
       </nav>
 
       <div class="mt-auto pt-6 border-t border-stone-200 text-xs text-stone-500 space-y-2">
-        <p>WhatsApp: <a href="https://wa.me/84941625653" class="text-stone-900 font-medium">+84 94 162 5653</a></p>
-        <p>Email: <a href="mailto:spacetime.donghocodien@gmail.com" class="text-stone-900 font-medium">spacetime.donghocodien@gmail.com</a></p>
+        <p>WhatsApp: <a href={CONTACT.whatsappLink} class="text-black font-medium">{CONTACT.whatsapp}</a></p>
+        <p>Email: <a href={CONTACT.emailLink} class="text-black font-medium">{CONTACT.email}</a></p>
       </div>
     </div>
   </div>

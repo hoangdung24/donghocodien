@@ -1,6 +1,6 @@
 import { Effect, Schema } from 'effect';
 import { CartSchema, AddToCartRequestSchema, UpdateCartItemRequestSchema, RemoveCartItemRequestSchema } from '../schema/cart';
-import type { Cart, AddToCartRequest, UpdateCartItemRequest, RemoveCartItemRequest } from '../schema/cart';
+import type { Cart, CartAddress, AddToCartRequest, UpdateCartItemRequest, RemoveCartItemRequest } from '../schema/cart';
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 
@@ -173,3 +173,24 @@ export const clearCart = Effect.gen(function* () {
   Effect.retry({ times: 2 }),
   Effect.timeout('30 seconds')
 );
+
+export interface CheckoutRequest {
+  billing_address: CartAddress;
+  shipping_address?: CartAddress;
+  payment_method: string;
+  customer_note?: string;
+}
+
+export interface CheckoutResponse {
+  order_id?: number;
+  order_key?: string;
+  order_number?: number;
+  status?: string;
+  payment_result?: {
+    payment_status?: string;
+    payment_method?: string;
+    payment_details?: Record<string, string>;
+    redirect_url?: string;
+  };
+  [key: string]: unknown;
+}

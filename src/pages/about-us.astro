@@ -1,30 +1,31 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { SITE, CONTACT } from '../lib/constants';
 ---
 
 <Layout
   title="About Us – Spacetime"
   description="Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Spacetime – Vintage Watch."
 >
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24 font-sans text-stone-900">
-    <div class="space-y-6 text-sm sm:text-base leading-relaxed text-stone-800">
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24 font-sans text-black">
+    <div class="space-y-6 text-sm sm:text-base leading-relaxed text-stone-700">
       <p>
-        Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Born with the mission to deliver timeless elegance to every wrist, Spacetime represents two precious moments we all hold dear: “Now and Here.” With each passing second, we’re reminded to live fully in the present — no matter the time, no matter the place.
+        Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Born with the mission to deliver timeless elegance to every wrist, {SITE.name} represents two precious moments we all hold dear: "Now and Here." With each passing second, we're reminded to live fully in the present — no matter the time, no matter the place.
       </p>
 
       <p>
-        From wandering the world to expressing your unique style, wherever you are and whatever you do, Spacetime is always with you — here, now, and on your wrist.
+        From wandering the world to expressing your unique style, wherever you are and whatever you do, {SITE.name} is always with you — here, now, and on your wrist.
       </p>
 
       <div class="pt-6 space-y-2">
-        <h4 class="text-base sm:text-lg font-bold text-stone-950">
-          Spacetime &ndash; Vintage Watch
+        <h4 class="text-base sm:text-lg font-bold text-black">
+          {SITE.fullName}
         </h4>
-        <p class="text-sm text-stone-800">
-          <strong>Email:</strong> <a href="mailto:spacetime.donghocodien@gmail.com" class="hover:underline">spacetime.donghocodien@gmail.com</a>
+        <p class="text-sm text-stone-700">
+          <strong>Email:</strong> <a href={CONTACT.emailLink} class="hover:underline">{CONTACT.email}</a>
         </p>
-        <p class="text-sm text-stone-800">
-          <strong>WhatsApp:</strong> <a href="https://wa.me/84941625653" target="_blank" rel="noopener noreferrer" class="hover:underline">+84 941 62 5653</a>
+        <p class="text-sm text-stone-700">
+          <strong>WhatsApp:</strong> <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer" class="hover:underline">{CONTACT.whatsapp}</a>
         </p>
       </div>
     </div>

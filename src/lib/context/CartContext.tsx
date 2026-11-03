@@ -1,14 +1,21 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useSyncExternalStore, ReactNode } from 'react';
 import { cartStore, type CartState } from '../../lib/cartStore';
 import type { Cart } from '../schema/cart';
+import type { CheckoutRequest, CheckoutResponse } from '../services/cart';
 
 interface CartContextType extends Omit<CartState, 'cart'> {
   cart: Cart | null;
+  itemCount: number;
+  totalPrice: string;
+  currency: { code: string; symbol: string };
   addItem: (productId: number, quantity?: number) => Promise<void>;
   updateQuantity: (key: string, quantity: number) => Promise<void>;
   removeItem: (key: string) => Promise<void>;
   clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
+  processCheckout: (request: CheckoutRequest) => Promise<CheckoutResponse>;
+  openDrawer: () => void;
+  closeDrawer: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -46,6 +53,10 @@ export function CartProvider({ children, initialCart = null }: { children: React
     await cartStore.loadCart();
   }, []);
 
+  const processCheckout = useCallback(async (request: CheckoutRequest): Promise<CheckoutResponse> => {
+    return cartStore.processCheckout(request);
+  }, []);
+
   const value: CartContextType = {
     cart: cartStore.getState().cart,
     isLoading: cartStore.getState().isLoading,
@@ -59,6 +70,7 @@ export function CartProvider({ children, initialCart = null }: { children: React
     removeItem,
     clearCart,
     refreshCart,
+    processCheckout,
     openDrawer: cartStore.openDrawer.bind(cartStore),
     closeDrawer: cartStore.closeDrawer.bind(cartStore),
   };
@@ -66,11 +78,13 @@ export function CartProvider({ children, initialCart = null }: { children: React
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
+const SERVER_SNAPSHOT: CartState = { cart: null, isLoading: true, error: null, isDrawerOpen: false };
+
 function useCartStore() {
   const snapshot = useSyncExternalStore(
     cartStore.subscribe.bind(cartStore),
     cartStore.getState.bind(cartStore),
-    () => ({ cart: null, isLoading: true, error: null, isDrawerOpen: false })
+    () => SERVER_SNAPSHOT
   );
   return snapshot;
 }
@@ -94,6 +108,7 @@ export function useCart(): CartContextType {
     removeItem: cartStore.removeItem.bind(cartStore),
     clearCart: cartStore.clearCart.bind(cartStore),
     refreshCart: cartStore.loadCart.bind(cartStore),
+    processCheckout: cartStore.processCheckout.bind(cartStore),
     openDrawer: cartStore.openDrawer.bind(cartStore),
     closeDrawer: cartStore.closeDrawer.bind(cartStore),
   };

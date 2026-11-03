@@ -19,6 +19,7 @@
   "dependencies": {
     "@ark-ui/react": "^5.40.0",
     "@astrojs/react": "^7.1.2",
+    "@astrojs/sitemap": "^3.7.4",
     "@lucide/astro": "^1.66.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
@@ -37,6 +38,7 @@
     "@effect/tsgo": "0.63.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "sharp": "^0.35.5",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5",
     "wrangler": "^4.156.0"

@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Effect } from 'effect';
+import { getPageBySlug } from '../lib/services/woocommerce';
+import { sanitizeWordPressHtml } from '../lib/utils/html';
+
+const pageResult = await Effect.runPromiseExit(getPageBySlug('exchange-policy'));
+
+if (pageResult._tag === 'Failure') {
+  return Astro.redirect('/404');
+}
+
+const page = pageResult.value;
+
+function cleanTitle(title: string) {
+  return title
+    .replace(/&#8216;/g, '‘')
+    .replace(/&#8217;/g, '’')
+    .replace(/&#8220;/g, '“')
+    .replace(/&#8221;/g, '”')
+    .replace(/&#8211;/g, '–')
+    .replace(/&#038;/g, '&')
+    .replace(/&/g, '&');
+}
+
+const cleanPageTitle = cleanTitle(page.title.rendered);
+const cleanHtmlContent = await sanitizeWordPressHtml(page.content.rendered);
+---
+
+<Layout
+  title={`${cleanPageTitle} | Spacetime`}
+  description={`${cleanPageTitle} — Spacetime Vintage Watch Atelier`}
+>
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <article
+      class="prose prose-stone max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:tracking-wide prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm sm:prose-p:text-base prose-p:leading-relaxed prose-p:text-stone-700 prose-img:rounded-none prose-img:shadow-sm prose-table:w-full prose-table:border-collapse prose-td:py-2.5 prose-td:border-b prose-td:border-stone-100"
+      set:html={cleanHtmlContent}
+    />
+  </main>
+</Layout>

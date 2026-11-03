@@ -2,47 +2,50 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { Providers } from '../components/Providers';
+import Head from '../components/Head.astro';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
+  type?: 'website' | 'product' | 'article';
+  product?: {
+    name: string;
+    brand: string;
+    sku: string;
+    price: number;
+    currency: string;
+    availability: 'in_stock' | 'out_of_stock';
+    url: string;
+    image: string;
+  };
+  article?: {
+    title: string;
+    author: string;
+    publishedTime: string;
+    modifiedTime: string;
+    section: string;
+    tags: string[];
+  };
 }
 
 const {
   title,
-  description = 'Dong Ho Co Dien — Curating rare, authentic vintage timepieces from Switzerland and Japan for global collectors.',
-  image = 'https://donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',
+  description,
+  image,
+  type = 'website',
+  product,
+  article,
 } = Astro.props;
-
-const canonicalURL = new URL(Astro.url.pathname, 'https://donghocodien.com');
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-
-    <title>{title} | Dong Ho Co Dien</title>
-    <meta name="title" content={`${title} | Dong Ho Co Dien`} />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalURL} />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={`${title} | Dong Ho Co Dien`} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={`${title} | Dong Ho Co Dien`} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
-
+    <Head title={title} description={description} image={image} type={type} product={product} article={article} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

@@ -106,7 +106,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
 
                     {product.on_sale && (
                       <div className="absolute top-3 left-3 z-10">
-                        <span className="bg-brand-badge-sale text-white text-[10px] uppercase font-sans tracking-widest px-2.5 py-0.5 font-medium shadow-xs">
+                        <span className="bg-red-700 text-white text-[10px] uppercase font-sans tracking-widest px-2.5 py-0.5 font-medium shadow-xs">
                           {discountPct > 0 ? `-${discountPct}%` : 'Sale'}
                         </span>
                       </div>
@@ -120,7 +120,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
                       </p>
                     )}
 
-                    <h3 className="text-xs sm:text-sm text-stone-900 uppercase tracking-wider line-clamp-2 leading-relaxed mb-2 font-normal">
+                    <h3 className="text-xs sm:text-sm text-black uppercase tracking-wider line-clamp-2 leading-relaxed mb-2 font-normal">
                       <a
                         href={`/product/${product.slug}`}
                         className="hover:text-stone-500 transition-colors"
@@ -136,7 +136,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
                             {formatUSD(regularPrice)}
                           </span>
                         )}
-                        <span className="text-sm sm:text-base font-semibold text-stone-950">
+                        <span className="text-sm sm:text-base font-semibold text-black">
                           {formatUSD(price)}
                         </span>
                       </div>
@@ -160,7 +160,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
         className={`absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white border border-stone-200 shadow-md flex items-center justify-center text-stone-800 transition-all ${
           prevBtnDisabled
             ? 'opacity-0 pointer-events-none'
-            : 'hover:bg-stone-950 hover:text-white hover:border-stone-950 cursor-pointer'
+            : 'hover:bg-black hover:text-white hover:border-black cursor-pointer'
         }`}
       >
         <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -174,7 +174,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
         className={`absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white border border-stone-200 shadow-md flex items-center justify-center text-stone-800 transition-all ${
           nextBtnDisabled
             ? 'opacity-0 pointer-events-none'
-            : 'hover:bg-stone-950 hover:text-white hover:border-stone-950 cursor-pointer'
+            : 'hover:bg-black hover:text-white hover:border-black cursor-pointer'
         }`}
       >
         <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />

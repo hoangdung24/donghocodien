@@ -15,6 +15,7 @@ let contentItem: {
   title: string;
   content: string;
   date?: string;
+  modified?: string;
   image?: string;
   isPost: boolean;
 } | null = null;
@@ -35,6 +36,8 @@ if (postResult._tag === 'Success') {
     contentItem = {
       title: page.title.rendered,
       content: page.content.rendered,
+      date: page.date,
+      modified: page.modified,
       isPost: false,
     };
   }
@@ -64,11 +67,22 @@ const formattedDate = contentItem.date
       day: 'numeric',
     })
   : null;
+
+const articleSchema = contentItem.isPost && contentItem.date ? {
+  title: cleanItemTitle,
+  author: 'Spacetime Editorial',
+  publishedTime: contentItem.date,
+  modifiedTime: contentItem.modified || contentItem.date,
+  section: 'Horology',
+  tags: ['vintage watches', 'horology', 'collecting'],
+} : undefined;
 ---
 
 <Layout
   title={`${cleanItemTitle} | Spacetime`}
   description={`${cleanItemTitle} — Spacetime Vintage Watch Atelier`}
+  type={contentItem.isPost ? 'article' : 'website'}
+  article={articleSchema}
 >
   <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
     <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-6">

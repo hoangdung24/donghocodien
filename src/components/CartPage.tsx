@@ -77,7 +77,7 @@ export function CartPage() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-900 text-sm rounded flex items-center justify-between">
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 text-yellow-900 text-sm rounded flex items-center justify-between">
           <span>{error}</span>
           <button onClick={refreshCart} className="text-sm font-medium hover:underline">
             Retry
@@ -119,7 +119,7 @@ export function CartPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <a href={item.permalink} className="font-serif text-lg font-medium text-stone-900 hover:text-amber-900 transition-colors block truncate">
+                      <a href={item.permalink} className="font-serif text-lg font-medium text-stone-900 hover:text-yellow-900 transition-colors block truncate">
                         {item.name}
                       </a>
                       {item.sku && (
@@ -155,7 +155,7 @@ export function CartPage() {
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
-                    <span className="font-semibold text-amber-900 ml-auto whitespace-nowrap">
+                    <span className="font-semibold text-yellow-900 ml-auto whitespace-nowrap">
                       {formatPrice(item.totals.line_total)}
                     </span>
                   </div>
@@ -185,10 +185,10 @@ export function CartPage() {
                           className="w-full h-32 object-cover mb-3"
                         />
                       )}
-                      <p className="text-xs font-serif text-stone-900 truncate group-hover:text-amber-900 transition-colors">
+                      <p className="text-xs font-serif text-stone-900 truncate group-hover:text-yellow-900 transition-colors">
                         {crossSell.name}
                       </p>
-                      <p className="text-xs font-semibold text-amber-900 mt-1">
+                      <p className="text-xs font-semibold text-yellow-900 mt-1">
                         {crossSell.prices.currency_symbol}{crossSell.prices.price}
                       </p>
                     </a>
@@ -210,7 +210,7 @@ export function CartPage() {
                   <dd className="font-medium text-stone-900">{formatPrice(subtotal.toFixed(2))}</dd>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-emerald-700">
+                  <div className="flex justify-between text-green-700">
                     <dt>Discount</dt>
                     <dd className="font-medium">-{formatPrice(discount.toFixed(2))}</dd>
                   </div>
@@ -223,7 +223,7 @@ export function CartPage() {
                 </div>
                 <div className="flex justify-between pt-3 border-t border-stone-200">
                   <dt className="font-serif text-base font-medium text-stone-950">Total</dt>
-                  <dd className="font-serif text-base font-medium text-amber-900">
+                  <dd className="font-serif text-base font-medium text-yellow-900">
                     {formatPrice(totalPrice)}
                   </dd>
                 </div>
@@ -236,15 +236,15 @@ export function CartPage() {
 
               <div className="mt-6 pt-4 border-t border-stone-200 space-y-3 text-xs text-stone-600">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-emerald-700" />
+                  <Shield className="w-4 h-4 text-green-700" />
                   <span>Authenticated & mechanically verified</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-emerald-700" />
+                  <Truck className="w-4 h-4 text-green-700" />
                   <span>Worldwide insured delivery</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-emerald-700" />
+                  <CreditCard className="w-4 h-4 text-green-700" />
                   <span>Secure checkout</span>
                 </div>
               </div>

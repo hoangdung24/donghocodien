@@ -16,7 +16,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
     >
       <Accordion.Item value="specs" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
-          <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
+          <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-black transition-colors flex items-center gap-2">
             <Clock className="w-4 h-4 text-stone-500" />
             Technical Specifications &amp; Details
           </span>
@@ -39,7 +39,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
 
       <Accordion.Item value="authenticity" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
-          <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
+          <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-black transition-colors flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-stone-500" />
             Authenticity &amp; Mechanical Warranty
           </span>
@@ -61,7 +61,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
 
       <Accordion.Item value="shipping" className="py-4">
         <Accordion.ItemTrigger className="flex w-full items-center justify-between text-left group cursor-pointer">
-          <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-amber-800 transition-colors flex items-center gap-2">
+          <span className="font-serif text-lg tracking-wide text-stone-900 group-hover:text-black transition-colors flex items-center gap-2">
             <RefreshCw className="w-4 h-4 text-stone-500" />
             Worldwide Express Shipping &amp; Returns
           </span>

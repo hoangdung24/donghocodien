@@ -1,10 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import WatchCard from '../components/WatchCard.astro';
+import { WatchCard } from '../components/WatchCard';
+import { PriceRangeSlider } from '../components/PriceRangeSlider';
 import { ChevronDown } from '@lucide/astro';
 import { Effect } from 'effect';
-import { getProducts, getCategories } from '../lib/services/woocommerce';
+import { getProducts, getCategories, getInStockCategoryCounts } from '../lib/services/woocommerce';
 import { buildCategoryTree, decodeCategoryName } from '../lib/utils/categories';
+import { CategoryAccordion } from '../components/CategoryAccordion';
 
 const url = Astro.url;
 const page = Number(url.searchParams.get('page') || '1');
@@ -23,15 +25,20 @@ const categoryId = rawCategory
     : slugToIdMap[rawCategory.toLowerCase()]
   : undefined;
 
-const [productsResult, categoriesResult] = await Effect.runPromise(
+const [productsResult, categoriesResult, inStockCountsResult] = await Effect.runPromise(
   Effect.all([
     Effect.exit(getProducts({ page, per_page: 20, search, category: categoryId })),
     Effect.exit(getCategories),
+    Effect.exit(getInStockCategoryCounts),
   ])
 );
 
-const products = productsResult._tag === 'Success' ? productsResult.value : [];
+const allProducts = productsResult._tag === 'Success' ? productsResult.value : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
+const inStockCounts = inStockCountsResult._tag === 'Success' ? inStockCountsResult.value : new Map();
+
+// Filter products: only show in-stock products with price > 0
+const products = allProducts.filter((p) => p.is_in_stock && Number(p.prices.price) > 0);
 
 const activeCategory = categoryId ? categories.find((c) => c.id === categoryId) : null;
 const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.name) : null;
@@ -44,6 +51,22 @@ const pageTitle = activeCategory
   : 'All Watches';
 
 const categoryGroups = buildCategoryTree(categories);
+
+// Filter category groups to only show those with available in-stock products globally
+// Use true in-stock counts computed from all products
+const filteredCategoryGroups = categoryGroups
+  .map((group) => ({
+    ...group,
+    children: group.children.filter((c) => (inStockCounts.get(c.id) || 0) > 0),
+  }))
+  .filter((group) => group.children.length > 0);
+
+// Calculate price range from available products
+const pricesWithValue = products
+  .filter((p) => Number(p.prices.price) > 0)
+  .map((p) => Number(p.prices.price));
+const minPrice = pricesWithValue.length > 0 ? Math.floor(Math.min(...pricesWithValue) / 100) * 100 : 0;
+const maxPrice = pricesWithValue.length > 0 ? Math.ceil(Math.max(...pricesWithValue) / 100) * 100 : 100000;
 
 const pageHref = (p: number) => {
   const params = new URLSearchParams();
@@ -59,134 +82,27 @@ const hasNextPage = products.length === 20;
 
 <Layout title={`${pageTitle} | Spacetime`} description="Explore over 2,300+ vintage timepieces from Switzerland and Japan.">
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-    <div class="border-b border-stone-200 pb-8 mb-8">
-      <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-2">
-        <a href="/" class="hover:text-stone-800">Home</a> / 
-        {activeCategory ? (
-          <>
-            <a href="/shop" class="hover:text-stone-800">Watches</a> / 
-            <span class="text-stone-800">{activeCategoryName}</span>
-          </>
-        ) : (
-          <span class="text-stone-800">Watches</span>
-        )}
-      </nav>
-
-      <h1 class="text-2xl sm:text-4xl text-stone-900 font-normal uppercase tracking-[0.15em] mb-2">
-        {pageTitle}
-      </h1>
-      <p class="text-xs text-stone-500 max-w-xl">
-        Every timepiece is authenticated, regulated, and verified before acquisition.
-      </p>
-
+    <div class="pb-8 mb-8">
       {categories.length > 0 && (
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <aside class="lg:col-span-3 space-y-8">
             <section class="space-y-4">
-              <h3 class="text-[11px] uppercase tracking-wider font-bold text-stone-900 border-b border-brand-dark pb-1">
-                CATEGORY
-              </h3>
-              <div class="space-y-1">
-                {categoryGroups.map((group) => {
-                  const activeInGroup =
-                    activeCategory &&
-                    (activeCategory.id === group.parent.id ||
-                      group.children.some((c) => c.id === activeCategory.id));
-                  return (
-                    <section
-                      key={group.parent.id}
-                      class="space-y-4 pt-4 border-t border-stone-200"
-                      data-group={group.parent.slug}
-                    >
-                      <div class="flex items-center justify-between">
-                        <a
-                          href={`/shop?category=${group.parent.id}${search ? `&search=${search}` : ''}`}
-                          class={`text-[11px] uppercase tracking-wider font-bold text-stone-900 ${activeInGroup ? 'text-brand-dark' : 'hover:text-brand-dark'} transition-colors`}
-                        >
-                          {group.parent.displayName}
-                        </a>
-                        <button
-                          class="text-[11px] uppercase tracking-wider font-bold text-stone-600 hover:text-brand-dark transition-colors"
-                          data-toggle={group.parent.slug}
-                        >
-                          <ChevronDown class="w-3 h-3" />
-                        </button>
-                      </div>
-                      <div class="space-y-1" data-list>
-                        {group.children.map((c) => {
-                          const isActive = activeCategory && activeCategory.id === c.id;
-                          return (
-                            <a
-                              key={c.id}
-                              href={`/shop?category=${c.id}${search ? `&search=${search}` : ''}`}
-                              class={`block text-[11px] uppercase tracking-wider border-l-2 border-transparent pl-3 py-1.5 transition-colors ${isActive ? 'border-brand-dark bg-brand-surface font-bold text-brand-dark' : 'border-transparent bg-transparent text-stone-600 hover:bg-brand-surface'}`}
-                            >
-                              {c.displayName}
-                            </a>
-                          );
-                        })}
-                      </div>
-                    </section>
-                  );
-                })}
-              </div>
+              <CategoryAccordion
+                client:visible
+                groups={filteredCategoryGroups}
+                activeCategoryId={categoryId}
+                search={search}
+              />
             </section>
 
-            <section class="space-y-4 pt-4 border-t border-stone-200">
-              <h3 class="text-[11px] uppercase tracking-wider font-bold text-stone-900 border-b border-brand-dark pb-1 mb-2">
-                PRICE
-              </h3>
-              <div class="flex items-end gap-2 text-xs">
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Min price"
-                  class="w-24 h-8 border border-stone-300 bg-white px-2 text-[10px] text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
-                />
-                <span class="text-stone-400">–</span>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Max price"
-                  class="w-24 h-8 border border-stone-300 bg-white px-2 text-[10px] text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
-                />
-                <button
-                  class="flex-shrink-0 px-3 py-2 text-[10px] uppercase tracking-widest border border-stone-300 bg-white text-stone-800 hover:bg-brand-dark hover:text-white transition-colors"
-                >
-                  FILTER
-                </button>
-              </div>
-              <p class="text-[10px] text-stone-400">Price: —</p>
-            </section>
+            <PriceRangeSlider
+                client:visible
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+              />
           </aside>
 
           <div class="lg:col-span-9">
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-3">
-                <span class="text-[11px] uppercase tracking-wider text-stone-500">
-                  Showing {products.length} timepieces
-                </span>
-                <button
-                  class="text-[11px] uppercase tracking-wider font-bold text-stone-600 hover:text-brand-dark transition-colors"
-                  data-toggle="filter-sidebar"
-                >
-                  Filter
-                </button>
-              </div>
-              <div class="relative">
-                <select
-                  class="appearance-none text-[11px] uppercase tracking-wider text-stone-900 border border-stone-200 bg-white pl-3 pr-9 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-dark cursor-pointer"
-                >
-                  <option value="popularity">Sort by popularity</option>
-                  <option value="latest">Sort by latest</option>
-                  <option value="price_asc">Sort by price: low to high</option>
-                  <option value="price_desc" selected>Sort by price: high to low</option>
-                  <option value="in_stock">Xem sản phẩm còn hàng</option>
-                </select>
-                <ChevronDown class="w-3.5 h-3.5 text-stone-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            </div>
-
             {products.length === 0 ? (
               <div class="py-24 text-center text-xs uppercase tracking-widest text-stone-400">
                 No timepieces found matching this criteria.
@@ -194,7 +110,7 @@ const hasNextPage = products.length === 20;
             ) : (
               <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 {products.map((watch) => (
-                  <WatchCard product={watch} />
+                  <WatchCard client:visible product={watch} />
                 ))}
               </div>
 
@@ -202,7 +118,7 @@ const hasNextPage = products.length === 20;
                 {page > 1 ? (
                   <a
                     href={pageHref(page - 1)}
-                    class="px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-stone-800 hover:bg-stone-100 transition-colors"
+                    class="px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors"
                   >
                     &larr; Previous
                   </a>
@@ -215,7 +131,7 @@ const hasNextPage = products.length === 20;
                 {hasNextPage ? (
                   <a
                     href={pageHref(page + 1)}
-                    class="px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-stone-800 hover:bg-stone-100 transition-colors"
+                    class="px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors"
                   >
                     Next &rarr;
                   </a>
@@ -227,26 +143,4 @@ const hasNextPage = products.length === 20;
       )}
     </div>
   </main>
-
-  <script>
-    document.querySelectorAll<HTMLElement>('[data-toggle]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const section = btn.closest<HTMLElement>('[data-group]');
-        const list = section?.querySelector<HTMLElement>('[data-list]');
-        if (!list) return;
-
-        list.classList.toggle('hidden');
-        btn.classList.toggle('rotate-180');
-      });
-    });
-
-    const filterBtn = document.querySelector<HTMLElement>('[data-toggle="filter-sidebar"]');
-    const sidebar = document.querySelector<HTMLElement>('aside.lg\\:col-span-3');
-
-    if (filterBtn && sidebar) {
-      filterBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('hidden');
-      });
-    }
-  </script>
 </Layout>
