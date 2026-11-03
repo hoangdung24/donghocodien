@@ -1,11 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { WatchGallery } from '../../components/WatchGallery';
-import { WatchSpecs } from '../../components/WatchSpecs';
-import { CartDrawer } from '../../components/CartDrawer';
+import { AddToCartButton } from '../../components/AddToCartButton';
+import { ProductTabs } from '../../components/ProductTabs';
+import { RelatedProducts } from '../../components/RelatedProducts';
 import { Effect } from 'effect';
-import { getProductBySlug } from '../../lib/services/woocommerce';
-import { Check, Shield } from '@lucide/astro';
+import { getProductBySlug, getProducts } from '../../lib/services/woocommerce';
 import { formatApproxVND } from '../../lib/utils/currency';
 import { sanitizeWordPressHtml } from '../../lib/utils/html';
 
@@ -30,7 +30,7 @@ function cleanTitle(title: string) {
     .replace(/&#8217;/g, '’')
     .replace(/&#8211;/g, '–')
     .replace(/&#038;/g, '&')
-    .replace(/&amp;/g, '&');
+    .replace(/&/g, '&');
 }
 
 const cleanName = cleanTitle(product.name);
@@ -41,6 +41,22 @@ const primaryBrand = product.categories.find((c) =>
     (b) => c.name.toLowerCase().includes(b.toLowerCase())
   )
 ) || product.categories[0];
+
+// Fetch related products from same primary category
+let relatedProducts: typeof result.value[] = [];
+if (primaryBrand) {
+  const relatedResult = await Effect.runPromiseExit(
+    getProducts({ category: primaryBrand.id, per_page: 4 })
+  );
+  if (relatedResult._tag === 'Success') {
+    relatedProducts = relatedResult.value.filter(p => p.id !== product.id).slice(0, 4);
+  }
+}
+
+const stockText = product.is_in_stock
+  ? `${product.low_stock_remaining ? `${product.low_stock_remaining} in stock` : 'In stock'}`
+  : 'Out of stock';
+const stockClass = product.is_in_stock ? 'text-emerald-700' : 'text-stone-500';
 ---
 
 <Layout
@@ -56,7 +72,7 @@ const primaryBrand = product.categories.find((c) =>
       {primaryBrand && (
         <>
           <span>/</span>
-          <a href={`/shop?brand=${primaryBrand.slug}`} class="hover:text-stone-900 transition-colors">
+          <a href={`/shop?category=${primaryBrand.id}`} class="hover:text-stone-900 transition-colors">
             {cleanTitle(primaryBrand.name)}
           </a>
         </>
@@ -65,8 +81,8 @@ const primaryBrand = product.categories.find((c) =>
       <span class="text-stone-900 truncate max-w-xs">{cleanName}</span>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-      <div class="lg:col-span-7 sticky top-28">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <div class="lg:col-span-7">
         <WatchGallery client:visible images={product.images} title={cleanName} />
       </div>
 
@@ -81,7 +97,7 @@ const primaryBrand = product.categories.find((c) =>
           {cleanName}
         </h1>
 
-        <div class="flex flex-col pb-6 border-b border-stone-200">
+        <div class="flex flex-col pb-6">
           <div class="flex items-baseline gap-4">
             <span class="font-serif text-3xl font-medium text-stone-900">
               ${product.prices.price}
@@ -100,29 +116,26 @@ const primaryBrand = product.categories.find((c) =>
           </span>
         </div>
 
-        <div class="py-4 space-y-2 text-xs text-stone-600 font-sans">
-          <div class="flex items-center gap-2">
-            <Check class="w-4 h-4 text-emerald-700" />
-            <span>Authenticated &amp; mechanically verified by master horologist</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <Shield class="w-4 h-4 text-emerald-700" />
-            <span>Worldwide insured delivery via FedEx / DHL Express</span>
-          </div>
-        </div>
-
-        <div class="my-6">
-          <CartDrawer client:visible product={product} />
-        </div>
-
         {cleanShortDescription && (
-          <div class="pt-4 text-xs text-stone-600 leading-relaxed italic border-t border-stone-100">
+          <div class="my-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
             <div set:html={cleanShortDescription} />
           </div>
         )}
 
-        <WatchSpecs client:visible descriptionHtml={cleanDescription} sku={product.sku} />
+        <AddToCartButton client:visible product={product} stockText={stockText} stockClass={stockClass} />
       </div>
+    </div>
+
+    <div class="mt-16 lg:mt-24">
+      <ProductTabs client:visible
+        descriptionHtml={cleanDescription}
+        sku={product.sku}
+        shortDescription={cleanShortDescription}
+      />
+
+      {relatedProducts.length > 0 && (
+        <RelatedProducts client:visible products={relatedProducts} title="Similar Watches" />
+      )}
     </div>
   </main>
 </Layout>

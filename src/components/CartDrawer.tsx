@@ -1,143 +1,316 @@
-import React, { useState } from 'react';
+import React, { useEffect, useCallback, useContext } from 'react';
 import { Dialog } from '@ark-ui/react/dialog';
-import { ShoppingBag, X, MessageCircle, Mail, Phone, ArrowRight } from 'lucide-react';
-import type { Product } from '../lib/schema/product';
+import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Truck, Shield, CreditCard, Sparkles } from 'lucide-react';
+import { formatApproxVND } from '../lib/utils/currency';
+import { useCart } from '../lib/context/CartContext';
 
-interface CartDrawerProps {
-  product?: Product;
-}
+function CartDrawerContent() {
+  const {
+    cart,
+    isLoading,
+    error,
+    itemCount,
+    totalPrice,
+    currency,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    closeDrawer,
+    isDrawerOpen,
+  } = useCart();
 
-export function CartDrawer({ product }: CartDrawerProps) {
-  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (isDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isDrawerOpen]);
+
+  const formatPrice = (price: string) => {
+    const num = parseFloat(price);
+    return `${currency.symbol}${num.toFixed(currency.code === 'VND' ? 0 : 2)}`;
+  };
+
+  const getItemTotal = (item: typeof cart.items[0]) => {
+    return parseFloat(item.totals.line_total);
+  };
+
+  const subtotal = cart?.items.reduce((sum, item) => sum + getItemTotal(item), 0) ?? 0;
+  const shipping = cart?.shipping_rates[0] ? parseFloat(cart.shipping_rates[0].cost) : 0;
+  const discount = parseFloat(cart?.totals.total_discount ?? '0');
+
+  if (isLoading && !cart) {
+    return (
+      <Dialog.Root open={isDrawerOpen} onOpenChange={() => {}}>
+        <Dialog.Backdrop className="fixed inset-0 bg-stone-950/40 backdrop-blur-xs z-50" />
+        <Dialog.Positioner className="fixed inset-y-0 right-0 z-50 w-full max-w-md flex">
+          <Dialog.Content className="w-full bg-white h-full shadow-2xl flex flex-col border-l border-stone-200 p-6 overflow-y-auto">
+            <div className="flex items-center justify-center h-full">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-stone-900 border-t-transparent" />
+                <div className="absolute inset-0 rounded-full border-2 border-stone-200 border-t-stone-900 animate-ping" />
+              </div>
+              <p className="mt-4 text-sm text-stone-500 font-serif">Preparing your case...</p>
+            </div>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
+    );
+  }
 
   return (
-    <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
-      <Dialog.Trigger className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-stone-900 text-stone-50 font-serif text-sm tracking-widest uppercase hover:bg-stone-800 transition-colors shadow-sm cursor-pointer">
-        <ShoppingBag className="w-4 h-4" />
-        Acquire / Inquire Timepiece
+    <Dialog.Root open={isDrawerOpen} onOpenChange={(e) => !e.open && closeDrawer()}>
+      <Dialog.Trigger className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-stone-900 text-stone-50 font-serif text-sm tracking-widest uppercase hover:bg-stone-800 transition-all duration-200 shadow-sm cursor-pointer relative group overflow-hidden">
+        <div className="absolute inset-0 bg-amber-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <ShoppingBag className="w-4 h-4 relative z-10" />
+        <span className="relative z-10">Collector's Case</span>
+        {itemCount > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-700 text-white text-[10px] font-mono font-bold rounded-full flex items-center justify-center shadow-lg animate-bounce-in">
+            {itemCount > 9 ? '9+' : itemCount}
+          </span>
+        )}
       </Dialog.Trigger>
 
-      <Dialog.Backdrop className="fixed inset-0 bg-stone-950/40 backdrop-blur-xs z-50 transition-opacity" />
+      <Dialog.Backdrop className="fixed inset-0 bg-stone-950/40 backdrop-blur-xs z-50 transition-opacity duration-300" />
 
       <Dialog.Positioner className="fixed inset-y-0 right-0 z-50 w-full max-w-md flex">
-        <Dialog.Content className="w-full bg-white h-full shadow-2xl flex flex-col border-l border-stone-200 p-6 overflow-y-auto">
+        <Dialog.Content className="w-full bg-white h-full shadow-2xl flex flex-col border-l border-stone-200 p-6 overflow-y-auto relative">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-700/50 to-transparent" />
+          
           <div className="flex items-center justify-between pb-4 border-b border-stone-200">
-            <Dialog.Title className="font-serif text-xl text-stone-900">
-              Collector Inquiries &amp; Orders
-            </Dialog.Title>
-            <Dialog.CloseTrigger className="p-2 text-stone-400 hover:text-stone-800 rounded-full transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                <ShoppingBag className="w-5 h-5 text-amber-700" />
+              </div>
+              <Dialog.Title className="font-serif text-xl text-stone-900">
+                Collector's Case
+              </Dialog.Title>
+            </div>
+            <Dialog.CloseTrigger className="p-2 text-stone-400 hover:text-stone-800 hover:bg-stone-100 rounded-full transition-all duration-200">
               <X className="w-5 h-5" />
             </Dialog.CloseTrigger>
           </div>
 
-          <Dialog.Description className="text-xs text-stone-500 mt-2">
+          <Dialog.Description className="text-xs text-stone-500 mt-2 mb-4 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-amber-600" />
             Dong Ho Co Dien — Specialist dealers in rare Swiss and Japanese vintage horology.
           </Dialog.Description>
 
-          {product && (
-            <div className="my-6 p-4 bg-stone-50 border border-stone-200 flex gap-4 items-center">
-              {product.images[0] && (
-                <img
-                  src={product.images[0].thumbnail || product.images[0].src}
-                  alt={product.name}
-                  className="w-16 h-20 object-cover border border-stone-200"
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-serif text-sm font-medium text-stone-900 truncate">
-                  {product.name}
-                </p>
-                <p className="text-sm font-semibold text-amber-900 mt-1">
-                  ${product.prices.price} {product.prices.currency_code}
-                </p>
-                {product.sku && (
-                  <p className="text-xs text-stone-400 mt-0.5">Ref: {product.sku}</p>
-                )}
-              </div>
+          {error && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-900 text-sm rounded-lg flex items-center gap-2 animate-slide-down">
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+              {error}
             </div>
           )}
 
-          <div className="space-y-3 my-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Direct Collector Channels:
-            </p>
-            <a
-              href={`https://wa.me/84901234567?text=${encodeURIComponent(
-                product ? `Hello, I am inquiring about the ${product.name} (${product.permalink})` : 'Hello, I would like to inquire about a vintage timepiece.'
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between w-full px-4 py-3 bg-emerald-700 text-white font-medium text-sm rounded-none hover:bg-emerald-800 transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <MessageCircle className="w-4 h-4" />
-                Message via WhatsApp
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
-
-            <a
-              href={`mailto:contact@donghocodien.com?subject=${encodeURIComponent(
-                product ? `Inquiry: ${product.name}` : 'Vintage Watch Inquiry'
-              )}`}
-              className="flex items-center justify-between w-full px-4 py-3 border border-stone-300 text-stone-800 font-medium text-sm hover:bg-stone-50 transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Email Specialist
-              </span>
-              <span className="text-xs text-stone-500">contact@donghocodien.com</span>
-            </a>
-
-            <a
-              href="tel:+84901234567"
-              className="flex items-center justify-between w-full px-4 py-3 border border-stone-200 text-stone-700 font-medium text-sm hover:bg-stone-50 transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                International Call
-              </span>
-              <span className="font-mono text-xs text-stone-500">+84 90 123 4567</span>
-            </a>
-          </div>
-
-          <form className="mt-4 pt-4 border-t border-stone-200 space-y-3 flex-1" onSubmit={(e) => e.preventDefault()}>
-            <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Or Request an Acquisition Quote:
-            </p>
-            <div>
-              <label className="block text-xs text-stone-600 mb-1">Your Full Name</label>
-              <input
-                type="text"
-                placeholder="Arthur Pendelton"
-                className="w-full px-3 py-2 text-sm border border-stone-300 focus:outline-none focus:border-stone-900"
-              />
+          {!cart || cart.items.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-16 px-4">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 rounded-full bg-stone-100 flex items-center justify-center mx-auto">
+                  <ShoppingBag className="w-10 h-10 text-stone-300" />
+                </div>
+                <div className="absolute inset-0 rounded-full border-2 border-stone-200 border-t-amber-700 animate-spin-slow opacity-50" />
+              </div>
+              <p className="font-serif text-xl text-stone-900 mb-2">Your case is empty</p>
+              <p className="text-sm text-stone-500 mb-8 max-w-xs leading-relaxed">
+                Discover rare timepieces and add them to your collector's case.
+              </p>
+              <a
+                href="/shop"
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 hover:shadow-lg hover:shadow-stone-900/20 transition-all duration-200"
+                onClick={closeDrawer}
+              >
+                <ArrowRight className="w-4 h-4" />
+                Browse Collection
+              </a>
             </div>
-            <div>
-              <label className="block text-xs text-stone-600 mb-1">Email / Phone</label>
-              <input
-                type="text"
-                placeholder="arthur@example.com"
-                className="w-full px-3 py-2 text-sm border border-stone-300 focus:outline-none focus:border-stone-900"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-stone-600 mb-1">Shipping Destination Country</label>
-              <input
-                type="text"
-                placeholder="United States / United Kingdom / Singapore..."
-                className="w-full px-3 py-2 text-sm border border-stone-300 focus:outline-none focus:border-stone-900"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors"
-            >
-              Submit Inquiry
-            </button>
-          </form>
+          ) : (
+            <>
+              <div className="flex-1 overflow-y-auto pb-4 pr-2">
+                <div className="space-y-4">
+                  {cart.items.map((item, index) => (
+                    <div
+                      key={item.key}
+                      className="group relative flex gap-4 p-4 bg-white border border-stone-200 hover:border-amber-200 hover:shadow-md transition-all duration-300 animate-slide-up"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      {item.images[0] && (
+                        <a href={item.permalink} className="relative w-24 h-28 flex-shrink-0 overflow-hidden rounded-lg bg-stone-50 group-hover:scale-105 transition-transform duration-300">
+                          <img
+                            src={item.images[0].thumbnail || item.images[0].src}
+                            alt={item.name}
+                            className="w-full h-full object-cover transition-opacity duration-300"
+                          />
+                          {item.on_sale && (
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-amber-700 text-white text-[9px] font-sans font-medium uppercase tracking-widest rounded">
+                              Sale
+                            </span>
+                          )}
+                        </a>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className="font-serif text-sm font-medium text-stone-900 truncate pr-2">
+                            {item.name}
+                          </p>
+                          <button
+                            onClick={() => removeItem(item.key)}
+                            className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        {item.sku && (
+                          <p className="text-xs text-stone-400 mb-1.5 font-mono">Ref: {item.sku}</p>
+                        )}
+                        <div className="flex items-baseline gap-2 mb-2">
+                          <span className="font-semibold text-amber-900 text-lg">
+                            {formatPrice(item.totals.line_total)}
+                          </span>
+                          {item.on_sale && item.sale_price && (
+                            <span className="text-xs text-stone-400 line-through">
+                              {formatPrice(item.regular_price)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateQuantity(item.key, item.quantity - 1)}
+                            disabled={item.quantity <= 1}
+                            className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-200 rounded-lg border border-stone-200 bg-white"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <span className="text-sm font-mono font-medium text-stone-900 w-10 text-center bg-stone-50 rounded-lg px-2 py-1.5">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.key, item.quantity + 1)}
+                            className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-all duration-200 rounded-lg border border-stone-200 bg-white"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {cart.cross_sells.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-stone-200 animate-slide-up">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-stone-500 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-amber-600" />
+                        You may also appreciate
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {cart.cross_sells.slice(0, 4).map((crossSell, idx) => (
+                        <a
+                          key={crossSell.id}
+                          href={crossSell.permalink}
+                          className="group p-3 bg-stone-50 border border-stone-200 hover:border-amber-300 hover:shadow-md hover:bg-white transition-all duration-300 rounded-lg"
+                          onClick={closeDrawer}
+                          style={{ animationDelay: `${idx * 50}ms` }}
+                        >
+                          {crossSell.images[0] && (
+                            <div className="relative aspect-[4/3] overflow-hidden rounded-lg mb-2 bg-stone-100">
+                              <img
+                                src={crossSell.images[0].thumbnail || crossSell.images[0].src}
+                                alt={crossSell.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            </div>
+                          )}
+                          <p className="text-xs font-serif text-stone-900 truncate group-hover:text-amber-900 transition-colors mb-1">
+                            {crossSell.name}
+                          </p>
+                          <p className="text-xs font-semibold text-amber-900">
+                            {crossSell.prices.currency_symbol}{crossSell.prices.price}
+                          </p>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-stone-200 pt-6 mt-4 space-y-3 animate-slide-up">
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-600">Subtotal</span>
+                  <span className="font-medium text-stone-900">{formatPrice(subtotal.toFixed(2))}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm text-emerald-700">
+                    <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> Discount</span>
+                    <span className="font-medium">-{formatPrice(discount.toFixed(2))}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-600">Shipping</span>
+                  <span className="font-medium text-stone-900">
+                    {shipping > 0 ? formatPrice(shipping.toFixed(2)) : 'Calculated at checkout'}
+                  </span>
+                </div>
+                <div className="flex justify-between pt-3 border-t border-stone-200">
+                  <span className="font-serif text-base font-medium text-stone-950">Total</span>
+                  <span className="font-serif text-xl font-medium text-amber-900">
+                    {formatPrice(totalPrice)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-stone-200 space-y-3 animate-slide-up">
+                <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-4 h-4 text-emerald-700" />
+                  </div>
+                  <span className="text-xs text-stone-700">Authenticated & mechanically verified</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Truck className="w-4 h-4 text-blue-700" />
+                  </div>
+                  <span className="text-xs text-stone-700">Worldwide insured delivery via FedEx / DHL</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="w-4 h-4 text-amber-700" />
+                  </div>
+                  <span className="text-xs text-stone-700">Secure checkout with bank transfer</span>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3 animate-slide-up">
+                <a
+                  href="/checkout"
+                  className="w-full py-4 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 hover:shadow-lg hover:shadow-stone-900/20 transition-all duration-200 text-center block relative overflow-hidden"
+                >
+                  <span className="relative z-10">Proceed to Checkout</span>
+                  <div className="absolute inset-0 bg-amber-700 opacity-0 hover:opacity-100 transition-opacity duration-200" />
+                  <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                </a>
+                <a
+                  href="/shop"
+                  className="w-full py-4 border-2 border-stone-200 text-stone-800 font-serif text-sm tracking-wider uppercase hover:border-stone-900 hover:bg-stone-50 hover:text-stone-900 transition-all duration-200 text-center block"
+                  onClick={closeDrawer}
+                >
+                  Continue Shopping
+                </a>
+              </div>
+            </>
+          )}
         </Dialog.Content>
       </Dialog.Positioner>
     </Dialog.Root>
   );
+}
+
+export function CartDrawer() {
+  return <CartDrawerContent />;
 }

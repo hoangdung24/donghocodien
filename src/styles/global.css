@@ -55,3 +55,56 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 ::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+
+/* Custom prose styles for product descriptions */
+.prose .entry-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.prose .entry-content table td,
+.prose .entry-content table th {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.prose .entry-content table td:first-child,
+.prose .entry-content table th:first-child {
+  width: 30%;
+  font-weight: 600;
+  color: #374151;
+  background-color: #f9fafb;
+}
+
+.prose .entry-content table td:last-child {
+  color: #4b5563;
+}
+
+.prose .entry-content table tr:last-child td {
+  border-bottom: none;
+}
+
+.prose .entry-content table tr:hover td {
+  background-color: #f9fafb;
+}
+
+/* Custom prose color overrides for brand consistency */
+.prose {
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #191414;
+  --tw-prose-links: #191414;
+  --tw-prose-bold: #191414;
+  --tw-prose-counters: #6b7280;
+  --tw-prose-bullets: #d1d5db;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #191414;
+  --tw-prose-quote-borders: #e5e7eb;
+  --tw-prose-captions: #6b7280;
+  --tw-prose-code: #191414;
+  --tw-prose-pre-code: #f3f4f6;
+  --tw-prose-pre-bg: #1f2937;
+  --tw-prose-th-borders: #e5e7eb;
+  --tw-prose-td-borders: #e5e7eb;
+}

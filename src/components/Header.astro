@@ -1,6 +1,7 @@
 ---
 import { Search, ShoppingBag, Menu, X, ChevronDown } from '@lucide/astro';
 import { formatHeaderClock } from '../lib/utils/format';
+import { CartDrawer } from './CartDrawer';
 
 export const megaMenuData = [
   {
@@ -107,13 +108,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
       </div>
 
       <div class="flex items-center gap-4 sm:gap-5 flex-1 justify-end">
-        <a
-          href="/cart"
-          aria-label="Cart"
-          class="inline-flex items-center justify-center px-2.5 py-1 border border-stone-300 text-stone-800 hover:border-stone-900 text-xs font-mono font-medium transition-colors"
-        >
-          0
-        </a>
+        <CartDrawer client:only="react" />
 
         <a
           href="/shop?search=true"
@@ -176,20 +171,11 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           </div>
         </div>
 
-        <a href="/shop?category=1102" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
-          Consignment
-        </a>
-        <a href="/blog" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
-          Articles
-        </a>
-        <a href="/about-us" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
-          About Us
-        </a>
         <a href="/shop?category=214" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
           Archives
         </a>
-        <a href="/consign-your-watch" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
-          Consign Your Watch
+        <a href="/about-us" class="flex items-center hover:text-stone-500 transition-colors py-3.5">
+          About Us
         </a>
       </nav>
     </div>
@@ -256,20 +242,11 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           </div>
         </div>
 
-        <a href="/shop?category=1102" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
-          Consignment
-        </a>
-        <a href="/blog" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
-          Articles
-        </a>
-        <a href="/about-us" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
-          About Us
-        </a>
         <a href="/shop?category=214" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
           Archives
         </a>
-        <a href="/consign-your-watch" class="block py-2 text-stone-800 hover:text-stone-500">
-          Consign Your Watch
+        <a href="/about-us" class="block py-2 text-stone-800 hover:text-stone-500 border-b border-stone-100">
+          About Us
         </a>
       </nav>
 
