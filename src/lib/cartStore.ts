@@ -1,7 +1,7 @@
 import type { Cart } from './schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from './services/cart';
 
-const API_BASE = import.meta.env.DEV ? '/wc/store/v1' : 'https://donghocodien.com/wp-json/wc/store/v1';
+const API_BASE = '/wc/store/v1';
 
 export interface CartState {
   cart: Cart | null;
