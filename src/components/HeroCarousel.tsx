@@ -43,10 +43,9 @@ const HERO_SLIDES: HeroSlide[] = [
 ];
 
 export default function HeroCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, duration: 30 },
-    [Autoplay({ delay: 5500, stopOnInteraction: false })]
-  );
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 30 }, [
+    Autoplay({ delay: 5500, stopOnInteraction: false }),
+  ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
@@ -68,29 +67,29 @@ export default function HeroCarousel() {
   }, [emblaApi, onSelect]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-stone-950 text-white select-none group/hero">
-      <div className="overflow-hidden w-full cursor-grab active:cursor-grabbing" ref={emblaRef}>
-        <div className="flex touch-pan-y">
+    <div className='group/hero relative w-full overflow-hidden bg-stone-950 text-white select-none'>
+      <div className='w-full cursor-grab overflow-hidden active:cursor-grabbing' ref={emblaRef}>
+        <div className='flex touch-pan-y'>
           {HERO_SLIDES.map((slide, index) => (
             <div
               key={slide.id}
-              className="relative flex-[0_0_100%] min-w-0 h-[480px] sm:h-[580px] lg:h-[660px]"
+              className='relative h-120 min-w-0 flex-[0_0_100%] sm:h-[65vh] lg:h-[65vh]'
             >
               <img
                 src={slide.image}
                 alt={slide.alt}
-                className="w-full h-full object-cover object-center"
+                className='h-full w-full object-cover object-center'
                 loading={index === 0 ? 'eager' : 'lazy'}
               />
 
-              <div className="absolute inset-0 flex items-center justify-start p-6 sm:p-12 lg:p-20 bg-gradient-to-r from-black/60 via-black/30 to-transparent">
-                <div className="max-w-md sm:max-w-lg bg-black/65 backdrop-blur-xs p-6 sm:p-8 border border-white/10 shadow-2xl">
-                  <p className="text-base sm:text-xl lg:text-2xl text-stone-100 font-serif leading-relaxed mb-6 font-light">
+              <div className='absolute inset-0 flex items-end justify-center bg-linear-to-r from-black/60 via-black/30 to-transparent p-6 sm:p-12 lg:p-20'>
+                <div className='max-w-md border border-white/10 bg-black/65 p-6 shadow-2xl backdrop-blur-xs sm:max-w-lg sm:p-8'>
+                  <p className='mb-6 font-serif text-base leading-relaxed font-light text-stone-100 sm:text-xl lg:text-2xl'>
                     {slide.title}
                   </p>
                   <a
                     href={slide.link}
-                    className="inline-block text-xs uppercase tracking-[0.25em] text-white border-b border-white/60 pb-1 hover:border-white hover:text-stone-200 transition-colors"
+                    className='inline-block border-b border-white/60 pb-1 text-xs tracking-[0.25em] text-white uppercase transition-colors hover:border-white hover:text-stone-200'
                   >
                     Learn More &rarr;
                   </a>
@@ -102,34 +101,32 @@ export default function HeroCarousel() {
       </div>
 
       <button
-        type="button"
+        type='button'
         onClick={scrollPrev}
-        aria-label="Previous slide"
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm flex items-center justify-center text-white transition-all opacity-0 group-hover/hero:opacity-100 focus:opacity-100 cursor-pointer"
+        aria-label='Previous slide'
+        className='absolute top-1/2 left-4 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white opacity-0 backdrop-blur-sm transition-all group-hover/hero:opacity-100 hover:bg-white/40 focus:opacity-100 sm:h-12 sm:w-12'
       >
-        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+        <ChevronLeft className='h-5 w-5 sm:h-6 sm:w-6' />
       </button>
 
       <button
-        type="button"
+        type='button'
         onClick={scrollNext}
-        aria-label="Next slide"
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm flex items-center justify-center text-white transition-all opacity-0 group-hover/hero:opacity-100 focus:opacity-100 cursor-pointer"
+        aria-label='Next slide'
+        className='absolute top-1/2 right-4 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white opacity-0 backdrop-blur-sm transition-all group-hover/hero:opacity-100 hover:bg-white/40 focus:opacity-100 sm:h-12 sm:w-12'
       >
-        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+        <ChevronRight className='h-5 w-5 sm:h-6 sm:w-6' />
       </button>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10">
+      <div className='absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5'>
         {scrollSnaps.map((_, index) => (
           <button
             key={index}
-            type="button"
+            type='button'
             onClick={() => scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}
-            className={`transition-all duration-300 rounded-full cursor-pointer ${
-              index === selectedIndex
-                ? 'w-7 h-2 bg-white'
-                : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+            className={`cursor-pointer rounded-full transition-all duration-300 ${
+              index === selectedIndex ? 'w-7 h-2 bg-white' : 'w-2 h-2 bg-white/40 hover:bg-white/70'
             }`}
           />
         ))}

@@ -1,20 +1,34 @@
 import { Effect, Schema } from 'effect';
 import { CartSchema } from '../schema/cart';
-import type { CartAddress, AddToCartRequest, UpdateCartItemRequest, RemoveCartItemRequest } from '../schema/cart';
+import type {
+  CartAddress,
+  AddToCartRequest,
+  UpdateCartItemRequest,
+  RemoveCartItemRequest,
+} from '../schema/cart';
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 
-export class CartNetworkError extends Schema.TaggedError<CartNetworkError, { readonly brand: unique symbol }>()('CartNetworkError', {
+export class CartNetworkError extends Schema.TaggedError<
+  CartNetworkError,
+  { readonly brand: unique symbol }
+>()('CartNetworkError', {
   message: Schema.String,
 }) {}
 
-export class CartHttpError extends Schema.TaggedError<CartHttpError, { readonly brand: unique symbol }>()('CartHttpError', {
+export class CartHttpError extends Schema.TaggedError<
+  CartHttpError,
+  { readonly brand: unique symbol }
+>()('CartHttpError', {
   status: Schema.Finite,
   statusText: Schema.String,
   url: Schema.String,
 }) {}
 
-export class CartNotFoundError extends Schema.TaggedError<CartNotFoundError, { readonly brand: unique symbol }>()('CartNotFoundError', {
+export class CartNotFoundError extends Schema.TaggedError<
+  CartNotFoundError,
+  { readonly brand: unique symbol }
+>()('CartNotFoundError', {
   message: Schema.String,
 }) {}
 
@@ -37,13 +51,14 @@ const fetchWithAuth = (url: string, options: RequestInit = {}) =>
 const handleResponse = <A>(schema: Schema.Schema<A>, url: string) =>
   Effect.gen(function* () {
     const response = yield* Effect.tryPromise({
-      try: () => fetch(url, {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'DongHoCoDien-Headless/1.0',
-        },
-        credentials: 'include' as RequestCredentials,
-      }),
+      try: () =>
+        fetch(url, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'DongHoCoDien-Headless/1.0',
+          },
+          credentials: 'include' as RequestCredentials,
+        }),
       catch: (cause) => new CartNetworkError({ message: String(cause) }),
     });
 
@@ -61,10 +76,7 @@ const handleResponse = <A>(schema: Schema.Schema<A>, url: string) =>
     });
 
     return yield* Schema.decodeUnknownEffect(schema)(raw);
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 export const getCart = handleResponse(CartSchema, `${API_BASE}/cart`);
 
@@ -90,10 +102,7 @@ export const addToCart = (request: AddToCartRequest) =>
     });
 
     return yield* Schema.decodeUnknownEffect(CartSchema)(raw);
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 export const updateCartItem = (request: UpdateCartItemRequest) =>
   Effect.gen(function* () {
@@ -117,10 +126,7 @@ export const updateCartItem = (request: UpdateCartItemRequest) =>
     });
 
     return yield* Schema.decodeUnknownEffect(CartSchema)(raw);
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 export const removeCartItem = (request: RemoveCartItemRequest) =>
   Effect.gen(function* () {
@@ -144,10 +150,7 @@ export const removeCartItem = (request: RemoveCartItemRequest) =>
     });
 
     return yield* Schema.decodeUnknownEffect(CartSchema)(raw);
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 export const clearCart = Effect.gen(function* () {
   const url = `${API_BASE}/cart/items`;
@@ -169,10 +172,7 @@ export const clearCart = Effect.gen(function* () {
   });
 
   return yield* Schema.decodeUnknownEffect(CartSchema)(raw);
-}).pipe(
-  Effect.retry({ times: 2 }),
-  Effect.timeout('30 seconds')
-);
+}).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 export interface CheckoutRequest {
   billing_address: CartAddress;

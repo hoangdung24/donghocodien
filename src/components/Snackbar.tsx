@@ -17,26 +17,28 @@ export function Snackbar() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 z-[60] flex flex-col items-end gap-3 pointer-events-none">
+    <div className='pointer-events-none fixed right-4 bottom-6 left-4 z-60 flex flex-col items-end gap-3 sm:right-6 sm:left-auto'>
       {toasts.map((toast) => {
         const style = VARIANT_STYLES[toast.variant];
         return (
           <div
             key={toast.id}
             role={style.role}
-            className="pointer-events-auto flex items-stretch w-full sm:w-auto max-w-sm bg-white border border-stone-200 shadow-xl animate-snackbar-in"
+            className='animate-snackbar-in pointer-events-auto flex w-full max-w-sm items-stretch border border-stone-200 bg-white shadow-xl sm:w-auto'
           >
             <div className={`w-1 shrink-0 ${style.accent}`} />
-            <div className="flex items-center gap-3 px-4 py-3.5 min-w-0">
-              <style.Icon className={`w-4 h-4 shrink-0 ${style.icon}`} />
-              <p className="text-sm text-stone-900 leading-relaxed wrap-break-word">{toast.message}</p>
+            <div className='flex min-w-0 items-center gap-3 px-4 py-3.5'>
+              <style.Icon className={`h-4 w-4 shrink-0 ${style.icon}`} />
+              <p className='text-sm leading-relaxed wrap-break-word text-stone-900'>
+                {toast.message}
+              </p>
             </div>
             <button
               onClick={() => toastStore.dismiss(toast.id)}
-              aria-label="Dismiss notification"
-              className="flex items-center px-3 text-stone-400 hover:text-black hover:bg-stone-100 transition-colors duration-200"
+              aria-label='Dismiss notification'
+              className='flex items-center px-3 text-stone-400 transition-colors duration-200 hover:bg-stone-100 hover:text-black'
             >
-              <X className="w-4 h-4" />
+              <X className='h-4 w-4' />
             </button>
           </div>
         );

@@ -5,197 +5,188 @@ import { CONTACT, SITE } from '../lib/constants';
 ---
 
 <Layout
-  title="Contact Us - Boutique Concierge"
-  description="Connect with our horology specialists in Ho Chi Minh City or via WhatsApp for acquisitions, valuations, and consignments."
+  title='Contact Us - Boutique Concierge'
+  description='Connect with our horology specialists in Ho Chi Minh City or via WhatsApp for acquisitions, valuations, and consignments.'
 >
-  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-    <nav class="text-[11px] uppercase tracking-wider text-stone-400 mb-6">
-      <a href="/" class="hover:text-black">Home</a> / <span class="text-black">Contact Us</span>
+  <main class='max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16'>
+    <nav class='text-[11px] uppercase tracking-wider text-stone-400 mb-6'>
+      <a href='/' class='hover:text-black'>
+        Home
+      </a>{' '}
+      / <span class='text-black'>Contact Us</span>
     </nav>
 
-    <div class="border-b border-stone-200 pb-8 mb-12">
-      <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-medium mb-2">
+    <div class='border-b border-stone-200 pb-8 mb-12'>
+      <p class='text-xs uppercase tracking-[0.25em] text-stone-400 font-medium mb-2'>
         Boutique Concierge &bull; {SITE.name}
       </p>
-      <h1 class="text-3xl sm:text-5xl text-black font-normal tracking-tight mb-4">
+      <h1 class='text-3xl sm:text-5xl text-black font-normal tracking-tight mb-4'>
         Contact Our Specialists
       </h1>
-      <p class="text-sm text-stone-600 max-w-2xl leading-relaxed">
-        Whether you are seeking a specific vintage reference, inquiring about timepiece authentication, or wishing to consign a watch, our team is at your disposal worldwide.
+      <p class='text-sm text-stone-600 max-w-2xl leading-relaxed'>
+        Whether you are seeking a specific vintage reference, inquiring about timepiece
+        authentication, or wishing to consign a watch, our team is at your disposal worldwide.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-      <div class="space-y-8">
+    <div class='grid grid-cols-1 md:grid-cols-2 gap-12 items-start'>
+      <div class='space-y-8'>
         <div>
-          <h2 class="text-xs uppercase tracking-[0.2em] font-bold text-black mb-6">
+          <h2 class='text-xs uppercase tracking-[0.2em] font-bold text-black mb-6'>
             Direct Communication Channels
           </h2>
 
-          <div class="space-y-4">
+          <div class='space-y-4'>
             <a
               href={CONTACT.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-4 p-4 border border-stone-200 hover:border-black bg-white hover:bg-stone-50/30 transition-all group"
+              target='_blank'
+              rel='noopener noreferrer'
+              class='flex items-center gap-4 p-4 border border-stone-200 hover:border-black bg-white hover:bg-stone-50/30 transition-all group'
             >
-              <div class="w-12 h-12 bg-stone-100/70 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                <MessageCircle class="w-6 h-6" />
+              <div class='w-12 h-12 bg-stone-100/70 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors'>
+                <MessageCircle class='w-6 h-6' />
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs uppercase tracking-wider font-semibold text-black">
+              <div class='flex-1 min-w-0'>
+                <p class='text-xs uppercase tracking-wider font-semibold text-black'>
                   WhatsApp Concierge
                 </p>
-                <p class="text-xs text-stone-500 font-mono mt-0.5">
-                  {CONTACT.whatsapp}
-                </p>
+                <p class='text-xs text-stone-500 font-mono mt-0.5'>{CONTACT.whatsapp}</p>
               </div>
-              <span class="text-xs uppercase tracking-wider text-stone-800 font-medium">
+              <span class='text-xs uppercase tracking-wider text-stone-800 font-medium'>
                 Chat &rarr;
               </span>
             </a>
 
             <a
               href={CONTACT.emailLink}
-              class="flex items-center gap-4 p-4 border border-stone-200 hover:border-black bg-white hover:bg-stone-50 transition-all group"
+              class='flex items-center gap-4 p-4 border border-stone-200 hover:border-black bg-white hover:bg-stone-50 transition-all group'
             >
-              <div class="w-12 h-12 bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                <Mail class="w-6 h-6" />
+              <div class='w-12 h-12 bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors'>
+                <Mail class='w-6 h-6' />
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs uppercase tracking-wider font-semibold text-black">
+              <div class='flex-1 min-w-0'>
+                <p class='text-xs uppercase tracking-wider font-semibold text-black'>
                   Email Inquiries
                 </p>
-                <p class="text-xs text-stone-500 truncate mt-0.5">
-                  {CONTACT.email}
-                </p>
+                <p class='text-xs text-stone-500 truncate mt-0.5'>{CONTACT.email}</p>
               </div>
-              <span class="text-xs uppercase tracking-wider text-black font-medium">
+              <span class='text-xs uppercase tracking-wider text-black font-medium'>
                 Write &rarr;
               </span>
             </a>
 
             <a
               href={CONTACT.phoneLink}
-              class="flex items-center gap-4 p-4 border border-stone-200 hover:border-black bg-white hover:bg-stone-50 transition-all group"
+              class='flex items-center gap-4 p-4 border border-stone-200 hover:border-black bg-white hover:bg-stone-50 transition-all group'
             >
-              <div class="w-12 h-12 bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-                <Phone class="w-6 h-6" />
+              <div class='w-12 h-12 bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors'>
+                <Phone class='w-6 h-6' />
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs uppercase tracking-wider font-semibold text-black">
-                  Direct Line
-                </p>
-                <p class="text-xs text-stone-500 font-mono mt-0.5">
-                  {CONTACT.whatsapp}
-                </p>
+              <div class='flex-1 min-w-0'>
+                <p class='text-xs uppercase tracking-wider font-semibold text-black'>Direct Line</p>
+                <p class='text-xs text-stone-500 font-mono mt-0.5'>{CONTACT.whatsapp}</p>
               </div>
             </a>
           </div>
         </div>
 
-        <div class="p-6 bg-stone-100 border border-stone-200 space-y-4">
-          <div class="flex items-start gap-3">
-            <MapPin class="w-5 h-5 text-stone-700 mt-0.5 shrink-0" />
+        <div class='p-6 bg-stone-100 border border-stone-200 space-y-4'>
+          <div class='flex items-start gap-3'>
+            <MapPin class='w-5 h-5 text-stone-700 mt-0.5 shrink-0' />
             <div>
-              <p class="text-xs uppercase tracking-wider font-bold text-black">
-                Atelier Location
-              </p>
-              <p class="text-xs text-stone-600 mt-1 leading-relaxed">
+              <p class='text-xs uppercase tracking-wider font-bold text-black'>Atelier Location</p>
+              <p class='text-xs text-stone-600 mt-1 leading-relaxed'>
                 {CONTACT.location} (Private viewing available by prior appointment).
               </p>
             </div>
           </div>
 
-          <div class="flex items-start gap-3 pt-3 border-t border-stone-200">
-            <Clock class="w-5 h-5 text-stone-700 mt-0.5 shrink-0" />
+          <div class='flex items-start gap-3 pt-3 border-t border-stone-200'>
+            <Clock class='w-5 h-5 text-stone-700 mt-0.5 shrink-0' />
             <div>
-              <p class="text-xs uppercase tracking-wider font-bold text-black">
-                Operating Hours
-              </p>
-              <p class="text-xs text-stone-600 mt-1 leading-relaxed">
-                {CONTACT.hours}
-              </p>
+              <p class='text-xs uppercase tracking-wider font-bold text-black'>Operating Hours</p>
+              <p class='text-xs text-stone-600 mt-1 leading-relaxed'>{CONTACT.hours}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="p-8 bg-white border border-stone-200 shadow-xs">
-        <h2 class="text-xs uppercase tracking-[0.2em] font-bold text-black mb-2">
+      <div class='p-8 bg-white border border-stone-200 shadow-xs'>
+        <h2 class='text-xs uppercase tracking-[0.2em] font-bold text-black mb-2'>
           Send an Inquiry
         </h2>
-        <p class="text-xs text-stone-500 mb-6">
+        <p class='text-xs text-stone-500 mb-6'>
           We respond to all collector inquiries within 12 hours.
         </p>
 
-        <form class="space-y-4" onSubmit="event.preventDefault(); alert('Thank you. We have received your inquiry.');">
+        <form
+          class='space-y-4'
+          onSubmit="event.preventDefault(); alert('Thank you. We have received your inquiry.');"
+        >
           <div>
-            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+            <label class='block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium'>
               Full Name *
             </label>
             <input
-              type="text"
+              type='text'
               required
-              placeholder="e.g. Jean-Luc Dubois"
-              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors"
+              placeholder='e.g. Jean-Luc Dubois'
+              class='w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors'
             />
           </div>
 
           <div>
-            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+            <label class='block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium'>
               Email Address *
             </label>
             <input
-              type="email"
+              type='email'
               required
-              placeholder="name@domain.com"
-              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors"
+              placeholder='name@domain.com'
+              class='w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors'
             />
           </div>
 
           <div>
-            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+            <label class='block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium'>
               WhatsApp / Phone Number (Optional)
             </label>
             <input
-              type="tel"
-              placeholder="+1 (555) 012-3456"
-              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors"
+              type='tel'
+              placeholder='+1 (555) 012-3456'
+              class='w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors'
             />
           </div>
 
           <div>
-            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+            <label class='block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium'>
               Subject of Inquiry
             </label>
-            <select
-              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors bg-white"
-            >
-              <option value="acquisition">Timepiece Acquisition</option>
-              <option value="consign">Consign a Watch</option>
-              <option value="service">Servicing & Restoration</option>
-              <option value="general">General Collector Inquiry</option>
+            <select class='w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors bg-white'>
+              <option value='acquisition'>Timepiece Acquisition</option>
+              <option value='consign'>Consign a Watch</option>
+              <option value='service'>Servicing & Restoration</option>
+              <option value='general'>General Collector Inquiry</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+            <label class='block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium'>
               Message *
             </label>
             <textarea
-              rows="4"
+              rows='4'
               required
-              placeholder="Tell us about the watch or reference you are looking for..."
-              class="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors"
+              placeholder='Tell us about the watch or reference you are looking for...'
+              class='w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-black transition-colors'
             ></textarea>
           </div>
 
           <button
-            type="submit"
-            class="w-full py-3.5 bg-black text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-900 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            type='submit'
+            class='w-full py-3.5 bg-black text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-900 transition-colors flex items-center justify-center gap-2 cursor-pointer'
           >
-            <Send class="w-4 h-4" />
+            <Send class='w-4 h-4' />
             <span>Send Message</span>
           </button>
         </form>

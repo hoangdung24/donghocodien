@@ -31,79 +31,38 @@ interface Props {
   };
 }
 
-const {
-  title,
-  description,
-  image,
-  type = 'website',
-  itunesAppId,
-  product,
-  article,
-} = Astro.props;
+const { title, description, image, type = 'website', itunesAppId, product, article } = Astro.props;
 ---
+
 <!doctype html>
-<html lang="en">
+<html lang='en'>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <Head title={title} description={description} image={image} type={type} itunesAppId={itunesAppId} product={product} article={article} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta name='generator' content={Astro.generator} />
+    <Head
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      itunesAppId={itunesAppId}
+      product={product}
+      article={article}
+    />
+    <link rel='preconnect' href='https://fonts.googleapis.com' />
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet" />
+      href='https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap'
+      rel='stylesheet'
+    />
   </head>
-  <body class="min-h-screen flex flex-col bg-stone-50 text-stone-900">
+  <body class='min-h-screen flex flex-col bg-stone-50 text-stone-900'>
     <Header />
-    <div class="flex-1">
-      <Providers client:only="react">
+    <div class='flex-1'>
+      <Providers client:only='react'>
         <slot />
       </Providers>
     </div>
     <Footer />
-
-    <script>
-      import { formatApproxPrice, getExchangeRates, resolveApproxDisplayCurrency } from '../lib/utils/currency';
-      import { detectVisitorCountry, readVisitorCountry } from '../lib/utils/geo';
-
-      (async () => {
-        const el = await new Promise((resolve) => {
-          const existing = document.getElementById('approx-price-product');
-          if (existing) {
-            resolve(existing);
-            return;
-          }
-          const observer = new MutationObserver(() => {
-            const found = document.getElementById('approx-price-product');
-            if (found) {
-              observer.disconnect();
-              resolve(found);
-            }
-          });
-          observer.observe(document.body, { childList: true, subtree: true });
-          setTimeout(() => {
-            observer.disconnect();
-            resolve(null);
-          }, 10000);
-        });
-        if (!el) return;
-        let country = readVisitorCountry();
-        if (!country) {
-          country = await detectVisitorCountry();
-        }
-        const currency = resolveApproxDisplayCurrency(country);
-        if (country && !currency) {
-          el.remove();
-          return;
-        }
-        const rates = await getExchangeRates();
-        if (!rates) return;
-        const usd = Number(el.dataset.usdPrice);
-        if (usd && !isNaN(usd)) {
-          el.textContent = formatApproxPrice(usd, currency ?? 'VND', rates);
-        }
-      })();
-    </script>
   </body>
 </html>

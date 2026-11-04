@@ -10,26 +10,22 @@ interface WatchGalleryProps {
 export function WatchGallery({ images, title }: WatchGalleryProps) {
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-[4/5] bg-stone-100 flex items-center justify-center text-stone-400 font-serif">
+      <div className='flex aspect-4/5 items-center justify-center bg-stone-100 font-serif text-stone-400'>
         No images available
       </div>
     );
   }
 
   return (
-    <Carousel.Root
-      slideCount={images.length}
-      spacing="16px"
-      className="relative w-full group"
-    >
-      <Carousel.ItemGroup className="overflow-hidden rounded-none border border-stone-200/80 bg-white">
+    <Carousel.Root slideCount={images.length} spacing='16px' className='group relative w-full'>
+      <Carousel.ItemGroup className='overflow-hidden rounded-none border border-stone-200/80 bg-white'>
         {images.map((image, index) => (
-          <Carousel.Item key={image.id ?? index} index={index} className="w-full">
-            <div className="relative aspect-[4/5] overflow-hidden bg-stone-50 flex items-center justify-center">
+          <Carousel.Item key={image.id ?? index} index={index} className='w-full'>
+            <div className='relative flex aspect-4/5 items-center justify-center overflow-hidden bg-stone-50'>
               <img
                 src={image.src}
                 alt={image.alt || `${title} - ảnh ${index + 1}`}
-                className="w-full h-full object-contain p-4"
+                className='h-full w-full object-contain p-4'
                 loading={index === 0 ? 'eager' : 'lazy'}
               />
             </div>
@@ -38,28 +34,28 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
       </Carousel.ItemGroup>
 
       {images.length > 1 && (
-        <Carousel.Control className="absolute inset-0 pointer-events-none flex items-center justify-between px-3">
-          <Carousel.PrevTrigger className="pointer-events-auto w-10 h-10 rounded-full bg-white/90 shadow-md border border-stone-200/60 flex items-center justify-center text-stone-800 hover:bg-stone-900 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-            <ChevronLeft className="w-5 h-5" />
+        <Carousel.Control className='pointer-events-none absolute inset-0 flex items-center justify-between px-3'>
+          <Carousel.PrevTrigger className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-stone-200/60 bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white'>
+            <ChevronLeft className='h-5 w-5' />
           </Carousel.PrevTrigger>
-          <Carousel.NextTrigger className="pointer-events-auto w-10 h-10 rounded-full bg-white/90 shadow-md border border-stone-200/60 flex items-center justify-center text-stone-800 hover:bg-stone-900 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-            <ChevronRight className="w-5 h-5" />
+          <Carousel.NextTrigger className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-stone-200/60 bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white'>
+            <ChevronRight className='h-5 w-5' />
           </Carousel.NextTrigger>
         </Carousel.Control>
       )}
 
       {images.length > 1 && (
-        <Carousel.IndicatorGroup className="mt-4 flex gap-2 overflow-x-auto pb-2">
+        <Carousel.IndicatorGroup className='mt-4 flex gap-2 overflow-x-auto pb-2'>
           {images.map((image, index) => (
             <Carousel.Indicator
               key={image.id ?? index}
               index={index}
-              className="shrink-0 w-16 h-20 border border-stone-200 overflow-hidden cursor-pointer opacity-70 data-current:opacity-100 data-current:border-stone-900 transition-all"
+              className='h-20 w-16 shrink-0 cursor-pointer overflow-hidden border border-stone-200 opacity-70 transition-all data-current:border-stone-900 data-current:opacity-100'
             >
               <img
                 src={image.thumbnail || image.src}
                 alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
+                className='h-full w-full object-cover'
               />
             </Carousel.Indicator>
           ))}

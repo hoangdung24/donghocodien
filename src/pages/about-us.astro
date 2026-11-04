@@ -4,28 +4,42 @@ import { SITE, CONTACT } from '../lib/constants';
 ---
 
 <Layout
-  title="About Us – Spacetime"
-  description="Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Spacetime – Vintage Watch."
+  title='About Us – Spacetime'
+  description='Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Spacetime – Vintage Watch.'
 >
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24 font-sans text-black">
-    <div class="space-y-6 text-sm sm:text-base leading-relaxed text-stone-700">
+  <main class='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24 font-sans text-black'>
+    <div class='space-y-6 text-sm sm:text-base leading-relaxed text-stone-700'>
       <p>
-        Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Born with the mission to deliver timeless elegance to every wrist, {SITE.name} represents two precious moments we all hold dear: "Now and Here." With each passing second, we're reminded to live fully in the present — no matter the time, no matter the place.
+        Vintage watches have long left deep imprints across time — marking decades, even centuries —
+        evoking memories of a bygone era. Born with the mission to deliver timeless elegance to
+        every wrist, {SITE.name} represents two precious moments we all hold dear: "Now and Here."
+        With each passing second, we're reminded to live fully in the present — no matter the time,
+        no matter the place.
       </p>
 
       <p>
-        From wandering the world to expressing your unique style, wherever you are and whatever you do, {SITE.name} is always with you — here, now, and on your wrist.
+        From wandering the world to expressing your unique style, wherever you are and whatever you
+        do, {SITE.name} is always with you — here, now, and on your wrist.
       </p>
 
-      <div class="pt-6 space-y-2">
-        <h4 class="text-base sm:text-lg font-bold text-black">
-          {SITE.fullName}
-        </h4>
-        <p class="text-sm text-stone-700">
-          <strong>Email:</strong> <a href={CONTACT.emailLink} class="hover:underline">{CONTACT.email}</a>
+      <div class='pt-6 space-y-2'>
+        <h4 class='text-base sm:text-lg font-bold text-black'>{SITE.fullName}</h4>
+        <p class='text-sm text-stone-700'>
+          <strong>Email:</strong>{' '}
+          <a href={CONTACT.emailLink} class='hover:underline'>
+            {CONTACT.email}
+          </a>
         </p>
-        <p class="text-sm text-stone-700">
-          <strong>WhatsApp:</strong> <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer" class="hover:underline">{CONTACT.whatsapp}</a>
+        <p class='text-sm text-stone-700'>
+          <strong>WhatsApp:</strong>{' '}
+          <a
+            href={CONTACT.whatsappLink}
+            target='_blank'
+            rel='noopener noreferrer'
+            class='hover:underline'
+          >
+            {CONTACT.whatsapp}
+          </a>
         </p>
       </div>
     </div>

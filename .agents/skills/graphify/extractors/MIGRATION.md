@@ -6,27 +6,27 @@ written so an AI agent can execute it in a single session.
 
 ## Status
 
-| module | migrated |
-|---|---|
-| blade | yes |
-| zig | yes |
-| elixir | yes |
-| razor | yes |
-| dart | yes |
-| rust | yes |
-| go | yes |
-| powershell (ps1 + psd1 manifest) | yes |
-| fortran | yes |
-| sql | yes |
-| dm (dm/dmm/dmi/dmf) | yes |
-| bash | yes |
-| apex | yes |
-| terraform | yes |
-| sln | yes |
-| pascal_forms (dfm + lfm) | yes |
-| json_config | yes |
+| module                                                                                                                           | migrated                                             |
+| -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| blade                                                                                                                            | yes                                                  |
+| zig                                                                                                                              | yes                                                  |
+| elixir                                                                                                                           | yes                                                  |
+| razor                                                                                                                            | yes                                                  |
+| dart                                                                                                                             | yes                                                  |
+| rust                                                                                                                             | yes                                                  |
+| go                                                                                                                               | yes                                                  |
+| powershell (ps1 + psd1 manifest)                                                                                                 | yes                                                  |
+| fortran                                                                                                                          | yes                                                  |
+| sql                                                                                                                              | yes                                                  |
+| dm (dm/dmm/dmi/dmf)                                                                                                              | yes                                                  |
+| bash                                                                                                                             | yes                                                  |
+| apex                                                                                                                             | yes                                                  |
+| terraform                                                                                                                        | yes                                                  |
+| sln                                                                                                                              | yes                                                  |
+| pascal_forms (dfm + lfm)                                                                                                         | yes                                                  |
+| json_config                                                                                                                      | yes                                                  |
 | (config-driven core: python, js, java, c, cpp, csharp, kotlin, scala, php, lua, swift, groovy, vue, svelte, astro, xaml, groovy) | no — shared _extract_generic core, move as one batch |
-| (other bespoke: julia, verilog, markdown, objc, csproj, slnx, lazarus_package, pascal) | no |
+| (other bespoke: julia, verilog, markdown, objc, csproj, slnx, lazarus_package, pascal)                                           | no                                                   |
 
 Note: config-driven extractors (python, js, java, c, cpp, ruby, csharp,
 kotlin, scala, php, lua, swift, groovy) depend on the shared

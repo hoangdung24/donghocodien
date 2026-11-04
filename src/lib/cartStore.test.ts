@@ -11,11 +11,14 @@ const jsonResponse = (body: unknown, headers: Record<string, string> = {}) =>
   new Response(JSON.stringify(body), { status: 200, headers });
 
 const cartResponse = (headers: Record<string, string> = {}, itemsCount = 0) =>
-  jsonResponse({ ...CART_BODY, items_count: itemsCount }, {
-    'x-wc-store-api-nonce': 'nonce-1',
-    'cart-token': 'token-1',
-    ...headers,
-  });
+  jsonResponse(
+    { ...CART_BODY, items_count: itemsCount },
+    {
+      'x-wc-store-api-nonce': 'nonce-1',
+      'cart-token': 'token-1',
+      ...headers,
+    }
+  );
 
 describe('CartStore session handling', () => {
   beforeEach(() => {
@@ -31,7 +34,9 @@ describe('CartStore session handling', () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock
       .mockResolvedValueOnce(cartResponse())
-      .mockResolvedValueOnce(cartResponse({ 'x-wc-store-api-nonce': 'nonce-2', 'cart-token': 'token-2' }, 1));
+      .mockResolvedValueOnce(
+        cartResponse({ 'x-wc-store-api-nonce': 'nonce-2', 'cart-token': 'token-2' }, 1)
+      );
 
     await store.addItem(22874, 1);
 
@@ -50,8 +55,12 @@ describe('CartStore session handling', () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock
       .mockResolvedValueOnce(cartResponse())
-      .mockResolvedValueOnce(cartResponse({ 'x-wc-store-api-nonce': 'nonce-2', 'cart-token': 'token-2' }, 1))
-      .mockResolvedValueOnce(cartResponse({ 'x-wc-store-api-nonce': 'nonce-3', 'cart-token': 'token-3' }, 1));
+      .mockResolvedValueOnce(
+        cartResponse({ 'x-wc-store-api-nonce': 'nonce-2', 'cart-token': 'token-2' }, 1)
+      )
+      .mockResolvedValueOnce(
+        cartResponse({ 'x-wc-store-api-nonce': 'nonce-3', 'cart-token': 'token-3' }, 1)
+      );
 
     await store.addItem(22874, 1);
     await store.updateQuantity('item-key', 2);
@@ -66,9 +75,7 @@ describe('CartStore session handling', () => {
   it('does not re-prime when the session is already established', async () => {
     const store = new CartStore();
     const fetchMock = vi.mocked(fetch);
-    fetchMock
-      .mockResolvedValueOnce(cartResponse())
-      .mockResolvedValueOnce(cartResponse({}, 1));
+    fetchMock.mockResolvedValueOnce(cartResponse()).mockResolvedValueOnce(cartResponse({}, 1));
 
     await store.loadCart();
     await store.addItem(22874, 1);
@@ -84,8 +91,12 @@ describe('CartStore session handling', () => {
     const store = new CartStore();
     const fetchMock = vi.mocked(fetch);
     fetchMock
-      .mockResolvedValueOnce(cartResponse({ 'x-wc-store-api-nonce': 'nonce-1', 'cart-token': 'stored-token' }))
-      .mockResolvedValueOnce(cartResponse({ 'x-wc-store-api-nonce': 'nonce-2', 'cart-token': 'token-9' }, 1));
+      .mockResolvedValueOnce(
+        cartResponse({ 'x-wc-store-api-nonce': 'nonce-1', 'cart-token': 'stored-token' })
+      )
+      .mockResolvedValueOnce(
+        cartResponse({ 'x-wc-store-api-nonce': 'nonce-2', 'cart-token': 'token-9' }, 1)
+      );
 
     await store.addItem(22874, 1);
 

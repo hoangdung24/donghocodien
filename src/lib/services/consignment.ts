@@ -18,22 +18,35 @@ export interface ConsignmentResponse {
   readonly invalid_fields?: ReadonlyArray<{ readonly field: string; readonly message: string }>;
 }
 
-export class NetworkError extends Schema.TaggedError<NetworkError, { readonly brand: unique symbol }>()('NetworkError', {
+export class NetworkError extends Schema.TaggedError<
+  NetworkError,
+  { readonly brand: unique symbol }
+>()('NetworkError', {
   message: Schema.String,
 }) {}
 
-export class HttpError extends Schema.TaggedError<HttpError, { readonly brand: unique symbol }>()('HttpError', {
-  status: Schema.Finite,
-  statusText: Schema.String,
-}) {}
+export class HttpError extends Schema.TaggedError<HttpError, { readonly brand: unique symbol }>()(
+  'HttpError',
+  {
+    status: Schema.Finite,
+    statusText: Schema.String,
+  }
+) {}
 
-export class ConsignmentError extends Schema.TaggedError<ConsignmentError, { readonly brand: unique symbol }>()('ConsignmentError', {
+export class ConsignmentError extends Schema.TaggedError<
+  ConsignmentError,
+  { readonly brand: unique symbol }
+>()('ConsignmentError', {
   status: Schema.String,
   message: Schema.String,
-  invalid_fields: Schema.optional(Schema.Array(Schema.Struct({
-    field: Schema.String,
-    message: Schema.String,
-  }))),
+  invalid_fields: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        field: Schema.String,
+        message: Schema.String,
+      })
+    )
+  ),
 }) {}
 
 const CF7_CONSIGNMENT_ENDPOINT =

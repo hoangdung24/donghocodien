@@ -66,8 +66,8 @@ const pageTitle = activeCategory
     ? 'Archive Watches'
     : `${activeCategoryName} Watches`
   : search
-  ? `Search Results for "${search}"`
-  : 'All Watches';
+    ? `Search Results for "${search}"`
+    : 'All Watches';
 
 const categoryGroups = buildCategoryTree(categories);
 
@@ -100,13 +100,16 @@ const pageHref = (p: number) => {
 const hasNextPage = products.length === 20;
 ---
 
-<Layout title={`${pageTitle} | Spacetime`} description="Explore over 2,300+ vintage timepieces from Switzerland and Japan.">
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-    <div class="pb-8 mb-8">
+<Layout
+  title={`${pageTitle} | Spacetime`}
+  description='Explore over 2,300+ vintage timepieces from Switzerland and Japan.'
+>
+  <main class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14'>
+    <div class='pb-8 mb-8'>
       {categories.length > 0 && (
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <aside class="lg:col-span-3 space-y-8">
-            <section class="space-y-4">
+        <div class='grid grid-cols-1 lg:grid-cols-12 gap-8'>
+          <aside class='lg:col-span-3 space-y-8'>
+            <section class='space-y-4'>
               <CategoryAccordion
                 client:visible
                 groups={filteredCategoryGroups}
@@ -124,41 +127,50 @@ const hasNextPage = products.length === 20;
             />
           </aside>
 
-          <div class="lg:col-span-9">
+          <div class='lg:col-span-9'>
             {products.length === 0 ? (
-              <div class="py-24 text-center text-xs uppercase tracking-widest text-stone-400">
+              <div class='py-24 text-center text-xs uppercase tracking-widest text-stone-400'>
                 No timepieces found matching this criteria.
               </div>
             ) : (
-              <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                {products.map((watch) => (
-                  <WatchCard client:visible product={watch} country={Astro.locals.country} />
-                ))}
-              </div>
+              <>
+                <div class='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8'>
+                  {products.map((watch) => (
+                    <WatchCard client:visible product={watch} country={Astro.locals.country} />
+                  ))}
+                </div>
 
-              <nav class="mt-16 pt-8 border-t border-stone-200 flex items-center justify-between" aria-label="Pagination">
-                {page > 1 ? (
-                  <a
-                    href={pageHref(page - 1)}
-                    class="px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors"
-                  >
-                    &larr; Previous
-                  </a>
-                ) : <div />}
+                <nav
+                  class='mt-16 pt-8 border-t border-stone-200 flex items-center justify-between'
+                  aria-label='Pagination'
+                >
+                  {page > 1 ? (
+                    <a
+                      href={pageHref(page - 1)}
+                      class='px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors'
+                    >
+                      &larr; Previous
+                    </a>
+                  ) : (
+                    <div />
+                  )}
 
-                <span class="text-xs uppercase tracking-widest text-stone-500 font-sans">
-                  Page {page}
-                </span>
+                  <span class='text-xs uppercase tracking-widest text-stone-500 font-sans'>
+                    Page {page}
+                  </span>
 
-                {hasNextPage ? (
-                  <a
-                    href={pageHref(page + 1)}
-                    class="px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors"
-                  >
-                    Next &rarr;
-                  </a>
-                ) : <div />}
-              </nav>
+                  {hasNextPage ? (
+                    <a
+                      href={pageHref(page + 1)}
+                      class='px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors'
+                    >
+                      Next &rarr;
+                    </a>
+                  ) : (
+                    <div />
+                  )}
+                </nav>
+              </>
             )}
           </div>
         </div>

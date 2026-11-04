@@ -53,7 +53,11 @@ describe('readLastOrder', () => {
 describe('buildClassicOrderUrl', () => {
   it('joins origin, pathname and query', () => {
     expect(
-      buildClassicOrderUrl('https://donghocodien.com', '/checkout/order-received/26419/', 'key=wc_order_abc123')
+      buildClassicOrderUrl(
+        'https://donghocodien.com',
+        '/checkout/order-received/26419/',
+        'key=wc_order_abc123'
+      )
     ).toBe('https://donghocodien.com/checkout/order-received/26419/?key=wc_order_abc123');
   });
 
@@ -64,9 +68,9 @@ describe('buildClassicOrderUrl', () => {
   });
 
   it('omits the query when empty', () => {
-    expect(buildClassicOrderUrl('https://donghocodien.com', '/checkout/order-received/1/', '')).toBe(
-      'https://donghocodien.com/checkout/order-received/1/'
-    );
+    expect(
+      buildClassicOrderUrl('https://donghocodien.com', '/checkout/order-received/1/', '')
+    ).toBe('https://donghocodien.com/checkout/order-received/1/');
   });
 });
 

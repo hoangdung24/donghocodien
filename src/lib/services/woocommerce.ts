@@ -13,17 +13,26 @@ const PostsListSchema = Schema.Array(PostSchema);
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
 
-export class NetworkError extends Schema.TaggedError<NetworkError, { readonly brand: unique symbol }>()('NetworkError', {
+export class NetworkError extends Schema.TaggedError<
+  NetworkError,
+  { readonly brand: unique symbol }
+>()('NetworkError', {
   message: Schema.String,
 }) {}
 
-export class HttpError extends Schema.TaggedError<HttpError, { readonly brand: unique symbol }>()('HttpError', {
-  status: Schema.Finite,
-  statusText: Schema.String,
-  url: Schema.String,
-}) {}
+export class HttpError extends Schema.TaggedError<HttpError, { readonly brand: unique symbol }>()(
+  'HttpError',
+  {
+    status: Schema.Finite,
+    statusText: Schema.String,
+    url: Schema.String,
+  }
+) {}
 
-export class ProductNotFoundError extends Schema.TaggedError<ProductNotFoundError, { readonly brand: unique symbol }>()('ProductNotFoundError', {
+export class ProductNotFoundError extends Schema.TaggedError<
+  ProductNotFoundError,
+  { readonly brand: unique symbol }
+>()('ProductNotFoundError', {
   slug: Schema.String,
 }) {}
 
@@ -83,10 +92,7 @@ export const getProducts = (params: GetProductsParams = {}) =>
     const products = yield* Schema.decodeUnknownEffect(ProductsListSchema)(raw);
     cache.set(cacheKey, { data: products, timestamp: Date.now() });
     return products;
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 const cache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
@@ -134,10 +140,7 @@ export const getProductBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: product, timestamp: Date.now() });
     return product;
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 const MAX_CATEGORY_PAGES = 5;
 
@@ -196,12 +199,12 @@ export const getCategories = Effect.gen(function* () {
 
   cache.set(cacheKey, { data: categories, timestamp: Date.now() });
   return categories;
-}).pipe(
-  Effect.retry({ times: 2 }),
-  Effect.timeout('30 seconds')
-);
+}).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
-export class PageNotFoundError extends Schema.TaggedError<PageNotFoundError, { readonly brand: unique symbol }>()('PageNotFoundError', {
+export class PageNotFoundError extends Schema.TaggedError<
+  PageNotFoundError,
+  { readonly brand: unique symbol }
+>()('PageNotFoundError', {
   slug: Schema.String,
 }) {}
 
@@ -248,12 +251,12 @@ export const getPageBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: page, timestamp: Date.now() });
     return page;
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
-export class PostNotFoundError extends Schema.TaggedError<PostNotFoundError, { readonly brand: unique symbol }>()('PostNotFoundError', {
+export class PostNotFoundError extends Schema.TaggedError<
+  PostNotFoundError,
+  { readonly brand: unique symbol }
+>()('PostNotFoundError', {
   slug: Schema.String,
 }) {}
 
@@ -306,10 +309,7 @@ export const getPosts = (params: GetPostsParams = {}) =>
     const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
     cache.set(cacheKey, { data: posts, timestamp: Date.now() });
     return posts;
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
 
 export const getPostBySlug = (slug: string) =>
   Effect.gen(function* () {
@@ -354,7 +354,4 @@ export const getPostBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: post, timestamp: Date.now() });
     return post;
-  }).pipe(
-    Effect.retry({ times: 2 }),
-    Effect.timeout('30 seconds')
-  );
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));

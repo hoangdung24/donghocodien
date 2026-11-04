@@ -17,7 +17,11 @@ const sizes: Record<ButtonSize, string> = {
   md: 'text-sm tracking-wider px-8 py-3.5',
 };
 
-export function buttonClass(variant: ButtonVariant = 'primary', size: ButtonSize = 'md', className = ''): string {
+export function buttonClass(
+  variant: ButtonVariant = 'primary',
+  size: ButtonSize = 'md',
+  className = ''
+): string {
   return [base, variants[variant], sizes[size], className].filter(Boolean).join(' ');
 }
 
@@ -28,9 +32,11 @@ interface SharedProps {
   children?: ReactNode;
 }
 
-type ButtonAsButton = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> & SharedProps & { href?: undefined };
+type ButtonAsButton = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> &
+  SharedProps & { href?: undefined };
 
-type ButtonAsLink = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className'> & SharedProps & { href: string };
+type ButtonAsLink = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className'> &
+  SharedProps & { href: string };
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 

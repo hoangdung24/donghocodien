@@ -3,28 +3,31 @@ import { Mail, Phone } from '@lucide/astro';
 import { CONTACT, SOCIAL } from '../lib/constants';
 ---
 
-<footer id="footer" class="w-full bg-white font-sans text-black border-t border-stone-200">
-  <section class="w-full">
-    <div class="grid grid-cols-1 md:grid-cols-3 border-y border-stone-200 bg-white">
-      <div class="bg-stone-50 py-4 text-center border-r border-stone-200 md:border-r-0 md:border-b border-b-0 md:border-b-0 last:md:border-r-0">
-        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-black uppercase m-0 leading-normal">
-          <a href="/warranty-policy" class="hover:text-stone-600 transition-colors block py-4">
+<footer id='footer' class='w-full bg-white font-sans text-black border-t border-stone-200'>
+  <section class='w-full'>
+    <div class='grid grid-cols-1 md:grid-cols-3 border-y border-stone-200 bg-white'>
+      <div class='bg-stone-50 py-4 text-center border-r border-stone-200 md:border-r-0 md:border-b border-b-0 md:border-b-0 last:md:border-r-0'>
+        <h3 class='text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-black uppercase m-0 leading-normal'>
+          <a href='/warranty-policy' class='hover:text-stone-600 transition-colors block py-4'>
             6 MONTHS WARRANTY
           </a>
         </h3>
       </div>
 
-      <div class="bg-stone-50 py-4 text-center border-r border-stone-200 md:border-r-0 md:border-b border-b-0 last:md:border-r-0">
-        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-black uppercase m-0 leading-normal">
-          <a href="/payment-shipping-methods" class="hover:text-stone-600 transition-colors block py-4">
+      <div class='bg-stone-50 py-4 text-center border-r border-stone-200 md:border-r-0 md:border-b border-b-0 last:md:border-r-0'>
+        <h3 class='text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-black uppercase m-0 leading-normal'>
+          <a
+            href='/payment-shipping-methods'
+            class='hover:text-stone-600 transition-colors block py-4'
+          >
             SHIPPING WORLDWIDE
           </a>
         </h3>
       </div>
 
-      <div class="bg-stone-50 py-4 text-center">
-        <h3 class="text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-black uppercase m-0 leading-normal">
-          <a href="/exchange-policy" class="hover:text-stone-600 transition-colors block py-4">
+      <div class='bg-stone-50 py-4 text-center'>
+        <h3 class='text-base sm:text-lg md:text-xl font-bold tracking-[0.05em] text-black uppercase m-0 leading-normal'>
+          <a href='/exchange-policy' class='hover:text-stone-600 transition-colors block py-4'>
             EXCHANGE POLICY
           </a>
         </h3>
@@ -32,43 +35,43 @@ import { CONTACT, SOCIAL } from '../lib/constants';
     </div>
   </section>
 
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 text-center">
+  <section class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12'>
+    <div class='grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 text-center'>
       <div>
-        <div class="mb-4">
-          <span class="text-base sm:text-lg font-normal uppercase text-black border-b border-black pb-1.5 inline-block">
+        <div class='mb-4'>
+          <span class='text-base sm:text-lg font-normal uppercase text-black border-b border-black pb-1.5 inline-block'>
             ABOUT US
           </span>
         </div>
-        <ul class="space-y-2 text-sm sm:text-base text-black">
+        <ul class='space-y-2 text-sm sm:text-base text-black'>
           <li>
-            <a href="/warranty-policy" class="hover:text-stone-600 transition-colors">
+            <a href='/warranty-policy' class='hover:text-stone-600 transition-colors'>
               Warranty Policy
             </a>
           </li>
           <li>
-            <a href="/exchange-policy" class="hover:text-stone-600 transition-colors">
+            <a href='/exchange-policy' class='hover:text-stone-600 transition-colors'>
               Exchange Policy
             </a>
           </li>
           <li>
-            <a href="/payment-shipping-methods" class="hover:text-stone-600 transition-colors">
+            <a href='/payment-shipping-methods' class='hover:text-stone-600 transition-colors'>
               Payment & Shipping Methods
             </a>
           </li>
-          </ul>
+        </ul>
       </div>
 
       <div>
-        <div class="mb-4">
-          <span class="text-base sm:text-lg font-normal uppercase text-black border-b border-black pb-1.5 inline-block">
+        <div class='mb-4'>
+          <span class='text-base sm:text-lg font-normal uppercase text-black border-b border-black pb-1.5 inline-block'>
             CONTACT
           </span>
         </div>
-        <div class="space-y-2 text-sm sm:text-base text-black">
+        <div class='space-y-2 text-sm sm:text-base text-black'>
           <p>
             <strong>Email:</strong>{' '}
-            <a href={CONTACT.emailLink} class="hover:underline">
+            <a href={CONTACT.emailLink} class='hover:underline'>
               {CONTACT.email}
             </a>
           </p>
@@ -76,9 +79,9 @@ import { CONTACT, SOCIAL } from '../lib/constants';
             <strong>WhatsApp:</strong>{' '}
             <a
               href={CONTACT.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:underline"
+              target='_blank'
+              rel='noopener noreferrer'
+              class='hover:underline'
             >
               {CONTACT.whatsapp}
             </a>
@@ -87,67 +90,75 @@ import { CONTACT, SOCIAL } from '../lib/constants';
       </div>
 
       <div>
-        <div class="mb-4">
-          <span class="text-base sm:text-lg font-normal uppercase text-black border-b border-black pb-1.5 inline-block">
+        <div class='mb-4'>
+          <span class='text-base sm:text-lg font-normal uppercase text-black border-b border-black pb-1.5 inline-block'>
             FOLLOW US
           </span>
         </div>
-        <div class="flex items-center justify-center gap-2 mb-3">
+        <div class='flex items-center justify-center gap-2 mb-3'>
           <a
             href={SOCIAL.facebook}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            target='_blank'
+            rel='noopener noreferrer'
+            aria-label='Facebook'
+            class='w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity'
           >
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            <svg class='w-4 h-4 fill-current' viewBox='0 0 24 24'>
+              <path d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' />
             </svg>
           </a>
           <a
             href={SOCIAL.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            target='_blank'
+            rel='noopener noreferrer'
+            aria-label='Instagram'
+            class='w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity'
           >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+            <svg
+              class='w-4 h-4'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            >
+              <rect width='20' height='20' x='2' y='2' rx='5' ry='5'></rect>
+              <path d='M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z'></path>
+              <line x1='17.5' x2='17.51' y1='6.5' y2='6.5'></line>
             </svg>
           </a>
           <a
             href={CONTACT.emailLink}
-            aria-label="Send us an email"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            aria-label='Send us an email'
+            class='w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity'
           >
-            <Mail class="w-4 h-4" />
+            <Mail class='w-4 h-4' />
           </a>
           <a
             href={CONTACT.phoneLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Call us"
-            class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity"
+            target='_blank'
+            rel='noopener noreferrer'
+            aria-label='Call us'
+            class='w-9 h-9 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity'
           >
-            <Phone class="w-4 h-4" />
+            <Phone class='w-4 h-4' />
           </a>
         </div>
         <div>
           <a
-            class="inline-block mt-1"
-            title="Content Protection by DMCA.com"
-            href="https://www.dmca.com/Protection/Status.aspx?ID=08160f1f-e048-492b-b3bb-004826bba1f9&refurl=https://donghocodien.com/"
-            target="_blank"
-            rel="noopener noreferrer"
+            class='inline-block mt-1'
+            title='Content Protection by DMCA.com'
+            href='https://www.dmca.com/Protection/Status.aspx?ID=08160f1f-e048-492b-b3bb-004826bba1f9&refurl=https://donghocodien.com/'
+            target='_blank'
+            rel='noopener noreferrer'
           >
             <img
-              src="https://images.dmca.com/Badges/dmca-badge-w100-5x1-02.png?ID=08160f1f-e048-492b-b3bb-004826bba1f9"
-              alt="Content Protection by DMCA.com"
-              width="100"
-              height="20"
-              class="mx-auto"
+              src='https://images.dmca.com/Badges/dmca-badge-w100-5x1-02.png?ID=08160f1f-e048-492b-b3bb-004826bba1f9'
+              alt='Content Protection by DMCA.com'
+              width='100'
+              height='20'
+              class='mx-auto'
             />
           </a>
         </div>

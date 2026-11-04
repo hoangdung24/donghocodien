@@ -3,7 +3,11 @@ import { useCart } from '../lib/context/CartContext';
 import { ShoppingBag, Shield, Truck, CreditCard, Check } from 'lucide-react';
 import { formatApproxPrice } from '../lib/utils/currency';
 import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
-import { CHECKOUT_COUNTRIES, COUNTRY_STATES, COUNTRY_LOCALE } from '../lib/data/woocommerce-regions';
+import {
+  CHECKOUT_COUNTRIES,
+  COUNTRY_STATES,
+  COUNTRY_LOCALE,
+} from '../lib/data/woocommerce-regions';
 import { Button } from './Button';
 import { SelectField, type SelectOption } from './SelectField';
 
@@ -89,9 +93,11 @@ export function CheckoutPage() {
     }));
   };
 
-  const setField = (field: keyof BillingForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm((f) => ({ ...f, [field]: e.target.value }));
-  };
+  const setField =
+    (field: keyof BillingForm) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((f) => ({ ...f, [field]: e.target.value }));
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,10 +141,16 @@ export function CheckoutPage() {
               email: form.email,
               total: cart.totals.total_price,
               currencySymbol: cart.totals.currency_symbol,
-              itemCount: cart.totals.total_items ? Math.round(parseFloat(cart.totals.total_items)) || itemCount : itemCount,
+              itemCount: cart.totals.total_items
+                ? Math.round(parseFloat(cart.totals.total_items)) || itemCount
+                : itemCount,
               paymentMethod: 'bacs',
               status: resultData.status,
-              date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+              date: new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }),
               redirectUrl: payment?.redirect_url,
             })
           );
@@ -159,22 +171,22 @@ export function CheckoutPage() {
 
   if (!mounted || (isLoading && !cart)) {
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-stone-900 border-t-transparent" />
+      <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+        <div className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent' />
       </main>
     );
   }
 
   if (!cart || cart.items.length === 0) {
     return (
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-        <div className="text-center py-20">
-          <ShoppingBag className="w-24 h-24 text-stone-300 mx-auto mb-6" />
-          <h2 className="font-serif text-2xl text-stone-900 mb-3">Your cart is currently empty</h2>
-          <p className="text-stone-500 mb-8 max-w-md mx-auto">
+      <main className='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+        <div className='py-20 text-center'>
+          <ShoppingBag className='mx-auto mb-6 h-24 w-24 text-stone-300' />
+          <h2 className='mb-3 font-serif text-2xl text-stone-900'>Your cart is currently empty</h2>
+          <p className='mx-auto mb-8 max-w-md text-stone-500'>
             Browse our curated collection of rare vintage watches before proceeding to checkout.
           </p>
-          <Button href="/shop">Return to Shop</Button>
+          <Button href='/shop'>Return to Shop</Button>
         </div>
       </main>
     );
@@ -185,274 +197,300 @@ export function CheckoutPage() {
   const total = parseFloat(cart.totals.total_price);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <main className='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
       {error && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 text-yellow-900 text-sm rounded flex items-center justify-between">
+        <div className='mb-6 flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-900'>
           <span>{error}</span>
-          <button onClick={refreshCart} className="text-sm font-medium hover:underline">Retry</button>
+          <button onClick={refreshCart} className='text-sm font-medium hover:underline'>
+            Retry
+          </button>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-        <div className="lg:col-span-3">
-          <h2 className="font-serif text-2xl text-stone-950 mb-6 pb-3 border-b border-stone-200">
+      <form onSubmit={handleSubmit} className='grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12'>
+        <div className='lg:col-span-3'>
+          <h2 className='mb-6 border-b border-stone-200 pb-3 font-serif text-2xl text-stone-950'>
             Billing Details
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className='grid grid-cols-1 gap-5 sm:grid-cols-2'>
             <div>
-              <label htmlFor="billing_first_name" className={labelClass}>First name *</label>
+              <label htmlFor='billing_first_name' className={labelClass}>
+                First name *
+              </label>
               <input
-                id="billing_first_name"
-                type="text"
+                id='billing_first_name'
+                type='text'
                 required
                 value={form.first_name}
                 onChange={setField('first_name')}
                 className={inputClass}
-                autoComplete="given-name"
+                autoComplete='given-name'
               />
             </div>
             <div>
-              <label htmlFor="billing_last_name" className={labelClass}>Last name *</label>
+              <label htmlFor='billing_last_name' className={labelClass}>
+                Last name *
+              </label>
               <input
-                id="billing_last_name"
-                type="text"
+                id='billing_last_name'
+                type='text'
                 required
                 value={form.last_name}
                 onChange={setField('last_name')}
                 className={inputClass}
-                autoComplete="family-name"
+                autoComplete='family-name'
               />
             </div>
           </div>
 
-          <div className="mt-5">
+          <div className='mt-5'>
             <SelectField
-              id="billing_country"
-              label="Country / Region"
+              id='billing_country'
+              label='Country / Region'
               required
-              placeholder="Select a country / region…"
-              autoComplete="country"
+              placeholder='Select a country / region…'
+              autoComplete='country'
               options={COUNTRY_OPTIONS}
               value={form.country}
               onValueChange={handleCountryChange}
             />
           </div>
 
-          <div className="mt-5">
-            <label htmlFor="billing_address_1" className={labelClass}>Street address *</label>
+          <div className='mt-5'>
+            <label htmlFor='billing_address_1' className={labelClass}>
+              Street address *
+            </label>
             <input
-              id="billing_address_1"
-              type="text"
+              id='billing_address_1'
+              type='text'
               required
               value={form.address_1}
               onChange={setField('address_1')}
-              placeholder="House number and street name"
+              placeholder='House number and street name'
               className={inputClass}
-              autoComplete="address-line1"
+              autoComplete='address-line1'
             />
           </div>
 
-          <div className="mt-5">
-            <label htmlFor="billing_address_2" className={labelClass}>
-              Apartment, suite, unit, etc. <span className="normal-case text-stone-400">(optional)</span>
+          <div className='mt-5'>
+            <label htmlFor='billing_address_2' className={labelClass}>
+              Apartment, suite, unit, etc.{' '}
+              <span className='text-stone-400 normal-case'>(optional)</span>
             </label>
             <input
-              id="billing_address_2"
-              type="text"
+              id='billing_address_2'
+              type='text'
               value={form.address_2}
               onChange={setField('address_2')}
               className={inputClass}
-              autoComplete="address-line2"
+              autoComplete='address-line2'
             />
           </div>
 
           {!stateHidden && (
-            <div className="mt-5">
+            <div className='mt-5'>
               {stateOptions ? (
                 <SelectField
-                  id="billing_state"
+                  id='billing_state'
                   label={stateLabel}
                   required={stateRequired}
-                  placeholder="Select an option…"
-                  options={Object.entries(stateOptions).map(([code, name]) => ({ value: code, label: name }))}
+                  placeholder='Select an option…'
+                  options={Object.entries(stateOptions).map(([code, name]) => ({
+                    value: code,
+                    label: name,
+                  }))}
                   value={form.state}
                   onValueChange={(value) => setForm((f) => ({ ...f, state: value }))}
                 />
               ) : (
                 <>
-                  <label htmlFor="billing_state" className={labelClass}>
-                    {stateLabel} {stateRequired ? '*' : <span className="normal-case text-stone-400">(optional)</span>}
+                  <label htmlFor='billing_state' className={labelClass}>
+                    {stateLabel}{' '}
+                    {stateRequired ? (
+                      '*'
+                    ) : (
+                      <span className='text-stone-400 normal-case'>(optional)</span>
+                    )}
                   </label>
                   <input
-                    id="billing_state"
-                    type="text"
+                    id='billing_state'
+                    type='text'
                     required={stateRequired}
                     value={form.state}
                     onChange={setField('state')}
                     className={inputClass}
-                    autoComplete="address-level1"
+                    autoComplete='address-level1'
                   />
                 </>
               )}
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5">
+          <div className='mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2'>
             {!postcodeHidden && (
               <div>
-                <label htmlFor="billing_postcode" className={labelClass}>
+                <label htmlFor='billing_postcode' className={labelClass}>
                   {postcodeLabel}{' '}
-                  {postcodeRequired ? '*' : <span className="normal-case text-stone-400">(optional)</span>}
+                  {postcodeRequired ? (
+                    '*'
+                  ) : (
+                    <span className='text-stone-400 normal-case'>(optional)</span>
+                  )}
                 </label>
                 <input
-                  id="billing_postcode"
-                  type="text"
+                  id='billing_postcode'
+                  type='text'
                   required={postcodeRequired}
                   value={form.postcode}
                   onChange={setField('postcode')}
                   className={inputClass}
-                  autoComplete="postal-code"
+                  autoComplete='postal-code'
                 />
               </div>
             )}
             <div>
-              <label htmlFor="billing_city" className={labelClass}>Town / City *</label>
+              <label htmlFor='billing_city' className={labelClass}>
+                Town / City *
+              </label>
               <input
-                id="billing_city"
-                type="text"
+                id='billing_city'
+                type='text'
                 required
                 value={form.city}
                 onChange={setField('city')}
                 className={inputClass}
-                autoComplete="address-level2"
+                autoComplete='address-level2'
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5">
+          <div className='mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2'>
             <div>
-              <label htmlFor="billing_phone" className={labelClass}>Phone *</label>
+              <label htmlFor='billing_phone' className={labelClass}>
+                Phone *
+              </label>
               <input
-                id="billing_phone"
-                type="tel"
+                id='billing_phone'
+                type='tel'
                 required
                 value={form.phone}
                 onChange={setField('phone')}
                 className={inputClass}
-                autoComplete="tel"
+                autoComplete='tel'
               />
             </div>
             <div>
-              <label htmlFor="billing_email" className={labelClass}>Email address *</label>
+              <label htmlFor='billing_email' className={labelClass}>
+                Email address *
+              </label>
               <input
-                id="billing_email"
-                type="email"
+                id='billing_email'
+                type='email'
                 required
                 value={form.email}
                 onChange={setField('email')}
                 className={inputClass}
-                autoComplete="email"
+                autoComplete='email'
               />
             </div>
           </div>
 
-          <div className="mt-5">
-            <label htmlFor="order_notes" className={labelClass}>
-              Order notes <span className="normal-case text-stone-400">(optional)</span>
+          <div className='mt-5'>
+            <label htmlFor='order_notes' className={labelClass}>
+              Order notes <span className='text-stone-400 normal-case'>(optional)</span>
             </label>
             <textarea
-              id="order_notes"
+              id='order_notes'
               rows={4}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Notes about your order, e.g. special notes for delivery."
+              placeholder='Notes about your order, e.g. special notes for delivery.'
               className={`${inputClass} resize-none`}
             />
           </div>
         </div>
 
-        <div className="lg:col-span-2">
-          <div className="lg:sticky lg:top-28 bg-white border border-stone-200 p-6">
-            <h2 className="font-serif text-lg text-stone-900 mb-4 pb-3 border-b border-stone-200">
+        <div className='lg:col-span-2'>
+          <div className='border border-stone-200 bg-white p-6 lg:sticky lg:top-28'>
+            <h2 className='mb-4 border-b border-stone-200 pb-3 font-serif text-lg text-stone-900'>
               Your Order
             </h2>
 
-            <div className="divide-y divide-stone-200">
+            <div className='divide-y divide-stone-200'>
               {cart.items.map((item) => (
-                <div key={item.key} className="flex items-center gap-4 py-4">
+                <div key={item.key} className='flex items-center gap-4 py-4'>
                   {item.images[0] && (
                     <img
                       src={item.images[0].thumbnail ?? item.images[0].src}
                       alt={item.name}
-                      className="w-16 h-20 object-cover border border-stone-200 shrink-0"
+                      className='h-20 w-16 shrink-0 border border-stone-200 object-cover'
                     />
                   )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-serif text-sm text-stone-900 truncate">{decodeEntities(item.name)}</p>
-                    <p className="text-xs text-stone-400 mt-0.5">Qty: {item.quantity}</p>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate font-serif text-sm text-stone-900'>
+                      {decodeEntities(item.name)}
+                    </p>
+                    <p className='mt-0.5 text-xs text-stone-400'>Qty: {item.quantity}</p>
                     {approx && (
                       <span
-                        className="text-xs text-stone-400 font-mono tracking-tight mt-1 block approximate-vnd"
+                        className='approximate-vnd block'
                         data-usd-price={item.totals.line_total}
                       >
                         {formatApproxPrice(item.totals.line_total, approx.currency, approx.rates)}
                       </span>
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-yellow-900 whitespace-nowrap">
+                  <span className='text-sm font-semibold whitespace-nowrap text-yellow-900'>
                     {formatPrice(item.totals.line_total)}
                   </span>
                 </div>
               ))}
             </div>
 
-            <dl className="space-y-3 text-sm pt-4 border-t border-stone-200">
-              <div className="flex justify-between">
-                <dt className="text-stone-600">Subtotal ({itemCount} items)</dt>
-                <dd className="font-medium text-stone-900">{formatPrice(subtotal.toFixed(2))}</dd>
+            <dl className='space-y-3 border-t border-stone-200 pt-4 text-sm'>
+              <div className='flex justify-between'>
+                <dt className='text-stone-600'>Subtotal ({itemCount} items)</dt>
+                <dd className='font-medium text-stone-900'>{formatPrice(subtotal.toFixed(2))}</dd>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between text-green-700">
+                <div className='flex justify-between text-green-700'>
                   <dt>Discount</dt>
-                  <dd className="font-medium">-{formatPrice(discount.toFixed(2))}</dd>
+                  <dd className='font-medium'>-{formatPrice(discount.toFixed(2))}</dd>
                 </div>
               )}
-              <div className="flex justify-between">
-                <dt className="text-stone-600">Shipping</dt>
-                <dd className="font-medium text-stone-900">
+              <div className='flex justify-between'>
+                <dt className='text-stone-600'>Shipping</dt>
+                <dd className='font-medium text-stone-900'>
                   {cart.shipping_rates[0] && parseFloat(cart.shipping_rates[0].cost) > 0
                     ? formatPrice(cart.shipping_rates[0].cost)
                     : 'Free'}
                 </dd>
               </div>
-              <div className="flex justify-between pt-3 border-t border-stone-200">
-                <dt className="font-serif text-base font-medium text-stone-950">Total</dt>
-                <dd className="font-serif text-base font-medium text-yellow-900">
+              <div className='flex justify-between border-t border-stone-200 pt-3'>
+                <dt className='font-serif text-base font-medium text-stone-950'>Total</dt>
+                <dd className='font-serif text-base font-medium text-yellow-900'>
                   {formatPrice(total.toFixed(2))}
                 </dd>
               </div>
               {approx && (
-                <dd
-                  className="text-xs text-stone-400 font-mono tracking-tight approximate-vnd text-right"
-                  data-usd-price={total.toFixed(2)}
-                >
+                <dd className='approximate-vnd text-right' data-usd-price={total.toFixed(2)}>
                   {formatApproxPrice(total.toFixed(2), approx.currency, approx.rates)}
                 </dd>
               )}
             </dl>
 
-            <label className="flex items-start gap-3 mt-6 text-xs text-stone-600 cursor-pointer">
+            <label className='mt-6 flex cursor-pointer items-start gap-3 text-xs text-stone-600'>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={terms}
                 onChange={(e) => setTerms(e.target.checked)}
                 required
-                className="mt-0.5 accent-stone-900"
+                className='mt-0.5 accent-stone-900'
               />
               <span>
                 I have read and agree to the website{' '}
-                <a href="/payment-shipping-methods" className="underline hover:text-stone-900">
+                <a href='/payment-shipping-methods' className='underline hover:text-stone-900'>
                   terms and conditions
                 </a>{' '}
                 *
@@ -460,38 +498,36 @@ export function CheckoutPage() {
             </label>
 
             {submitError && (
-              <p className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs">{submitError}</p>
+              <p className='mt-4 border border-red-200 bg-red-50 p-3 text-xs text-red-700'>
+                {submitError}
+              </p>
             )}
 
-            <Button
-              type="submit"
-              disabled={submitting || !terms}
-              className="mt-6 w-full"
-            >
+            <Button type='submit' disabled={submitting || !terms} className='mt-6 w-full'>
               {submitting ? (
                 <>
-                  <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                  <span className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
                   Processing…
                 </>
               ) : (
                 <>
-                  <Check className="w-4 h-4" />
+                  <Check className='h-4 w-4' />
                   Place Order
                 </>
               )}
             </Button>
 
-            <div className="mt-6 pt-4 border-t border-stone-200 space-y-3 text-xs text-stone-600">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-700" />
+            <div className='mt-6 space-y-3 border-t border-stone-200 pt-4 text-xs text-stone-600'>
+              <div className='flex items-center gap-2'>
+                <Shield className='h-4 w-4 text-green-700' />
                 <span>Authenticated &amp; mechanically verified</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-green-700" />
+              <div className='flex items-center gap-2'>
+                <Truck className='h-4 w-4 text-green-700' />
                 <span>Worldwide insured delivery</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-green-700" />
+              <div className='flex items-center gap-2'>
+                <CreditCard className='h-4 w-4 text-green-700' />
                 <span>Secure checkout</span>
               </div>
             </div>

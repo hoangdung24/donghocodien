@@ -3,21 +3,21 @@
     "servers": {
       "ark-ui": {
         "type": "local",
-        "command": ["npx", "-y", "@ark-ui/mcp"]
+        "command": ["npx", "-y", "@ark-ui/mcp"],
       },
       "astro-docs": {
         "type": "remote",
         "url": "https://mcp.docs.astro.build/mcp",
-        "oauth": false
+        "oauth": false,
       },
       "cloudflare-api": {
         "type": "remote",
         "url": "https://mcp.cloudflare.com/mcp",
         "oauth": false,
         "headers": {
-          "Authorization": "Bearer {env:CLOUDFLARE_API_TOKEN}"
-        }
-      }
-    }
-  }
+          "Authorization": "Bearer {env:CLOUDFLARE_API_TOKEN}",
+        },
+      },
+    },
+  },
 }

@@ -22,7 +22,9 @@ describe('Cart Service Seam (Effect v4)', () => {
       json: async () => sampleCart,
     } as Response);
 
-    const result = await Effect.runPromise(getCart as Effect.Effect<typeof sampleCart, never, never>);
+    const result = await Effect.runPromise(
+      getCart as Effect.Effect<typeof sampleCart, never, never>
+    );
     expect(result.items_count).toBe(1);
     expect(result.totals.total_price).toBe('315.00');
   });
@@ -73,7 +75,12 @@ describe('Cart Service Seam (Effect v4)', () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ ...sampleCart, items: [], items_count: 0, totals: { ...sampleCart.totals, total_price: '0' } }),
+      json: async () => ({
+        ...sampleCart,
+        items: [],
+        items_count: 0,
+        totals: { ...sampleCart.totals, total_price: '0' },
+      }),
     } as Response);
 
     const request = { key: 'abc123' };
@@ -92,7 +99,12 @@ describe('Cart Service Seam (Effect v4)', () => {
     const mockFetch = vi.mocked(fetch);
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ ...sampleCart, items: [], items_count: 0, totals: { ...sampleCart.totals, total_price: '0' } }),
+      json: async () => ({
+        ...sampleCart,
+        items: [],
+        items_count: 0,
+        totals: { ...sampleCart.totals, total_price: '0' },
+      }),
     } as Response);
 
     await Effect.runPromise(clearCart);

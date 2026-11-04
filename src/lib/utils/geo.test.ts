@@ -46,17 +46,21 @@ describe('detectVisitorCountry', () => {
 
   it('detects the country in the background via the Cloudflare trace endpoint', async () => {
     vi.stubGlobal('document', { cookie: '' });
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      text: async () => 'fl=1\nip=1.2.3.4\nloc=FR\ntls=TLSv1.3\n',
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        text: async () => 'fl=1\nip=1.2.3.4\nloc=FR\ntls=TLSv1.3\n',
+      })
+    );
 
     await expect(detectVisitorCountry()).resolves.toBe('FR');
   });
 
   it('falls back to the public IP lookup when the trace endpoint is unavailable', async () => {
     vi.stubGlobal('document', { cookie: '' });
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: false })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ country_code: 'sg' }) });
     vi.stubGlobal('fetch', fetchMock);

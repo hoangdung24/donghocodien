@@ -48,30 +48,26 @@ export function SelectField({
       positioning={{ fitViewport: true, sameWidth: true, placement: 'bottom-start' }}
       id={id}
     >
-      <Select.Label className="block text-xs uppercase tracking-wider text-stone-500 mb-2 font-sans [&_span]:normal-case [&_span]:text-stone-400">
+      <Select.Label className='mb-2 block font-sans text-xs tracking-wider text-stone-500 uppercase [&_span]:text-stone-400 [&_span]:normal-case'>
         {label}
-        {required ? (
-          ' *'
-        ) : (
-          <span> (optional)</span>
-        )}
+        {required ? ' *' : <span> (optional)</span>}
       </Select.Label>
       <Select.Control>
-        <Select.Trigger className="w-full px-4 py-3 border border-stone-300 bg-white text-stone-900 text-sm transition-colors text-left flex items-center justify-between gap-3 outline-none data-[focus]:border-stone-900 data-[open]:border-stone-900">
-          <Select.ValueText placeholder={placeholder} className="truncate" />
+        <Select.Trigger className='flex w-full items-center justify-between gap-3 border border-stone-300 bg-white px-4 py-3 text-left text-sm text-stone-900 transition-colors outline-none data-focus:border-stone-900 data-open:border-stone-900'>
+          <Select.ValueText placeholder={placeholder} className='truncate' />
           <Select.Indicator>
-            <ChevronDown className="w-4 h-4 text-stone-400" />
+            <ChevronDown className='h-4 w-4 text-stone-400' />
           </Select.Indicator>
         </Select.Trigger>
       </Select.Control>
       <Portal>
         <Select.Positioner>
-          <Select.Content className="bg-white border border-stone-200 shadow-lg max-h-72 overflow-y-auto z-50">
+          <Select.Content className='z-50 max-h-72 overflow-y-auto border border-stone-200 bg-white shadow-lg'>
             {collection.items.map((item) => (
               <Select.Item key={item.value} item={item} className={itemClass}>
                 <Select.ItemText>{item.label}</Select.ItemText>
                 <Select.ItemIndicator>
-                  <Check className="w-4 h-4 text-stone-900" />
+                  <Check className='h-4 w-4 text-stone-900' />
                 </Select.ItemIndicator>
               </Select.Item>
             ))}

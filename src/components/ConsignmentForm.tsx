@@ -20,9 +20,7 @@ export function ConsignmentForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -91,30 +89,31 @@ export function ConsignmentForm() {
 
   if (status === 'success') {
     return (
-      <div className="bg-stone-50 border border-stone-200 p-8 sm:p-10 text-center space-y-5 animate-fade-in">
-        <div className="w-14 h-14 bg-green-100 text-green-800 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-8 h-8" />
+      <div className='animate-fade-in space-y-5 border border-stone-200 bg-stone-50 p-8 text-center sm:p-10'>
+        <div className='mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-800'>
+          <CheckCircle2 className='h-8 w-8' />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-xl font-serif text-stone-900 tracking-wide uppercase">
+        <div className='space-y-2'>
+          <h3 className='font-serif text-xl tracking-wide text-stone-900 uppercase'>
             Consignment Inquiry Received
           </h3>
-          <p className="text-xs text-stone-600 max-w-md mx-auto leading-relaxed">
-            Thank you for entrusting Spacetime with your timepiece. Our horology specialists will review your submission and contact you via email or WhatsApp within 24 hours.
+          <p className='mx-auto max-w-md text-xs leading-relaxed text-stone-600'>
+            Thank you for entrusting Spacetime with your timepiece. Our horology specialists will
+            review your submission and contact you via email or WhatsApp within 24 hours.
           </p>
         </div>
-        <div className="pt-4 border-t border-stone-200 flex flex-col sm:flex-row gap-3 justify-center">
+        <div className='flex flex-col justify-center gap-3 border-t border-stone-200 pt-4 sm:flex-row'>
           <a
             href={getWhatsAppLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-green-800 text-white text-xs uppercase tracking-wider hover:bg-green-700 transition-colors"
+            target='_blank'
+            rel='noopener noreferrer'
+            className='inline-flex items-center justify-center gap-2 bg-green-800 px-5 py-3 text-xs tracking-wider text-white uppercase transition-colors hover:bg-green-700'
           >
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle className='h-4 w-4' />
             <span>Send Extra Photos on WhatsApp</span>
           </a>
           <button
-            type="button"
+            type='button'
             onClick={() => {
               setStatus('idle');
               setFormData({
@@ -129,7 +128,7 @@ export function ConsignmentForm() {
               setSelectedFile(null);
               setFilePreview(null);
             }}
-            className="px-5 py-3 border border-stone-300 text-stone-700 text-xs uppercase tracking-wider hover:bg-stone-100 transition-colors cursor-pointer"
+            className='cursor-pointer border border-stone-300 px-5 py-3 text-xs tracking-wider text-stone-700 uppercase transition-colors hover:bg-stone-100'
           >
             Submit Another Timepiece
           </button>
@@ -139,182 +138,178 @@ export function ConsignmentForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className='space-y-6'>
       {errorMessage && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-3">
-          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-          <div className="flex-1">{errorMessage}</div>
+        <div className='flex items-start gap-3 border border-red-200 bg-red-50 p-4 text-xs text-red-800'>
+          <AlertCircle className='mt-0.5 h-4 w-4 shrink-0' />
+          <div className='flex-1'>{errorMessage}</div>
         </div>
       )}
 
       <div>
-        <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
           Your Full Name *
         </label>
         <input
-          type="text"
-          name="clientName"
+          type='text'
+          name='clientName'
           required
           value={formData.clientName}
           onChange={handleInputChange}
-          placeholder="e.g. Jean-Luc Dubois"
-          className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+          placeholder='e.g. Jean-Luc Dubois'
+          className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <div>
-          <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
             Email Address *
           </label>
           <input
-            type="email"
-            name="email"
+            type='email'
+            name='email'
             required
             value={formData.email}
             onChange={handleInputChange}
-            placeholder="e.g. collector@spacetime.com"
-            className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+            placeholder='e.g. collector@spacetime.com'
+            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
           />
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
             Phone / WhatsApp *
           </label>
           <input
-            type="tel"
-            name="phone"
+            type='tel'
+            name='phone'
             required
             value={formData.phone}
             onChange={handleInputChange}
-            placeholder="e.g. +84 94 162 5653"
-            className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+            placeholder='e.g. +84 94 162 5653'
+            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <div>
-          <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
             Watch Brand *
           </label>
           <input
-            type="text"
-            name="brand"
+            type='text'
+            name='brand'
             required
             value={formData.brand}
             onChange={handleInputChange}
-            placeholder="e.g. Rolex, Cartier, Omega"
-            className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+            placeholder='e.g. Rolex, Cartier, Omega'
+            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
           />
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
             Model / Reference *
           </label>
           <input
-            type="text"
-            name="model"
+            type='text'
+            name='model'
             required
             value={formData.model}
             onChange={handleInputChange}
-            placeholder="e.g. Cellini ref 4127 18K Gold"
-            className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+            placeholder='e.g. Cellini ref 4127 18K Gold'
+            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
           Expected Price (USD or VND) *
         </label>
         <input
-          type="text"
-          name="price"
+          type='text'
+          name='price'
           required
           value={formData.price}
           onChange={handleInputChange}
-          placeholder="e.g. $4,500 or 110,000,000 VND"
-          className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+          placeholder='e.g. $4,500 or 110,000,000 VND'
+          className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
         />
       </div>
 
       <div>
-        <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
           Timepiece Condition &amp; Details
         </label>
         <textarea
-          name="description"
+          name='description'
           rows={4}
           value={formData.description}
           onChange={handleInputChange}
-          placeholder="Please describe case condition, dial state, servicing history, presence of original box/papers..."
-          className="w-full px-3.5 py-2.5 text-xs border border-stone-300 focus:outline-none focus:border-stone-900 bg-white transition-colors"
+          placeholder='Please describe case condition, dial state, servicing history, presence of original box/papers...'
+          className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
         />
       </div>
 
       <div>
-        <label className="block text-xs uppercase tracking-wider text-stone-700 mb-1.5 font-medium">
+        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
           Watch Photograph (Max 4MB)
         </label>
-        <div className="mt-1">
+        <div className='mt-1'>
           {filePreview ? (
-            <div className="relative inline-block border border-stone-200 p-2 bg-stone-50">
+            <div className='relative inline-block border border-stone-200 bg-stone-50 p-2'>
               <img
                 src={filePreview}
-                alt="Selected watch preview"
-                className="w-32 h-32 object-cover border border-stone-100"
+                alt='Selected watch preview'
+                className='h-32 w-32 border border-stone-100 object-cover'
               />
               <button
-                type="button"
+                type='button'
                 onClick={handleRemoveFile}
-                className="absolute -top-2 -right-2 bg-stone-900 text-white p-1 rounded-full hover:bg-stone-700 transition-colors cursor-pointer"
-                aria-label="Remove image"
+                className='absolute -top-2 -right-2 cursor-pointer rounded-full bg-stone-900 p-1 text-white transition-colors hover:bg-stone-700'
+                aria-label='Remove image'
               >
-                <X className="w-3.5 h-3.5" />
+                <X className='h-3.5 w-3.5' />
               </button>
-              <p className="text-[10px] text-stone-500 mt-1 truncate max-w-[128px]">
+              <p className='mt-1 max-w-[128px] truncate text-[10px] text-stone-500'>
                 {selectedFile?.name}
               </p>
             </div>
           ) : (
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border border-dashed border-stone-300 hover:border-stone-900 p-6 text-center cursor-pointer transition-colors bg-stone-50 hover:bg-stone-100/50"
+              className='cursor-pointer border border-dashed border-stone-300 bg-stone-50 p-6 text-center transition-colors hover:border-stone-900 hover:bg-stone-100/50'
             >
-              <Upload className="w-6 h-6 mx-auto text-stone-400 mb-2" />
-              <p className="text-xs text-stone-700 font-medium">
-                Click or drag watch image here
-              </p>
-              <p className="text-[10px] text-stone-400 mt-1">
-                JPG, PNG, or JPEG up to 4MB
-              </p>
+              <Upload className='mx-auto mb-2 h-6 w-6 text-stone-400' />
+              <p className='text-xs font-medium text-stone-700'>Click or drag watch image here</p>
+              <p className='mt-1 text-[10px] text-stone-400'>JPG, PNG, or JPEG up to 4MB</p>
               <input
                 ref={fileInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/jpg"
+                type='file'
+                accept='image/png,image/jpeg,image/jpg'
                 onChange={handleFileChange}
-                className="hidden"
+                className='hidden'
               />
             </div>
           )}
         </div>
       </div>
 
-      <div className="pt-2 flex flex-col sm:flex-row gap-3">
+      <div className='flex flex-col gap-3 pt-2 sm:flex-row'>
         <button
-          type="submit"
+          type='submit'
           disabled={status === 'submitting'}
-          className="flex-1 py-3.5 bg-black text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className='flex flex-1 cursor-pointer items-center justify-center gap-2 bg-black py-3.5 text-xs font-medium tracking-[0.2em] text-white uppercase transition-colors hover:bg-stone-800 disabled:opacity-50'
         >
           {status === 'submitting' ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className='h-4 w-4 animate-spin' />
               <span>Transmitting...</span>
             </>
           ) : (
             <>
-              <Send className="w-4 h-4" />
+              <Send className='h-4 w-4' />
               <span>Submit Consignment</span>
             </>
           )}
@@ -322,11 +317,11 @@ export function ConsignmentForm() {
 
         <a
           href={getWhatsAppLink()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-5 py-3.5 border border-green-700 text-green-800 hover:bg-green-50 text-xs uppercase tracking-wider font-medium flex items-center justify-center gap-2 transition-colors"
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex items-center justify-center gap-2 border border-green-700 px-5 py-3.5 text-xs font-medium tracking-wider text-green-800 uppercase transition-colors hover:bg-green-50'
         >
-          <MessageCircle className="w-4 h-4" />
+          <MessageCircle className='h-4 w-4' />
           <span>Consign via WhatsApp</span>
         </a>
       </div>

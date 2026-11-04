@@ -24,7 +24,9 @@ export function resolveCountryCurrency(countryCode: string | null | undefined): 
   return COUNTRY_TO_CURRENCY[countryCode.trim().toUpperCase()] ?? null;
 }
 
-export function resolveApproxDisplayCurrency(countryCode: string | null | undefined): string | null {
+export function resolveApproxDisplayCurrency(
+  countryCode: string | null | undefined
+): string | null {
   const currency = resolveCountryCurrency(countryCode);
   return currency && currency !== 'USD' ? currency : null;
 }
@@ -37,8 +39,10 @@ function isZeroDecimalCurrency(currencyCode: string): boolean {
   let zeroDecimal = false;
   try {
     zeroDecimal =
-      new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).resolvedOptions()
-        .maximumFractionDigits === 0;
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currencyCode,
+      }).resolvedOptions().maximumFractionDigits === 0;
   } catch {
     zeroDecimal = false;
   }
@@ -85,8 +89,7 @@ export async function getExchangeRates(): Promise<Record<string, number> | null>
         return parsed.rates;
       }
     }
-  } catch (err) {
-  }
+  } catch {}
 
   try {
     const response = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -103,8 +106,8 @@ export async function getExchangeRates(): Promise<Record<string, number> | null>
       window.localStorage.setItem(EXCHANGE_RATES_CACHE_KEY, JSON.stringify(cachePayload));
       return rates;
     }
-  } catch (err) {
-    console.warn('Unable to refresh exchange rates, falling back to cached rates:', err);
+  } catch (error) {
+    console.warn('Unable to refresh exchange rates, falling back to cached rates:', error);
   }
 
   try {
@@ -113,8 +116,7 @@ export async function getExchangeRates(): Promise<Record<string, number> | null>
       const parsed: CachedExchangeRates = JSON.parse(rawCache);
       if (parsed?.rates && parsed.rates.VND > 0) return parsed.rates;
     }
-  } catch (err) {
-  }
+  } catch {}
 
   return null;
 }

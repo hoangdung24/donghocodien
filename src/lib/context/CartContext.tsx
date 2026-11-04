@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useState, useCallback, useSyncExternalStore, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 import { cartStore, type CartState } from '../../lib/cartStore';
 import type { Cart } from '../schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from '../services/cart';
@@ -20,7 +28,13 @@ interface CartContextType extends Omit<CartState, 'cart'> {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children, initialCart = null }: { children: ReactNode; initialCart?: Cart | null }) {
+export function CartProvider({
+  children,
+  initialCart = null,
+}: {
+  children: ReactNode;
+  initialCart?: Cart | null;
+}) {
   const [, forceUpdate] = useState(0);
 
   useEffect(() => {
@@ -29,7 +43,7 @@ export function CartProvider({ children, initialCart = null }: { children: React
     } else {
       cartStore.loadCart();
     }
-    const unsubscribe = cartStore.subscribe(() => forceUpdate(n => n + 1));
+    const unsubscribe = cartStore.subscribe(() => forceUpdate((n) => n + 1));
     return unsubscribe;
   }, [initialCart]);
 
@@ -53,9 +67,12 @@ export function CartProvider({ children, initialCart = null }: { children: React
     await cartStore.loadCart();
   }, []);
 
-  const processCheckout = useCallback(async (request: CheckoutRequest): Promise<CheckoutResponse> => {
-    return cartStore.processCheckout(request);
-  }, []);
+  const processCheckout = useCallback(
+    async (request: CheckoutRequest): Promise<CheckoutResponse> => {
+      return cartStore.processCheckout(request);
+    },
+    []
+  );
 
   const value: CartContextType = {
     cart: cartStore.getState().cart,
@@ -78,7 +95,12 @@ export function CartProvider({ children, initialCart = null }: { children: React
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
-const SERVER_SNAPSHOT: CartState = { cart: null, isLoading: true, error: null, isDrawerOpen: false };
+const SERVER_SNAPSHOT: CartState = {
+  cart: null,
+  isLoading: true,
+  error: null,
+  isDrawerOpen: false,
+};
 
 function useCartStore() {
   const snapshot = useSyncExternalStore(

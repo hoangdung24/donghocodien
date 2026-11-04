@@ -148,7 +148,10 @@ export class CartStore {
       const data = await this.fetchCart();
       this.setState({ cart: data, isLoading: false });
     } catch (err) {
-      this.setState({ error: err instanceof Error ? err.message : 'Failed to load cart', isLoading: false });
+      this.setState({
+        error: err instanceof Error ? err.message : 'Failed to load cart',
+        isLoading: false,
+      });
     }
   }
 
@@ -242,7 +245,10 @@ export class CartStore {
 
   get currency(): { code: string; symbol: string } {
     return this.state.cart?.totals
-      ? { code: this.state.cart.totals.currency_code, symbol: this.state.cart.totals.currency_symbol }
+      ? {
+          code: this.state.cart.totals.currency_code,
+          symbol: this.state.cart.totals.currency_symbol,
+        }
       : { code: 'USD', symbol: '$' };
   }
 }

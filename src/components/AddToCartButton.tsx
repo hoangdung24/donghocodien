@@ -30,24 +30,24 @@ export function AddToCartButton({ product, stockText, stockClass }: AddToCartBut
   };
 
   return (
-    <div className="w-full space-y-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-stone-900">Availability:</span>
-        <span className={`font-medium ${stockClass || (product.is_in_stock ? 'text-green-700' : 'text-stone-500')}`}>
+    <div className='w-full space-y-3'>
+      <div className='flex items-center justify-between text-sm'>
+        <span className='font-medium text-stone-900'>Availability:</span>
+        <span
+          className={`font-medium ${stockClass || (product.is_in_stock ? 'text-green-700' : 'text-stone-500')}`}
+        >
           {stockText || (product.is_in_stock ? 'In stock' : 'Out of stock')}
         </span>
       </div>
       <Button
         onClick={handleAddToCart}
         disabled={!product.is_in_stock || isAdding}
-        className="w-full"
+        className='w-full'
       >
-        {isAdding && <Loader2 className="w-5 h-5 animate-spin" />}
-        {added && <Check className="w-5 h-5" />}
-        {!isAdding && !added && <ShoppingBag className="w-5 h-5" />}
-        <span>
-          {isAdding ? 'Adding...' : added ? 'Added to Case' : 'Add to Collector\'s Case'}
-        </span>
+        {isAdding && <Loader2 className='h-5 w-5 animate-spin' />}
+        {added && <Check className='h-5 w-5' />}
+        {!isAdding && !added && <ShoppingBag className='h-5 w-5' />}
+        <span>{isAdding ? 'Adding...' : added ? 'Added to Case' : "Add to Collector's Case"}</span>
       </Button>
     </div>
   );

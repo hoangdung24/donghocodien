@@ -7,6 +7,7 @@ import { RelatedProducts } from '../../components/RelatedProducts';
 import { Effect } from 'effect';
 import { getProductBySlug, getProducts } from '../../lib/services/woocommerce';
 import { sanitizeWordPressHtml } from '../../lib/utils/html';
+import { cleanTitle } from '../../lib/utils/text';
 
 const { slug } = Astro.params;
 
@@ -23,33 +24,33 @@ if (result._tag === 'Failure') {
 
 const product = result.value;
 
-function cleanTitle(title: string) {
-  return title
-    .replace(/&#8216;/g, '‘')
-    .replace(/&#8217;/g, '’')
-    .replace(/&#8211;/g, '–')
-    .replace(/&#038;/g, '&')
-    .replace(/&/g, '&');
-}
-
 const cleanName = cleanTitle(product.name);
 const hideApproxPrice = Astro.locals.country === 'US';
 const cleanDescription = await sanitizeWordPressHtml(product.description || '');
 const cleanShortDescription = await sanitizeWordPressHtml(product.short_description || '');
-const primaryBrand = product.categories.find((c) =>
-  ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines'].some(
-    (b) => c.name.toLowerCase().includes(b.toLowerCase())
-  )
-) || product.categories[0];
+const primaryBrand =
+  product.categories.find((c) =>
+    [
+      'Omega',
+      'Rolex',
+      'Cartier',
+      'Edox',
+      'Eterna',
+      'Seiko',
+      'Farve-Leuba',
+      'Zenith',
+      'Longines',
+    ].some((b) => c.name.toLowerCase().includes(b.toLowerCase()))
+  ) || product.categories[0];
 
 // Fetch related products from same primary category
-let relatedProducts: typeof result.value[] = [];
+let relatedProducts: (typeof result.value)[] = [];
 if (primaryBrand) {
   const relatedResult = await Effect.runPromiseExit(
     getProducts({ category: primaryBrand.id, per_page: 4 })
   );
   if (relatedResult._tag === 'Success') {
-    relatedProducts = relatedResult.value.filter(p => p.id !== product.id).slice(0, 4);
+    relatedProducts = relatedResult.value.filter((p) => p.id !== product.id).slice(0, 4);
   }
 }
 
@@ -64,9 +65,11 @@ const productSchema = {
   sku: product.sku || product.id.toString(),
   price: Number(product.prices.price),
   currency: 'USD',
-  availability: product.is_in_stock ? 'in_stock' as const : 'out_of_stock' as const,
+  availability: product.is_in_stock ? ('in_stock' as const) : ('out_of_stock' as const),
   url: `/products/${product.slug}`,
-  image: product.images[0]?.src || 'https://donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',
+  image:
+    product.images[0]?.src ||
+    'https://donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',
 };
 ---
 
@@ -74,82 +77,97 @@ const productSchema = {
   title={cleanName}
   description={product.short_description.replace(/<[^>]*>?/gm, '').slice(0, 160)}
   image={product.images[0]?.src}
-  type="product"
+  type='product'
   product={productSchema}
 >
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-    <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-stone-500 mb-8 font-sans">
-      <a href="/" class="hover:text-stone-900 transition-colors">Home</a>
+  <main class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16'>
+    <nav class='flex items-center gap-2 text-xs uppercase tracking-wider text-stone-500 mb-8 font-sans'>
+      <a href='/' class='hover:text-stone-900 transition-colors'>
+        Home
+      </a>
       <span>/</span>
-      <a href="/shop" class="hover:text-stone-900 transition-colors">Collection</a>
+      <a href='/shop' class='hover:text-stone-900 transition-colors'>
+        Collection
+      </a>
       {primaryBrand && (
         <>
           <span>/</span>
-          <a href={`/shop?category=${primaryBrand.id}`} class="hover:text-stone-900 transition-colors">
+          <a
+            href={`/shop?category=${primaryBrand.id}`}
+            class='hover:text-stone-900 transition-colors'
+          >
             {cleanTitle(primaryBrand.name)}
           </a>
         </>
       )}
       <span>/</span>
-      <span class="text-stone-900 truncate max-w-xs">{cleanName}</span>
+      <span class='text-stone-900 truncate max-w-xs'>{cleanName}</span>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-      <div class="lg:col-span-7">
+    <div class='grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16'>
+      <div class='lg:col-span-7'>
         <WatchGallery client:visible images={product.images} title={cleanName} />
       </div>
 
-      <div class="lg:col-span-5 flex flex-col">
+      <div class='lg:col-span-5 flex flex-col'>
         {primaryBrand && (
-          <p class="text-xs uppercase tracking-[0.25em] text-black font-medium mb-3">
+          <p class='text-xs uppercase tracking-[0.25em] text-black font-medium mb-3'>
             {cleanTitle(primaryBrand.name)}
           </p>
         )}
 
-        <h1 class="font-serif text-3xl sm:text-4xl text-stone-950 font-normal leading-tight mb-5">
+        <h1 class='font-serif text-3xl sm:text-4xl text-stone-950 font-normal leading-tight mb-5'>
           {cleanName}
         </h1>
 
-        <div class="flex flex-col">
-          <div class="flex items-baseline gap-4">
-            <span class="font-serif text-3xl font-medium text-stone-900">
+        <div class='flex flex-col'>
+          <div class='flex items-baseline gap-4'>
+            <span class='font-serif text-3xl font-medium text-stone-900'>
               ${product.prices.price}
             </span>
             {product.on_sale && product.prices.regular_price && (
-              <span class="text-base text-stone-400 line-through">
+              <span class='text-base text-stone-400 line-through'>
                 ${product.prices.regular_price}
               </span>
             )}
-            <span class="text-xs text-stone-500 font-mono ml-auto">
+            <span class='text-xs text-stone-500 font-mono ml-auto'>
               {product.is_in_stock ? 'In Stock & Ready to Ship' : 'Sold / Reserved'}
             </span>
           </div>
-          {!hideApproxPrice && (
-            <span id="approx-price-product" class="text-xs text-stone-400 font-sans tracking-tight mt-2 approximate-vnd" data-usd-price={product.prices.price}></span>
-          )}
         </div>
 
         {cleanShortDescription && (
-          <div class="mt-8 pt-6 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
+          <div class='mt-8 pt-6 border-t border-stone-200 text-sm text-stone-700 leading-relaxed'>
             <div set:html={cleanShortDescription} />
           </div>
         )}
 
-        <div class="mt-8">
-          <AddToCartButton client:visible product={product} stockText={stockText} stockClass={stockClass} />
+        <div class='mt-8'>
+          <AddToCartButton
+            client:visible
+            product={product}
+            stockText={stockText}
+            stockClass={stockClass}
+          />
         </div>
       </div>
     </div>
 
-    <div class="mt-16 lg:mt-24">
-      <ProductTabs client:visible
+    <div class='mt-16 lg:mt-24'>
+      <ProductTabs
+        client:visible
         descriptionHtml={cleanDescription}
         sku={product.sku}
         shortDescription={cleanShortDescription}
       />
 
       {relatedProducts.length > 0 && (
-        <RelatedProducts client:visible products={relatedProducts} title="Similar Watches" country={Astro.locals.country} />
+        <RelatedProducts
+          client:visible
+          products={relatedProducts}
+          title='Similar Watches'
+          country={Astro.locals.country}
+        />
       )}
     </div>
   </main>

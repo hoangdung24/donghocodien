@@ -3,6 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import { CartPage } from '../components/CartPage';
 ---
 
-<Layout title="Collector's Case" description="Review your selected vintage timepieces before proceeding to checkout.">
+<Layout
+  title="Collector's Case"
+  description='Review your selected vintage timepieces before proceeding to checkout.'
+>
   <CartPage client:load />
 </Layout>

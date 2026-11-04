@@ -1,8 +1,8 @@
-import { execFile } from "node:child_process";
-import { accessSync, constants, existsSync, realpathSync, statSync } from "node:fs";
-import { homedir } from "node:os";
-import { delimiter, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { fileURLToPath } from "node:url";
+import { execFile } from 'node:child_process';
+import { accessSync, constants, existsSync, realpathSync, statSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { delimiter, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // One extension for both Pi and Oh My Pi (OMP). It imports only Node built-ins:
 // the wheel ships no node_modules, and the two hosts provide different packages
@@ -15,7 +15,13 @@ const TIMEOUT_MS = 2000;
 // Host tool name -> the Claude Code tool name hook-guard expects. OMP has `glob`
 // (its `path` is the pattern); Pi has `find` (`pattern` relative to `path`). OMP's
 // own `find` is a semantic search without `pattern`, so it is left alone.
-const TOOL_NAMES = { bash: "Bash", grep: "Grep", read: "Read", glob: "Glob", find: "Glob" } as const;
+const TOOL_NAMES = {
+  bash: 'Bash',
+  grep: 'Grep',
+  read: 'Read',
+  glob: 'Glob',
+  find: 'Glob',
+} as const;
 const FILE_URL_RE = /^file:\/\//i;
 // A URL or host-internal resource (https://, skill://, local:/, artifact://):
 // a scheme of 2+ characters followed by a slash. Two characters keep a Windows
@@ -33,7 +39,10 @@ type HostContext = {
 };
 type HostAPI = {
   on(event: string, handler: (event: never, ctx: HostContext) => unknown): void;
-  sendMessage?(message: { customType: string; content: string; display: boolean }, options: { deliverAs: "steer" }): void;
+  sendMessage?(
+    message: { customType: string; content: string; display: boolean },
+    options: { deliverAs: 'steer' }
+  ): void;
   // Present only on OMP, which hands extensions its own module.
   pi?: unknown;
 };
@@ -45,21 +54,22 @@ function isRemote(path: string): boolean {
   if (FILE_URL_RE.test(path)) {
     try {
       const { hostname } = new URL(path);
-      return !(hostname === "" || hostname.toLowerCase() === "localhost");
+      return !(hostname === '' || hostname.toLowerCase() === 'localhost');
     } catch {
       return true;
     }
   }
-  return SCHEME_RE.test(path) || /^www\./i.test(path) || path.includes("://");
+  return SCHEME_RE.test(path) || /^www\./i.test(path) || path.includes('://');
 }
 
 // A local target as an absolute path, normalized the way Pi's tools do (leading
 // `@` dropped, `~` expanded). A literal file wins over a selector reading, so a
 // file really named `source.py:12` is not truncated.
 function localPath(value: string, cwd: string, selectors: boolean): string {
-  if (value.startsWith("@")) value = value.slice(1);
-  if (value === "~" || value.startsWith("~/")) value = join(homedir(), value.slice(2));
-  if (FILE_URL_RE.test(value)) return fileURLToPath(value.replace(/^file:\/\/localhost/i, "file://"));
+  if (value.startsWith('@')) value = value.slice(1);
+  if (value === '~' || value.startsWith('~/')) value = join(homedir(), value.slice(2));
+  if (FILE_URL_RE.test(value))
+    return fileURLToPath(value.replace(/^file:\/\/localhost/i, 'file://'));
   const literal = resolve(cwd, value);
   if (!selectors || existsSync(literal)) return literal;
   const match = SELECTOR_RE.exec(value);
@@ -67,7 +77,8 @@ function localPath(value: string, cwd: string, selectors: boolean): string {
 }
 
 function which(name: string, path: string): string | undefined {
-  const exts = process.platform === "win32" ? (process.env.PATHEXT ?? ".EXE;.CMD;.BAT").split(";") : [""];
+  const exts =
+    process.platform === 'win32' ? (process.env.PATHEXT ?? '.EXE;.CMD;.BAT').split(';') : [''];
   for (const dir of path.split(delimiter)) {
     for (const ext of exts) {
       const candidate = join(dir, name + ext);
@@ -86,22 +97,40 @@ function which(name: string, path: string): string | undefined {
 // PATH entry itself is returned, not its realpath: a shim may dispatch on argv[0].
 function installedCommand(cwd: string): string | undefined {
   const project = realpathSync(cwd);
-  for (const dir of (process.env.PATH ?? "").split(delimiter).filter(isAbsolute)) {
-    const found = which("graphify", dir);
+  for (const dir of (process.env.PATH ?? '').split(delimiter).filter(isAbsolute)) {
+    const found = which('graphify', dir);
     if (!found) continue;
     const within = relative(project, realpathSync(found));
     if (within.startsWith(`..${sep}`) || isAbsolute(within)) return found;
   }
 }
 
-function runGuard(command: string, kind: string, payload: string, cwd: string, signal: AbortSignal, timeout: number, maxBuffer: number): Promise<string | undefined> {
+function runGuard(
+  command: string,
+  kind: string,
+  payload: string,
+  cwd: string,
+  signal: AbortSignal,
+  timeout: number,
+  maxBuffer: number
+): Promise<string | undefined> {
   if (Buffer.byteLength(payload) > INPUT_LIMIT || signal.aborted) return Promise.resolve(undefined);
   const { promise, resolve: done } = Promise.withResolvers<string | undefined>();
-  const child = execFile(command, ["hook-guard", kind], {
-    cwd, encoding: "utf8", timeout, killSignal: "SIGKILL", maxBuffer, signal,
-    env: { ...process.env, CLAUDE_PROJECT_DIR: cwd },
-  }, (error, stdout) => done(error ? undefined : stdout.trim() || undefined));
-  child.stdin?.on("error", () => {});
+  const child = execFile(
+    command,
+    ['hook-guard', kind],
+    {
+      cwd,
+      encoding: 'utf8',
+      timeout,
+      killSignal: 'SIGKILL',
+      maxBuffer,
+      signal,
+      env: { ...process.env, CLAUDE_PROJECT_DIR: cwd },
+    },
+    (error, stdout) => done(error ? undefined : stdout.trim() || undefined)
+  );
+  child.stdin?.on('error', () => {});
   child.stdin?.end(payload);
   return promise;
 }
@@ -115,7 +144,7 @@ export default function graphify(api: HostAPI): void {
   // so a file or command cannot forge this instruction channel. Both hosts send
   // it as unlabelled user text, so it is wrapped the way Claude Code labels
   // PreToolUse context; bare text reads as noise and agents ignore it.
-  const passive = typeof api.pi === "object" && api.pi !== null;
+  const passive = typeof api.pi === 'object' && api.pi !== null;
   let controller = new AbortController();
   const reset = () => {
     controller.abort();
@@ -123,58 +152,96 @@ export default function graphify(api: HostAPI): void {
   };
   // session_switch and session_branch exist only on OMP; Pi reloads extensions
   // and emits session_shutdown + session_start instead.
-  for (const event of ["session_start", "session_switch", "session_branch", "session_tree", "session_shutdown", "before_agent_start"]) {
+  for (const event of [
+    'session_start',
+    'session_switch',
+    'session_branch',
+    'session_tree',
+    'session_shutdown',
+    'before_agent_start',
+  ]) {
     api.on(event, reset);
   }
 
-  api.on("tool_call", async (event: HostEvent, ctx: HostContext) => {
+  api.on('tool_call', async (event: HostEvent, ctx: HostContext) => {
     const trusted = () => ctx.isProjectTrusted?.() ?? true;
-    const signal = ctx.signal ? AbortSignal.any([controller.signal, ctx.signal]) : controller.signal;
+    const signal = ctx.signal
+      ? AbortSignal.any([controller.signal, ctx.signal])
+      : controller.signal;
     const deadline = performance.now() + TIMEOUT_MS;
     const contexts: string[] = [];
     try {
-      if (!trusted()) { reset(); return; }
+      if (!trusted()) {
+        reset();
+        return;
+      }
       if (!Object.hasOwn(TOOL_NAMES, event.toolName)) return;
-      if (event.toolName === "find" && typeof event.input.pattern !== "string") return;
+      if (event.toolName === 'find' && typeof event.input.pattern !== 'string') return;
       const command = installedCommand(ctx.cwd);
       if (!command) return;
       const toolName = TOOL_NAMES[event.toolName as keyof typeof TOOL_NAMES];
-      const kind = toolName === "Bash" || toolName === "Grep" ? "search" : "read";
+      const kind = toolName === 'Bash' || toolName === 'Grep' ? 'search' : 'read';
       // The search CLI reads only `command`/`pattern`, so its input goes through unchanged.
       let inputs = [event.input];
-      if (kind === "read") {
-        const rawPath = typeof event.input.path === "string" ? event.input.path.trim() : ".";
+      if (kind === 'read') {
+        const rawPath = typeof event.input.path === 'string' ? event.input.path.trim() : '.';
         // OMP's glob accepts `;`-separated targets; Pi paths never contain one.
-        const paths = event.toolName === "glob" ?
-          rawPath.split(";").map(entry => entry.trim()).filter(Boolean) : [rawPath];
+        const paths =
+          event.toolName === 'glob'
+            ? rawPath
+                .split(';')
+                .map((entry) => entry.trim())
+                .filter(Boolean)
+            : [rawPath];
         inputs = [];
         for (const path of paths) {
           if (isRemote(path)) continue;
           const input: Record<string, unknown> = { ...event.input };
-          const resolved = localPath(path, ctx.cwd, toolName === "Read");
+          const resolved = localPath(path, ctx.cwd, toolName === 'Read');
           delete input.path;
-          if (toolName === "Read") input.file_path = resolved;
+          if (toolName === 'Read') input.file_path = resolved;
           // OMP's glob target is a pattern; the CLI containment-checks only `path`.
-          else if (event.toolName === "glob") { input.pattern = resolved; input.path = resolved; }
-          else input.path = resolved;
+          else if (event.toolName === 'glob') {
+            input.pattern = resolved;
+            input.path = resolved;
+          } else input.path = resolved;
           inputs.push(input);
         }
       }
       for (const input of inputs) {
         const timeout = Math.floor(deadline - performance.now());
         if (signal.aborted || !trusted() || timeout <= 0) return;
-        const output = await runGuard(command, kind, JSON.stringify({
-          session_id: ctx.sessionManager.getSessionId(), cwd: ctx.cwd, tool_name: toolName, tool_input: input,
-        }), ctx.cwd, signal, timeout, OUTPUT_LIMIT);
+        const output = await runGuard(
+          command,
+          kind,
+          JSON.stringify({
+            session_id: ctx.sessionManager.getSessionId(),
+            cwd: ctx.cwd,
+            tool_name: toolName,
+            tool_input: input,
+          }),
+          ctx.cwd,
+          signal,
+          timeout,
+          OUTPUT_LIMIT
+        );
         if (signal.aborted || !trusted()) return;
         if (!output) continue;
         let hook;
-        try { hook = JSON.parse(output)?.hookSpecificOutput; } catch { continue; }
-        if (hook?.hookEventName !== "PreToolUse") continue;
-        if (hook.permissionDecision === "deny" && typeof hook.permissionDecisionReason === "string" && hook.permissionDecisionReason.trim()) {
+        try {
+          hook = JSON.parse(output)?.hookSpecificOutput;
+        } catch {
+          continue;
+        }
+        if (hook?.hookEventName !== 'PreToolUse') continue;
+        if (
+          hook.permissionDecision === 'deny' &&
+          typeof hook.permissionDecisionReason === 'string' &&
+          hook.permissionDecisionReason.trim()
+        ) {
           return { block: true, reason: hook.permissionDecisionReason };
         }
-        if (typeof hook.additionalContext === "string" && hook.additionalContext.trim()) {
+        if (typeof hook.additionalContext === 'string' && hook.additionalContext.trim()) {
           contexts.push(hook.additionalContext);
         }
       }
@@ -183,8 +250,11 @@ export default function graphify(api: HostAPI): void {
       // invalid paths, malformed hook output, timeout, or cancellation.
     }
     if (contexts.length === 0) return;
-    const reminder = `<system-reminder source="graphify">\n${contexts.join("\n\n")}\n</system-reminder>`;
+    const reminder = `<system-reminder source="graphify">\n${contexts.join('\n\n')}\n</system-reminder>`;
     if (passive) return { additionalContext: reminder };
-    api.sendMessage?.({ customType: "graphify", content: reminder, display: true }, { deliverAs: "steer" });
+    api.sendMessage?.(
+      { customType: 'graphify', content: reminder, display: true },
+      { deliverAs: 'steer' }
+    );
   });
 }
