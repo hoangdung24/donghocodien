@@ -1,20 +1,20 @@
 import { Effect, Schema } from 'effect';
-import { CartSchema, AddToCartRequestSchema, UpdateCartItemRequestSchema, RemoveCartItemRequestSchema } from '../schema/cart';
-import type { Cart, CartAddress, AddToCartRequest, UpdateCartItemRequest, RemoveCartItemRequest } from '../schema/cart';
+import { CartSchema } from '../schema/cart';
+import type { CartAddress, AddToCartRequest, UpdateCartItemRequest, RemoveCartItemRequest } from '../schema/cart';
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 
-export class CartNetworkError extends Schema.TaggedError<CartNetworkError>()('CartNetworkError', {
+export class CartNetworkError extends Schema.TaggedError<CartNetworkError, { readonly brand: unique symbol }>()('CartNetworkError', {
   message: Schema.String,
 }) {}
 
-export class CartHttpError extends Schema.TaggedError<CartHttpError>()('CartHttpError', {
+export class CartHttpError extends Schema.TaggedError<CartHttpError, { readonly brand: unique symbol }>()('CartHttpError', {
   status: Schema.Finite,
   statusText: Schema.String,
   url: Schema.String,
 }) {}
 
-export class CartNotFoundError extends Schema.TaggedError<CartNotFoundError>()('CartNotFoundError', {
+export class CartNotFoundError extends Schema.TaggedError<CartNotFoundError, { readonly brand: unique symbol }>()('CartNotFoundError', {
   message: Schema.String,
 }) {}
 

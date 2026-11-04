@@ -3,6 +3,7 @@ import type { CheckoutRequest, CheckoutResponse } from './services/cart';
 import { toastStore } from './toastStore';
 
 const API_BASE = '/wc/store/v1';
+const CART_TOKEN_KEY = 'wc-cart-token';
 
 const stripHtml = (value: unknown): string =>
   typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
@@ -16,7 +17,7 @@ export interface CartState {
 
 type Listener = () => void;
 
-class CartStore {
+export class CartStore {
   private state: CartState = {
     cart: null,
     isLoading: true,
@@ -25,12 +26,25 @@ class CartStore {
   };
   private listeners: Set<Listener> = new Set();
   private nonce: string | null = null;
+  private cartToken: string | null = null;
+
+  constructor() {
+    if (typeof localStorage !== 'undefined') {
+      this.cartToken = localStorage.getItem(CART_TOKEN_KEY);
+    }
+  }
 
   private async fetchWithNonce(url: string, options: RequestInit = {}): Promise<Response> {
+    if (options.method && options.method !== 'GET' && !this.nonce) {
+      await this.fetchWithNonce(`${API_BASE}/cart`);
+    }
     const headers = new Headers(options.headers);
     headers.set('Accept', 'application/json');
     if (this.nonce) {
       headers.set('X-WC-Store-API-Nonce', this.nonce);
+    }
+    if (this.cartToken) {
+      headers.set('Cart-Token', this.cartToken);
     }
     if (options.body && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
@@ -42,10 +56,16 @@ class CartStore {
       credentials: 'include',
     });
 
-    // Update nonce from response headers
-    const newNonce = response.headers.get('x-wc-store-api-nonce');
-    if (newNonce) {
-      this.nonce = newNonce;
+    const nonce = response.headers.get('x-wc-store-api-nonce');
+    if (nonce) {
+      this.nonce = nonce;
+    }
+    const token = response.headers.get('cart-token');
+    if (token && token !== this.cartToken) {
+      this.cartToken = token;
+      try {
+        localStorage.setItem(CART_TOKEN_KEY, token);
+      } catch {}
     }
 
     return response;

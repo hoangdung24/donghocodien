@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../lib/context/CartContext';
-import { ShoppingBag, Shield, Truck, CreditCard, Check, ChevronRight } from 'lucide-react';
-import { formatApproxVND } from '../lib/utils/currency';
+import { ShoppingBag, Shield, Truck, CreditCard, Check } from 'lucide-react';
+import { formatApproxPrice } from '../lib/utils/currency';
+import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
 import { CHECKOUT_COUNTRIES, COUNTRY_STATES, COUNTRY_LOCALE } from '../lib/data/woocommerce-regions';
 import { Button } from './Button';
+import { SelectField, type SelectOption } from './SelectField';
+
+const COUNTRY_OPTIONS: SelectOption[] = CHECKOUT_COUNTRIES.filter((c) => c.code).map((c) => ({
+  value: c.code,
+  label: c.name,
+}));
+
+const decodeEntities = (value: string) => {
+  if (typeof window === 'undefined' || !value.includes('&')) return value;
+  const doc = new DOMParser().parseFromString(value, 'text/html');
+  return doc.documentElement.textContent ?? value;
+};
 
 interface BillingForm {
   first_name: string;
@@ -45,14 +58,10 @@ export function CheckoutPage() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [vndRate, setVndRate] = useState<number | null>(null);
+  const approx = useApproxDisplay();
 
   useEffect(() => {
     setMounted(true);
-    fetch('https://api.exchangerate-api.com/v4/latest/USD')
-      .then((res) => res.json())
-      .then((data) => setVndRate(data.rates?.VND ?? null))
-      .catch(() => {});
   }, []);
 
   const formatPrice = (price: string) => {
@@ -71,8 +80,7 @@ export function CheckoutPage() {
   const postcodeRequired = !postcodeHidden && (postcodeLocale?.required ?? false);
   const postcodeLabel = postcodeLocale?.label ?? 'Postcode / ZIP';
 
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const next = e.target.value;
+  const handleCountryChange = (next: string) => {
     const nextStateOptions = COUNTRY_STATES[next];
     setForm((f) => ({
       ...f,
@@ -81,7 +89,7 @@ export function CheckoutPage() {
     }));
   };
 
-  const setField = (field: keyof BillingForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const setField = (field: keyof BillingForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
   };
 
@@ -110,15 +118,39 @@ export function CheckoutPage() {
         payment_method: 'bacs',
         customer_note: notes,
       });
-      const payment = (result as Record<string, unknown>)?.payment_result as
+      const resultData = (result ?? {}) as Record<string, unknown>;
+      const payment = resultData.payment_result as
         | { redirect_url?: string; payment_status?: string }
         | undefined;
-      const redirect = payment?.redirect_url;
-      if (redirect) {
-        window.location.href = redirect;
+      const orderId = Number(resultData.order_id);
+      const orderKey = typeof resultData.order_key === 'string' ? resultData.order_key : '';
+
+      if (orderId && orderKey) {
+        try {
+          window.sessionStorage.setItem(
+            'spacetime_last_order',
+            JSON.stringify({
+              orderId,
+              orderKey,
+              email: form.email,
+              total: cart.totals.total_price,
+              currencySymbol: cart.totals.currency_symbol,
+              itemCount: cart.totals.total_items ? Math.round(parseFloat(cart.totals.total_items)) || itemCount : itemCount,
+              paymentMethod: 'bacs',
+              status: resultData.status,
+              date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+              redirectUrl: payment?.redirect_url,
+            })
+          );
+        } catch {}
+        window.location.href = `/checkout/order-received/${orderId}/?key=${orderKey}`;
         return;
       }
-      window.location.href = `/checkout/order-received/?key=${(result as Record<string, unknown>).order_key ?? ''}`;
+      if (payment?.redirect_url) {
+        window.location.href = payment.redirect_url;
+        return;
+      }
+      throw new Error('Checkout failed. Please try again.');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Checkout failed. Please try again.');
       setSubmitting(false);
@@ -136,11 +168,6 @@ export function CheckoutPage() {
   if (!cart || cart.items.length === 0) {
     return (
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-        <nav className="flex items-center gap-2 text-xs uppercase tracking-wider text-stone-500 mb-8 font-sans">
-          <a href="/" className="hover:text-stone-900 transition-colors">Home</a>
-          <span>/</span>
-          <span className="text-stone-900">Checkout</span>
-        </nav>
         <div className="text-center py-20">
           <ShoppingBag className="w-24 h-24 text-stone-300 mx-auto mb-6" />
           <h2 className="font-serif text-2xl text-stone-900 mb-3">Your cart is currently empty</h2>
@@ -159,26 +186,6 @@ export function CheckoutPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-      <nav className="flex items-center gap-2 text-xs uppercase tracking-wider text-stone-500 mb-8 font-sans">
-        <a href="/" className="hover:text-stone-900 transition-colors">Home</a>
-        <span>/</span>
-        <span className="text-stone-900">Checkout</span>
-      </nav>
-
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-0 mb-12" aria-label="Checkout progress">
-        <a href="/cart" className="flex items-center gap-2 text-sm uppercase tracking-wider text-stone-500 hover:text-stone-900 transition-colors font-sans">
-          Shopping Cart
-          <ChevronRight className="w-4 h-4 text-stone-300" />
-        </a>
-        <span className="flex items-center gap-2 text-sm uppercase tracking-wider text-stone-950 font-medium font-sans border-b border-stone-900 pb-1">
-          Checkout Details
-          <ChevronRight className="w-4 h-4 text-stone-300" />
-        </span>
-        <span className="flex items-center gap-2 text-sm uppercase tracking-wider text-stone-400 font-sans">
-          Order Complete
-        </span>
-      </div>
-
       {error && (
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 text-yellow-900 text-sm rounded flex items-center justify-between">
           <span>{error}</span>
@@ -220,19 +227,16 @@ export function CheckoutPage() {
           </div>
 
           <div className="mt-5">
-            <label htmlFor="billing_country" className={labelClass}>Country / Region *</label>
-            <select
+            <SelectField
               id="billing_country"
+              label="Country / Region"
               required
-              value={form.country}
-              onChange={handleCountryChange}
-              className={inputClass}
+              placeholder="Select a country / region…"
               autoComplete="country"
-            >
-              {CHECKOUT_COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>{c.name}</option>
-              ))}
-            </select>
+              options={COUNTRY_OPTIONS}
+              value={form.country}
+              onValueChange={handleCountryChange}
+            />
           </div>
 
           <div className="mt-5">
@@ -265,32 +269,31 @@ export function CheckoutPage() {
 
           {!stateHidden && (
             <div className="mt-5">
-              <label htmlFor="billing_state" className={labelClass}>
-                {stateLabel} {stateRequired ? '*' : <span className="normal-case text-stone-400">(optional)</span>}
-              </label>
               {stateOptions ? (
-                <select
+                <SelectField
                   id="billing_state"
+                  label={stateLabel}
                   required={stateRequired}
+                  placeholder="Select an option…"
+                  options={Object.entries(stateOptions).map(([code, name]) => ({ value: code, label: name }))}
                   value={form.state}
-                  onChange={setField('state')}
-                  className={inputClass}
-                >
-                  <option value="">Select an option…</option>
-                  {Object.entries(stateOptions).map(([code, name]) => (
-                    <option key={code} value={code}>{name}</option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  id="billing_state"
-                  type="text"
-                  required={stateRequired}
-                  value={form.state}
-                  onChange={setField('state')}
-                  className={inputClass}
-                  autoComplete="address-level1"
+                  onValueChange={(value) => setForm((f) => ({ ...f, state: value }))}
                 />
+              ) : (
+                <>
+                  <label htmlFor="billing_state" className={labelClass}>
+                    {stateLabel} {stateRequired ? '*' : <span className="normal-case text-stone-400">(optional)</span>}
+                  </label>
+                  <input
+                    id="billing_state"
+                    type="text"
+                    required={stateRequired}
+                    value={form.state}
+                    onChange={setField('state')}
+                    className={inputClass}
+                    autoComplete="address-level1"
+                  />
+                </>
               )}
             </div>
           )}
@@ -382,18 +385,18 @@ export function CheckoutPage() {
                     <img
                       src={item.images[0].thumbnail ?? item.images[0].src}
                       alt={item.name}
-                      className="w-16 h-20 object-cover border border-stone-200 flex-shrink-0"
+                      className="w-16 h-20 object-cover border border-stone-200 shrink-0"
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-serif text-sm text-stone-900 truncate">{item.name}</p>
+                    <p className="font-serif text-sm text-stone-900 truncate">{decodeEntities(item.name)}</p>
                     <p className="text-xs text-stone-400 mt-0.5">Qty: {item.quantity}</p>
-                    {vndRate && (
+                    {approx && (
                       <span
                         className="text-xs text-stone-400 font-mono tracking-tight mt-1 block approximate-vnd"
                         data-usd-price={item.totals.line_total}
                       >
-                        ≈ {formatApproxVND(item.totals.line_total, vndRate)}
+                        {formatApproxPrice(item.totals.line_total, approx.currency, approx.rates)}
                       </span>
                     )}
                   </div>
@@ -429,12 +432,12 @@ export function CheckoutPage() {
                   {formatPrice(total.toFixed(2))}
                 </dd>
               </div>
-              {vndRate && (
+              {approx && (
                 <dd
                   className="text-xs text-stone-400 font-mono tracking-tight approximate-vnd text-right"
                   data-usd-price={total.toFixed(2)}
                 >
-                  ≈ {formatApproxVND(total.toFixed(2), vndRate)}
+                  {formatApproxPrice(total.toFixed(2), approx.currency, approx.rates)}
                 </dd>
               )}
             </dl>

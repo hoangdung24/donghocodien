@@ -1,9 +1,10 @@
-export const DEFAULT_USD_TO_VND_RATE = 25800;
-export const EXCHANGE_RATE_CACHE_KEY = 'spacetime_usd_vnd_rate';
+import { COUNTRY_TO_CURRENCY } from '../data/countryCurrency';
+
+export const EXCHANGE_RATES_CACHE_KEY = 'spacetime_usd_rates_v2';
 export const EXCHANGE_RATE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
-export interface CachedExchangeRate {
-  rate: number;
+export interface CachedExchangeRates {
+  rates: Record<string, number>;
   timestamp: number;
 }
 
@@ -18,30 +19,70 @@ export function isExchangeRateExpired(
   return currentTimestamp - cachedTimestamp >= ttlMs;
 }
 
-export function formatApproxVND(
-  usdAmount: number | string,
-  rate: number = DEFAULT_USD_TO_VND_RATE
-): string {
-  const num = typeof usdAmount === 'string' ? parseFloat(usdAmount) : usdAmount;
-  if (isNaN(num)) return 'Approx. VND 0';
-  const effectiveRate = rate > 0 ? rate : DEFAULT_USD_TO_VND_RATE;
-  const rawVnd = num * effectiveRate;
-  const roundedVnd = Math.round(rawVnd / 100000) * 100000;
-  const formattedNumber = roundedVnd.toLocaleString('vi-VN');
-  return `Approx. VND ${formattedNumber}`;
+export function resolveCountryCurrency(countryCode: string | null | undefined): string | null {
+  if (!countryCode) return null;
+  return COUNTRY_TO_CURRENCY[countryCode.trim().toUpperCase()] ?? null;
 }
 
-export async function getClientExchangeRate(): Promise<number> {
+export function resolveApproxDisplayCurrency(countryCode: string | null | undefined): string | null {
+  const currency = resolveCountryCurrency(countryCode);
+  return currency && currency !== 'USD' ? currency : null;
+}
+
+const zeroDecimalCache = new Map<string, boolean>();
+
+function isZeroDecimalCurrency(currencyCode: string): boolean {
+  const cached = zeroDecimalCache.get(currencyCode);
+  if (cached !== undefined) return cached;
+  let zeroDecimal = false;
+  try {
+    zeroDecimal =
+      new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).resolvedOptions()
+        .maximumFractionDigits === 0;
+  } catch {
+    zeroDecimal = false;
+  }
+  zeroDecimalCache.set(currencyCode, zeroDecimal);
+  return zeroDecimal;
+}
+
+export function formatApproxPrice(
+  usdAmount: number | string,
+  currencyCode: string,
+  rates: Record<string, number> | null | undefined
+): string {
+  if (currencyCode === 'USD') return '';
+  const num = typeof usdAmount === 'string' ? parseFloat(usdAmount) : usdAmount;
+  if (isNaN(num) || num <= 0) return '';
+  const rate = rates?.[currencyCode];
+  if (!rate || rate <= 0) return '';
+  const step = isZeroDecimalCurrency(currencyCode) ? 1000 : 10;
+  const rounded = Math.round((num * rate) / step) * step;
+  try {
+    const formatted = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+      maximumFractionDigits: 0,
+    })
+      .format(rounded)
+      .replace(/[\u00A0\u202F]/g, ' ');
+    return `≈ ${formatted}`;
+  } catch {
+    return '';
+  }
+}
+
+export async function getExchangeRates(): Promise<Record<string, number> | null> {
   if (typeof window === 'undefined') {
-    return DEFAULT_USD_TO_VND_RATE;
+    return null;
   }
 
   try {
-    const rawCache = window.localStorage.getItem(EXCHANGE_RATE_CACHE_KEY);
+    const rawCache = window.localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
     if (rawCache) {
-      const parsed: CachedExchangeRate = JSON.parse(rawCache);
-      if (parsed.rate > 0 && !isExchangeRateExpired(parsed.timestamp)) {
-        return parsed.rate;
+      const parsed: CachedExchangeRates = JSON.parse(rawCache);
+      if (parsed.rates && parsed.rates.VND > 0 && !isExchangeRateExpired(parsed.timestamp)) {
+        return parsed.rates;
       }
     }
   } catch (err) {
@@ -53,28 +94,27 @@ export async function getClientExchangeRate(): Promise<number> {
       throw new Error(`Exchange rate API responded with status ${response.status}`);
     }
     const data = await response.json();
-    const rate = Number(data?.rates?.VND);
-
-    if (rate && rate > 0) {
-      const cachePayload: CachedExchangeRate = {
-        rate,
+    const rates = data?.rates;
+    if (rates && typeof rates === 'object' && Number(rates.VND) > 0) {
+      const cachePayload: CachedExchangeRates = {
+        rates,
         timestamp: Date.now(),
       };
-      window.localStorage.setItem(EXCHANGE_RATE_CACHE_KEY, JSON.stringify(cachePayload));
-      return rate;
+      window.localStorage.setItem(EXCHANGE_RATES_CACHE_KEY, JSON.stringify(cachePayload));
+      return rates;
     }
   } catch (err) {
-    console.warn('Unable to refresh exchange rate, falling back to local/default rate:', err);
+    console.warn('Unable to refresh exchange rates, falling back to cached rates:', err);
   }
 
   try {
-    const staleCache = window.localStorage.getItem(EXCHANGE_RATE_CACHE_KEY);
-    if (staleCache) {
-      const parsed = JSON.parse(staleCache);
-      if (parsed?.rate > 0) return parsed.rate;
+    const rawCache = window.localStorage.getItem(EXCHANGE_RATES_CACHE_KEY);
+    if (rawCache) {
+      const parsed: CachedExchangeRates = JSON.parse(rawCache);
+      if (parsed?.rates && parsed.rates.VND > 0) return parsed.rates;
     }
-  } catch {
+  } catch (err) {
   }
 
-  return DEFAULT_USD_TO_VND_RATE;
+  return null;
 }

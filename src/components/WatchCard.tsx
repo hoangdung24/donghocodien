@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
-import { formatApproxVND } from '../lib/utils/currency';
+import { formatApproxPrice } from '../lib/utils/currency';
+import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
 import { cartStore } from '../lib/cartStore';
 import { Button } from './Button';
 
@@ -16,6 +17,7 @@ const DEFAULT_PLACEHOLDER = `data:image/svg+xml;base64,${btoa(`
 
 interface WatchCardProps {
   product: Product;
+  country?: string | null;
 }
 
 function cleanTitle(title: string) {
@@ -27,7 +29,7 @@ function cleanTitle(title: string) {
     .replace(/&/g, '&');
 }
 
-export function WatchCard({ product }: WatchCardProps) {
+export function WatchCard({ product, country }: WatchCardProps) {
   const primaryCategory = product.categories.find((c) =>
     ['Omega', 'Rolex', 'Cartier', 'Edox', 'Eterna', 'Seiko', 'Farve-Leuba', 'Zenith', 'Longines', 'Universal Geneve', 'Tudor'].some(
       (b) => c.name.toLowerCase().includes(b.toLowerCase())
@@ -37,6 +39,7 @@ export function WatchCard({ product }: WatchCardProps) {
   const mainImage = product.images[0]?.src || DEFAULT_PLACEHOLDER;
   const hoverImage = product.images[1]?.src || mainImage;
   const cleanName = cleanTitle(product.name);
+  const approx = useApproxDisplay(country);
 
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
@@ -113,9 +116,11 @@ export function WatchCard({ product }: WatchCardProps) {
                   ${product.prices.price}
                 </span>
               </div>
-              <span className="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
-                {formatApproxVND(product.prices.price)}
-              </span>
+              {approx && (
+                <span className="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
+                  {formatApproxPrice(product.prices.price, approx.currency, approx.rates)}
+                </span>
+              )}
 
               <Button onClick={handleAddToCart} disabled={isAdding} size="sm" className="mt-3 w-full">
                 {isAdding && <Loader2 className="w-3.5 h-3.5 animate-spin" />}

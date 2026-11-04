@@ -1,5 +1,5 @@
 ---
-import { Search, ShoppingBag, Menu, X, ChevronDown } from '@lucide/astro';
+import { Search, Menu, X, ChevronDown } from '@lucide/astro';
 import { formatHeaderClock } from '../lib/utils/format';
 import { CartDrawer } from './CartDrawer';
 import { CONTACT } from '../lib/constants';
@@ -72,7 +72,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
           aria-label="Open navigation menu"
           class="p-1.5 text-black lg:hidden cursor-pointer"
         >
-          <Menu class="w-6 h-6" />
+          <Menu class="w-5 h-5" />
         </button>
 
         <span
@@ -114,7 +114,7 @@ const currentPath = Astro.url.pathname + Astro.url.search;
         <a
           href="/shop?search=true"
           aria-label="Search"
-          class="p-1.5 text-black hover:text-stone-500 transition-colors"
+          class="hidden lg:inline-flex p-1.5 text-black hover:text-stone-500 transition-colors"
         >
           <Search class="w-4 h-4" />
         </a>
@@ -249,6 +249,20 @@ const currentPath = Astro.url.pathname + Astro.url.search;
         <a href="/about-us" class="block py-2 text-stone-800 hover:text-black border-b border-stone-100">
           About Us
         </a>
+
+        <form action="/shop" method="GET" class="mt-4 pt-4 border-t border-stone-100">
+          <label for="mobile-search" class="sr-only">Search products</label>
+          <div class="relative">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+            <input
+              type="search"
+              name="search"
+              id="mobile-search"
+              placeholder="Search watches…"
+              class="w-full pl-10 pr-4 py-2.5 text-sm text-stone-900 placeholder-stone-400 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            />
+          </div>
+        </form>
       </nav>
 
       <div class="mt-auto pt-6 border-t border-stone-200 text-xs text-stone-500 space-y-2">

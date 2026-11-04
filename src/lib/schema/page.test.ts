@@ -22,7 +22,7 @@ describe('WordPress Page Schema Seam', () => {
       content: { rendered: '<p>Get in touch with our specialists.</p>' },
     };
 
-    const decoded = Schema.decodeUnknownSync(PageSchema)(rawPage);
+    const decoded = Schema.decodeSync(PageSchema)(rawPage);
     expect(decoded.id).toBe(616);
     expect(decoded.slug).toBe('contact-us');
     expect(decoded.title.rendered).toBe('Contact us');

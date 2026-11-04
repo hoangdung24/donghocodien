@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../lib/context/CartContext';
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Truck, Shield, CreditCard, RotateCcw } from 'lucide-react';
-import { formatApproxVND } from '../lib/utils/currency';
+import { ShoppingBag, Plus, Minus, Trash2, Truck, Shield, CreditCard, RotateCcw } from 'lucide-react';
+import { formatApproxPrice } from '../lib/utils/currency';
+import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
+import type { Cart } from '../lib/schema/cart';
 import { Button } from './Button';
 
 export function CartPage() {
@@ -19,14 +21,10 @@ export function CartPage() {
   } = useCart();
 
   const [mounted, setMounted] = useState(false);
-  const [vndRate, setVndRate] = useState<number | null>(null);
+  const approx = useApproxDisplay();
 
   useEffect(() => {
     setMounted(true);
-    fetch('https://api.exchangerate-api.com/v4/latest/USD')
-      .then((res) => res.json())
-      .then((data) => setVndRate(data.rates?.VND ?? null))
-      .catch(() => {});
   }, []);
 
   const formatPrice = (price: string) => {
@@ -34,7 +32,7 @@ export function CartPage() {
     return `${currency.symbol}${num.toFixed(currency.code === 'VND' ? 0 : 2)}`;
   };
 
-  const getItemTotal = (item: typeof cart.items[0]) => {
+  const getItemTotal = (item: Cart['items'][number]) => {
     return parseFloat(item.totals.line_total);
   };
 
@@ -44,7 +42,7 @@ export function CartPage() {
 
   if (!mounted) {
     return (
-      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 min-h-[60vh] flex items-center justify-center">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 min-h-[60vh] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-stone-900 border-t-transparent" />
       </main>
     );
@@ -52,7 +50,7 @@ export function CartPage() {
 
   if (isLoading && !cart) {
     return (
-      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 min-h-[60vh] flex items-center justify-center">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 min-h-[60vh] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-stone-900 border-t-transparent" />
       </main>
     );
@@ -104,7 +102,7 @@ export function CartPage() {
                 className="flex gap-6 p-6 bg-white border border-stone-200 hover:border-stone-300 transition-colors"
               >
                 {item.images[0] && (
-                  <a href={item.permalink} className="flex-shrink-0">
+                  <a href={item.permalink} className="shrink-0">
                     <img
                       src={item.images[0].src}
                       alt={item.name}
@@ -124,7 +122,7 @@ export function CartPage() {
                     </div>
                     <button
                       onClick={() => removeItem(item.key)}
-                      className="p-2 text-stone-400 hover:text-red-600 transition-colors flex-shrink-0"
+                      className="p-2 text-stone-400 hover:text-red-600 transition-colors shrink-0"
                       aria-label="Remove {item.name}"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -155,9 +153,9 @@ export function CartPage() {
                       {formatPrice(item.totals.line_total)}
                     </span>
                   </div>
-                  {vndRate && (
+                  {approx && (
                     <span className="text-xs text-stone-400 font-mono tracking-tight mt-2 block approximate-vnd" data-usd-price={item.totals.line_total}>
-                      ≈ {formatApproxVND(item.totals.line_total, vndRate)}
+                      {formatApproxPrice(item.totals.line_total, approx.currency, approx.rates)}
                     </span>
                   )}
                 </div>
@@ -223,9 +221,9 @@ export function CartPage() {
                     {formatPrice(totalPrice)}
                   </dd>
                 </div>
-                {vndRate && (
+                {approx && (
                   <dd className="text-xs text-stone-400 font-mono tracking-tight approximate-vnd" data-usd-price={totalPrice}>
-                    ≈ {formatApproxVND(totalPrice, vndRate)}
+                    {formatApproxPrice(totalPrice, approx.currency, approx.rates)}
                   </dd>
                 )}
               </dl>

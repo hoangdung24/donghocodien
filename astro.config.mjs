@@ -9,9 +9,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://donghocodien.com",
   output: "server",
-  adapter: cloudflare({
-    compatibilityDate: "2026-10-30",
-  }),
+  adapter: cloudflare(),
   session: false,
   integrations: [react(), sitemap()],
   image: {

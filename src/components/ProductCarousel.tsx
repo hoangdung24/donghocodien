@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
 import { formatUSD, calculateDiscountPercentage } from '../lib/utils/format';
-import { formatApproxVND, getClientExchangeRate, DEFAULT_USD_TO_VND_RATE } from '../lib/utils/currency';
+import { formatApproxPrice } from '../lib/utils/currency';
+import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
 
 interface ProductCarouselProps {
   products: Product[];
@@ -30,13 +31,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
 
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
-  const [exchangeRate, setExchangeRate] = useState<number>(DEFAULT_USD_TO_VND_RATE);
-
-  useEffect(() => {
-    getClientExchangeRate().then((rate) => {
-      if (rate > 0) setExchangeRate(rate);
-    });
-  }, []);
+  const approx = useApproxDisplay();
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -140,9 +135,11 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
                           {formatUSD(price)}
                         </span>
                       </div>
-                      <span className="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5">
-                        {formatApproxVND(price, exchangeRate)}
-                      </span>
+                      {approx && (
+                        <span className="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={price}>
+                          {formatApproxPrice(price, approx.currency, approx.rates)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </article>

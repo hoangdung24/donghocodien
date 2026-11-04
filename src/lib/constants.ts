@@ -32,3 +32,17 @@ export const COMPANY = {
   name: 'Spacetime Vintage Watch',
   legalName: 'Dong Ho Co Dien',
 } as const;
+
+export const BANK = {
+  beneficiaryName: 'LY XUAN LOC',
+  bankName: 'Vietnam Technological and Commercial Joint-stock Bank – Techcombank',
+  bankAddress: '191 Ba Trieu Street, Hai Ba Trung District, Ha Noi, Vietnam',
+  swiftCode: 'VTCBVNVX',
+  branch: 'Techcombank Sai Gon',
+  accountNumber: '8617868888',
+  accountAddress: 'Mega Ruby Residence, Long Truong Ward, Ho Chi Minh city, Vietnam, 700000',
+} as const;
+
+export const REVOLUT = {
+  appUrl: 'https://revolut.com/app/payments/send',
+} as const;

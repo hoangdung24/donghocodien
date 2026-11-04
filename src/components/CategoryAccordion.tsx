@@ -30,7 +30,7 @@ export function CategoryAccordion({ groups, activeCategoryId, search }: Category
           <div className="flex items-center justify-between">
             <a
               href={`/shop?category=${group.parent.id}${search ? `&search=${search}` : ""}`}
-              class="text-[11px] uppercase tracking-wider font-bold text-black hover:text-black transition-colors py-1.5 px-2"
+              className="text-[11px] uppercase tracking-wider font-bold text-black hover:text-black transition-colors py-1.5 px-2"
             >
               {group.parent.displayName}
             </a>
@@ -49,7 +49,7 @@ export function CategoryAccordion({ groups, activeCategoryId, search }: Category
                 <a
                   key={c.id}
                   href={`/shop?category=${c.id}${search ? `&search=${search}` : ""}`}
-                  class={`block text-[11px] uppercase tracking-wider border-l-2 border-transparent pl-3 py-1.5 transition-colors ${
+                  className={`block text-[11px] uppercase tracking-wider border-l-2 border-transparent pl-3 py-1.5 transition-colors ${
                     activeCategoryId === c.id
                       ? "border-black bg-stone-50 font-bold text-black"
                       : "border-transparent bg-transparent text-stone-600 hover:bg-stone-50"

@@ -76,7 +76,6 @@ export function ConsignmentForm() {
       setStatus('success');
     } else {
       setStatus('error');
-      const err = result.cause;
       setErrorMessage(
         'Unable to submit consignment form. Please try again or reach out directly via WhatsApp (+84 94 162 5653).'
       );
@@ -143,7 +142,7 @@ export function ConsignmentForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {errorMessage && (
         <div className="p-4 bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-3">
-          <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <div className="flex-1">{errorMessage}</div>
         </div>
       )}

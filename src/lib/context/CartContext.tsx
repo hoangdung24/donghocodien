@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useSyncExternalStore, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useSyncExternalStore, type ReactNode } from 'react';
 import { cartStore, type CartState } from '../../lib/cartStore';
 import type { Cart } from '../schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from '../services/cart';

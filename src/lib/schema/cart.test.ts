@@ -67,14 +67,14 @@ describe('Cart Schema Seam (Effect v4)', () => {
       extensions: {},
     };
 
-    const result = Schema.decodeUnknownSync(CartSchema)(raw);
+    const result = Schema.decodeSync(CartSchema)(raw);
     expect(result.items_count).toBe(0);
     expect(result.totals.total_price).toBe('0');
     expect(result.totals.currency_code).toBe('USD');
   });
 
   it('decodes cart with items from API', () => {
-    const result = Schema.decodeUnknownSync(CartSchema)(sampleCart);
+    const result = Schema.decodeSync(CartSchema)(sampleCart);
     expect(result.items.length).toBeGreaterThan(0);
     expect(result.items_count).toBe(result.items.length);
     expect(Number(result.totals.total_price)).toBeGreaterThan(0);
@@ -110,7 +110,7 @@ describe('Cart Schema Seam (Effect v4)', () => {
       ],
     };
 
-    const result = Schema.decodeUnknownSync(CartItemSchema)(raw);
+    const result = Schema.decodeSync(CartItemSchema)(raw);
     expect(result.id).toBe(22874);
     expect(result.quantity).toBe(1);
     expect(result.on_sale).toBe(true);
@@ -146,7 +146,7 @@ describe('Cart Schema Seam (Effect v4)', () => {
       currency_suffix: ' $',
     };
 
-    const result = Schema.decodeUnknownSync(CartTotalsSchema)(raw);
+    const result = Schema.decodeSync(CartTotalsSchema)(raw);
     expect(result.total_price).toBe('300');
     expect(result.currency_code).toBe('USD');
     expect(result.currency_symbol).toBe('$');

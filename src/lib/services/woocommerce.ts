@@ -1,6 +1,5 @@
 import { Effect, Schema } from 'effect';
 import {
-  ProductSchema,
   ProductsListSchema,
   ProductCategorySchema,
   type Product,
@@ -14,17 +13,17 @@ const PostsListSchema = Schema.Array(PostSchema);
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
 
-export class NetworkError extends Schema.TaggedError<NetworkError>()('NetworkError', {
+export class NetworkError extends Schema.TaggedError<NetworkError, { readonly brand: unique symbol }>()('NetworkError', {
   message: Schema.String,
 }) {}
 
-export class HttpError extends Schema.TaggedError<HttpError>()('HttpError', {
+export class HttpError extends Schema.TaggedError<HttpError, { readonly brand: unique symbol }>()('HttpError', {
   status: Schema.Finite,
   statusText: Schema.String,
   url: Schema.String,
 }) {}
 
-export class ProductNotFoundError extends Schema.TaggedError<ProductNotFoundError>()('ProductNotFoundError', {
+export class ProductNotFoundError extends Schema.TaggedError<ProductNotFoundError, { readonly brand: unique symbol }>()('ProductNotFoundError', {
   slug: Schema.String,
 }) {}
 
@@ -33,6 +32,8 @@ export interface GetProductsParams {
   per_page?: number;
   category?: number;
   search?: string;
+  min_price?: number;
+  max_price?: number;
   order?: 'asc' | 'desc';
   orderby?: 'date' | 'price' | 'title';
 }
@@ -44,6 +45,8 @@ export const getProducts = (params: GetProductsParams = {}) =>
     if (params.per_page) url.searchParams.set('per_page', String(params.per_page));
     if (params.category) url.searchParams.set('category', String(params.category));
     if (params.search) url.searchParams.set('search', params.search);
+    if (params.min_price !== undefined) url.searchParams.set('min_price', String(params.min_price));
+    if (params.max_price !== undefined) url.searchParams.set('max_price', String(params.max_price));
     if (params.order) url.searchParams.set('order', params.order);
     if (params.orderby) url.searchParams.set('orderby', params.orderby);
 
@@ -137,56 +140,6 @@ export const getProductBySlug = (slug: string) =>
   );
 
 const MAX_CATEGORY_PAGES = 5;
-const IN_STOCK_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
-
-// Fetch true in-stock counts per category from WP custom endpoint
-export const getInStockCategoryCounts = Effect.gen(function* () {
-  const cacheKey = 'categories:in-stock-counts';
-  const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < IN_STOCK_CACHE_TTL_MS) {
-    return cached.data as Map<number, number>;
-  }
-
-  const response = yield* Effect.tryPromise({
-    try: () => fetch('https://donghocodien.com/wp-json/spacetime/v1/categories-with-stock?per_page=200', {
-      headers: { Accept: 'application/json' },
-    }),
-    catch: (cause) => new NetworkError({ message: String(cause) }),
-  });
-
-  if (!response.ok) {
-    return yield* new HttpError({
-      status: response.status,
-      statusText: response.statusText,
-      url: response.url,
-    });
-  }
-
-  const raw = yield* Effect.tryPromise({
-    try: () => response.json(),
-    catch: (cause) => new NetworkError({ message: String(cause) }),
-  });
-
-  // Decode: array of { id, in_stock_count, ... }
-  const categories = yield* Schema.decodeUnknownEffect(
-    Schema.Array(Schema.Struct({
-      id: Schema.Finite,
-      in_stock_count: Schema.Finite,
-    }))
-  )(raw);
-
-  // Build Map
-  const inStockCounts = new Map<number, number>();
-  for (const cat of categories) {
-    inStockCounts.set(cat.id, cat.in_stock_count);
-  }
-
-  cache.set(cacheKey, { data: inStockCounts, timestamp: Date.now() });
-  return inStockCounts;
-}).pipe(
-  Effect.retry({ times: 1 }),
-  Effect.timeout('30 seconds')
-);
 
 export const getCategories = Effect.gen(function* () {
   const cacheKey = 'categories:all';
@@ -248,7 +201,7 @@ export const getCategories = Effect.gen(function* () {
   Effect.timeout('30 seconds')
 );
 
-export class PageNotFoundError extends Schema.TaggedError<PageNotFoundError>()('PageNotFoundError', {
+export class PageNotFoundError extends Schema.TaggedError<PageNotFoundError, { readonly brand: unique symbol }>()('PageNotFoundError', {
   slug: Schema.String,
 }) {}
 
@@ -300,7 +253,7 @@ export const getPageBySlug = (slug: string) =>
     Effect.timeout('30 seconds')
   );
 
-export class PostNotFoundError extends Schema.TaggedError<PostNotFoundError>()('PostNotFoundError', {
+export class PostNotFoundError extends Schema.TaggedError<PostNotFoundError, { readonly brand: unique symbol }>()('PostNotFoundError', {
   slug: Schema.String,
 }) {}
 

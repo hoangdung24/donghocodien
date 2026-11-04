@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCart } from '../lib/context/CartContext';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
@@ -11,7 +11,7 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ product, stockText, stockClass }: AddToCartButtonProps) {
-  const { addItem, openDrawer } = useCart();
+  const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
 

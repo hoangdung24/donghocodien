@@ -1,31 +1,27 @@
 import { useState } from 'react';
 import { Slider } from '@ark-ui/react/slider';
+import { Loader2 } from 'lucide-react';
+import { withPriceRange } from '../lib/utils/products';
 
 interface PriceRangeSliderProps {
   minPrice: number;
   maxPrice: number;
-  onFilter?: (min: number, max: number) => void;
   defaultMin?: number;
   defaultMax?: number;
 }
 
-export function PriceRangeSlider({ minPrice, maxPrice, onFilter, defaultMin, defaultMax }: PriceRangeSliderProps) {
+export function PriceRangeSlider({ minPrice, maxPrice, defaultMin, defaultMax }: PriceRangeSliderProps) {
   const [min, setMin] = useState(defaultMin ?? minPrice);
   const [max, setMax] = useState(defaultMax ?? maxPrice);
+  const [pending, setPending] = useState<'apply' | 'clear' | null>(null);
+
+  const hasAppliedFilter = defaultMin !== undefined && defaultMax !== undefined;
 
   const handleValueChange = (details: { value: number[] }) => {
     const [newMin, newMax] = details.value;
     if (newMin === undefined || newMax === undefined) return;
     setMin(Math.round(newMin));
     setMax(Math.round(newMax));
-  };
-
-  const handleValueChangeEnd = (details: { value: number[] }) => {
-    const [newMin, newMax] = details.value;
-    if (newMin === undefined || newMax === undefined) return;
-    setMin(Math.round(newMin));
-    setMax(Math.round(newMax));
-    onFilter?.(Math.round(newMin), Math.round(newMax));
   };
 
   const formatPrice = (price: number) => {
@@ -37,10 +33,16 @@ export function PriceRangeSlider({ minPrice, maxPrice, onFilter, defaultMin, def
     }).format(price);
   };
 
-  const handleReset = () => {
-    setMin(minPrice);
-    setMax(maxPrice);
-    onFilter?.(minPrice, maxPrice);
+  const handleApply = () => {
+    if (pending) return;
+    setPending('apply');
+    window.location.assign(withPriceRange(window.location.search, { min, max }));
+  };
+
+  const handleClear = () => {
+    if (pending) return;
+    setPending('clear');
+    window.location.assign(withPriceRange(window.location.search, null));
   };
 
   return (
@@ -58,7 +60,6 @@ export function PriceRangeSlider({ minPrice, maxPrice, onFilter, defaultMin, def
         step={100}
         value={[min, max]}
         onValueChange={handleValueChange}
-        onValueChangeEnd={handleValueChangeEnd}
         minStepsBetweenThumbs={1}
         className="w-full"
       >
@@ -83,13 +84,24 @@ export function PriceRangeSlider({ minPrice, maxPrice, onFilter, defaultMin, def
         </Slider.Control>
       </Slider.Root>
 
-      <button
-        onClick={handleReset}
-        disabled={min === minPrice && max === maxPrice}
-        className="w-full h-9 text-[11px] uppercase tracking-widest font-medium border border-stone-300 bg-white text-stone-600 hover:bg-stone-50 hover:text-black transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        Clear Filter
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={handleApply}
+          disabled={pending !== null || (min === minPrice && max === maxPrice && !hasAppliedFilter)}
+          className="flex-1 h-9 text-[11px] uppercase tracking-widest font-medium bg-black text-white hover:bg-stone-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+        >
+          {pending === 'apply' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {pending === 'apply' ? 'Filtering...' : 'Apply Filter'}
+        </button>
+        <button
+          onClick={handleClear}
+          disabled={pending !== null || !hasAppliedFilter}
+          className="flex-1 h-9 text-[11px] uppercase tracking-widest font-medium border border-stone-300 bg-white text-stone-600 hover:bg-stone-50 hover:text-black transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+        >
+          {pending === 'clear' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {pending === 'clear' ? 'Clearing...' : 'Clear'}
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,14 +1,18 @@
-import React from 'react';
 import type { Product } from '../lib/schema/product';
-import { formatApproxVND } from '../lib/utils/currency';
+import { formatApproxPrice } from '../lib/utils/currency';
+import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
 
 interface RelatedProductsProps {
   products: Product[];
   title?: string;
+  country?: string | null;
 }
 
-export function RelatedProducts({ products, title = 'Similar Watches' }: RelatedProductsProps) {
-  if (!products.length) return null;
+export function RelatedProducts({ products, title = 'Similar Watches', country }: RelatedProductsProps) {
+  const approx = useApproxDisplay(country);
+
+  const available = products.filter((product) => product.is_in_stock);
+  if (!available.length) return null;
 
   function cleanTitle(title: string) {
     return title
@@ -25,7 +29,7 @@ export function RelatedProducts({ products, title = 'Similar Watches' }: Related
         {title}
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-        {products.map((product) => (
+        {available.map((product) => (
           <article key={product.id} className="group flex flex-col bg-white border border-stone-200 overflow-hidden transition-all duration-300">
             <a href={`/product/${product.slug}`} className="relative block aspect-[300/375] overflow-hidden bg-brand-surface">
               {product.images[0] && (
@@ -45,13 +49,6 @@ export function RelatedProducts({ products, title = 'Similar Watches' }: Related
                     />
                   )}
                 </>
-              )}
-              {!product.is_in_stock && (
-                <div className="absolute top-2 left-2 z-10">
-                  <span className="bg-stone-900/80 text-white text-[9px] sm:text-[10px] uppercase font-sans tracking-widest px-2 py-0.5">
-                    Sold
-                  </span>
-                </div>
               )}
             </a>
 
@@ -75,9 +72,11 @@ export function RelatedProducts({ products, title = 'Similar Watches' }: Related
                         ${product.prices.price}
                       </span>
                     </div>
-                    <span className="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
-                      {formatApproxVND(product.prices.price)}
-                    </span>
+                    {approx && (
+                      <span className="text-[10px] sm:text-[11px] text-stone-400 font-sans tracking-tight mt-0.5 approximate-vnd" data-usd-price={product.prices.price}>
+                        {formatApproxPrice(product.prices.price, approx.currency, approx.rates)}
+                      </span>
+                    )}
                   </>
                 ) : (
                   <span className="text-sm sm:text-base font-semibold text-stone-950 uppercase">

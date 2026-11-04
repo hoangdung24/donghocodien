@@ -1,4 +1,3 @@
-import React from 'react';
 import { Accordion } from '@ark-ui/react/accordion';
 import { ChevronDown, ShieldCheck, Clock, RefreshCw } from 'lucide-react';
 

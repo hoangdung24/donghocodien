@@ -5,6 +5,7 @@ interface Props {
   image?: string;
   url?: string;
   type?: 'website' | 'product' | 'article';
+  itunesAppId?: string;
   product?: {
     name: string;
     brand: string;
@@ -31,6 +32,7 @@ const {
   image = '/og-banner.jpg',
   url = Astro.url.pathname,
   type = 'website',
+  itunesAppId,
   product,
   article,
 } = Astro.props;
@@ -73,6 +75,7 @@ const twitterHandle = '@spacetime_vintage';
 <!-- Additional Meta Tags -->
 <meta name="theme-color" content="#1a1a1a" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{itunesAppId && <meta name="apple-itunes-app" content={`app-id=${itunesAppId}`} />}
 
 <!-- Product Schema (JSON-LD) -->
 {product && (

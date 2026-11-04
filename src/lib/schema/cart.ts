@@ -52,8 +52,8 @@ export const CartTotalsSchema = Schema.Struct({
   total_fees_tax: Schema.String,
   total_discount: Schema.String,
   total_discount_tax: Schema.String,
-  total_shipping: Schema.optional(Schema.String, { nullable: true }),
-  total_shipping_tax: Schema.optional(Schema.String, { nullable: true }),
+  total_shipping: Schema.optional(Schema.NullOr(Schema.String)),
+  total_shipping_tax: Schema.optional(Schema.NullOr(Schema.String)),
   total_price: Schema.String,
   total_tax: Schema.String,
   tax_lines: Schema.Array(

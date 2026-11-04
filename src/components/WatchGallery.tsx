@@ -1,4 +1,3 @@
-import React from 'react';
 import { Carousel } from '@ark-ui/react/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ProductImage } from '../lib/schema/product';
@@ -55,7 +54,7 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
             <Carousel.Indicator
               key={image.id ?? index}
               index={index}
-              className="flex-shrink-0 w-16 h-20 border border-stone-200 overflow-hidden cursor-pointer opacity-70 data-[current]:opacity-100 data-[current]:border-stone-900 transition-all"
+              className="shrink-0 w-16 h-20 border border-stone-200 overflow-hidden cursor-pointer opacity-70 data-current:opacity-100 data-current:border-stone-900 transition-all"
             >
               <img
                 src={image.thumbnail || image.src}

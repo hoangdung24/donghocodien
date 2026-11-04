@@ -10,6 +10,7 @@ interface Props {
   description?: string;
   image?: string;
   type?: 'website' | 'product' | 'article';
+  itunesAppId?: string;
   product?: {
     name: string;
     brand: string;
@@ -35,6 +36,7 @@ const {
   description,
   image,
   type = 'website',
+  itunesAppId,
   product,
   article,
 } = Astro.props;
@@ -45,7 +47,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <Head title={title} description={description} image={image} type={type} product={product} article={article} />
+    <Head title={title} description={description} image={image} type={type} itunesAppId={itunesAppId} product={product} article={article} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -62,17 +64,46 @@ const {
     <Footer />
 
     <script>
-      import { getClientExchangeRate, formatApproxVND } from '../lib/utils/currency';
+      import { formatApproxPrice, getExchangeRates, resolveApproxDisplayCurrency } from '../lib/utils/currency';
+      import { detectVisitorCountry, readVisitorCountry } from '../lib/utils/geo';
 
-      getClientExchangeRate().then((rate) => {
-        if (!rate || rate <= 0) return;
-        document.querySelectorAll<HTMLElement>('.approximate-vnd').forEach((el) => {
-          const usd = Number(el.dataset.usdPrice);
-          if (usd && !isNaN(usd)) {
-            el.textContent = formatApproxVND(usd, rate);
+      (async () => {
+        const el = await new Promise((resolve) => {
+          const existing = document.getElementById('approx-price-product');
+          if (existing) {
+            resolve(existing);
+            return;
           }
+          const observer = new MutationObserver(() => {
+            const found = document.getElementById('approx-price-product');
+            if (found) {
+              observer.disconnect();
+              resolve(found);
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+          setTimeout(() => {
+            observer.disconnect();
+            resolve(null);
+          }, 10000);
         });
-      });
+        if (!el) return;
+        let country = readVisitorCountry();
+        if (!country) {
+          country = await detectVisitorCountry();
+        }
+        const currency = resolveApproxDisplayCurrency(country);
+        if (country && !currency) {
+          el.remove();
+          return;
+        }
+        const rates = await getExchangeRates();
+        if (!rates) return;
+        const usd = Number(el.dataset.usdPrice);
+        if (usd && !isNaN(usd)) {
+          el.textContent = formatApproxPrice(usd, currency ?? 'VND', rates);
+        }
+      })();
     </script>
   </body>
 </html>

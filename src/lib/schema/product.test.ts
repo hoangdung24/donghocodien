@@ -5,7 +5,7 @@ import sampleProduct from '../../tests/fixtures/sample-product.json';
 
 describe('Product Schema Seam (Effect v4)', () => {
   it('successfully decodes a real WooCommerce Store API product fixture', () => {
-    const decoded = Schema.decodeUnknownSync(ProductSchema)(sampleProduct);
+    const decoded = Schema.decodeSync(ProductSchema)(sampleProduct);
 
     expect(decoded.id).toBe(22874);
     expect(decoded.slug).toBe('edox-baignoire-ref-200246');

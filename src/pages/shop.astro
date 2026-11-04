@@ -4,8 +4,9 @@ import { WatchCard } from '../components/WatchCard';
 import { PriceRangeSlider } from '../components/PriceRangeSlider';
 import { ChevronDown } from '@lucide/astro';
 import { Effect } from 'effect';
-import { getProducts, getCategories, getInStockCategoryCounts } from '../lib/services/woocommerce';
+import { getProducts, getCategories } from '../lib/services/woocommerce';
 import { buildCategoryTree, decodeCategoryName } from '../lib/utils/categories';
+import { countInStockByCategory } from '../lib/utils/products';
 import { CategoryAccordion } from '../components/CategoryAccordion';
 
 const url = Astro.url;
@@ -25,20 +26,38 @@ const categoryId = rawCategory
     : slugToIdMap[rawCategory.toLowerCase()]
   : undefined;
 
-const [productsResult, categoriesResult, inStockCountsResult] = await Effect.runPromise(
-  Effect.all([
-    Effect.exit(getProducts({ page, per_page: 20, search, category: categoryId })),
-    Effect.exit(getCategories),
-    Effect.exit(getInStockCategoryCounts),
-  ])
+const minPriceParam = url.searchParams.get('min_price');
+const maxPriceParam = url.searchParams.get('max_price');
+const parsedMinPrice = minPriceParam !== null ? Number(minPriceParam) : NaN;
+const parsedMaxPrice = maxPriceParam !== null ? Number(maxPriceParam) : NaN;
+const hasPriceFilter = !isNaN(parsedMinPrice) && !isNaN(parsedMaxPrice);
+
+const [productsResult, categoriesResult, allProductsResult] = await Effect.runPromise(
+  Effect.all(
+    [
+      Effect.exit(
+        getProducts({
+          page,
+          per_page: 20,
+          search,
+          category: categoryId,
+          min_price: hasPriceFilter ? parsedMinPrice : undefined,
+          max_price: hasPriceFilter ? parsedMaxPrice : undefined,
+        })
+      ),
+      Effect.exit(getCategories),
+      Effect.exit(getProducts({ per_page: 100 })),
+    ],
+    { concurrency: 'unbounded' }
+  )
 );
 
 const allProducts = productsResult._tag === 'Success' ? productsResult.value : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
-const inStockCounts = inStockCountsResult._tag === 'Success' ? inStockCountsResult.value : new Map();
+const allAvailableProducts = allProductsResult._tag === 'Success' ? allProductsResult.value : [];
 
-// Filter products: only show in-stock products with price > 0
 const products = allProducts.filter((p) => p.is_in_stock && Number(p.prices.price) > 0);
+const inStockCounts = countInStockByCategory(allAvailableProducts);
 
 const activeCategory = categoryId ? categories.find((c) => c.id === categoryId) : null;
 const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.name) : null;
@@ -52,8 +71,6 @@ const pageTitle = activeCategory
 
 const categoryGroups = buildCategoryTree(categories);
 
-// Filter category groups to only show those with available in-stock products globally
-// Use true in-stock counts computed from all products
 const filteredCategoryGroups = categoryGroups
   .map((group) => ({
     ...group,
@@ -61,18 +78,21 @@ const filteredCategoryGroups = categoryGroups
   }))
   .filter((group) => group.children.length > 0);
 
-// Calculate price range from available products
-const pricesWithValue = products
-  .filter((p) => Number(p.prices.price) > 0)
+const boundPrices = allAvailableProducts
+  .filter((p) => p.is_in_stock && Number(p.prices.price) > 0)
   .map((p) => Number(p.prices.price));
-const minPrice = pricesWithValue.length > 0 ? Math.floor(Math.min(...pricesWithValue) / 100) * 100 : 0;
-const maxPrice = pricesWithValue.length > 0 ? Math.ceil(Math.max(...pricesWithValue) / 100) * 100 : 100000;
+const minPrice = boundPrices.length > 0 ? Math.floor(Math.min(...boundPrices) / 100) * 100 : 0;
+const maxPrice = boundPrices.length > 0 ? Math.ceil(Math.max(...boundPrices) / 100) * 100 : 100000;
 
 const pageHref = (p: number) => {
   const params = new URLSearchParams();
   if (p > 1) params.set('page', String(p));
   if (categoryId) params.set('category', String(categoryId));
   if (search) params.set('search', search);
+  if (hasPriceFilter) {
+    params.set('min_price', String(parsedMinPrice));
+    params.set('max_price', String(parsedMaxPrice));
+  }
   const qs = params.toString();
   return `/shop${qs ? `?${qs}` : ''}`;
 };
@@ -96,10 +116,12 @@ const hasNextPage = products.length === 20;
             </section>
 
             <PriceRangeSlider
-                client:visible
-                minPrice={minPrice}
-                maxPrice={maxPrice}
-              />
+              client:visible
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              defaultMin={hasPriceFilter ? parsedMinPrice : undefined}
+              defaultMax={hasPriceFilter ? parsedMaxPrice : undefined}
+            />
           </aside>
 
           <div class="lg:col-span-9">
@@ -110,7 +132,7 @@ const hasNextPage = products.length === 20;
             ) : (
               <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 {products.map((watch) => (
-                  <WatchCard client:visible product={watch} />
+                  <WatchCard client:visible product={watch} country={Astro.locals.country} />
                 ))}
               </div>
 

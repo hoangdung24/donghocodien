@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Effect } from 'effect';
 import { getCart, addToCart, updateCartItem, removeCartItem, clearCart } from './cart';
-import { CartSchema } from '../schema/cart';
 import sampleCart from '../../tests/fixtures/sample-cart.json';
 
 describe('Cart Service Seam (Effect v4)', () => {
