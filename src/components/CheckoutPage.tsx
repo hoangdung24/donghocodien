@@ -2,39 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '../lib/context/CartContext';
 import { ShoppingBag, Shield, Truck, CreditCard, Check, ChevronRight } from 'lucide-react';
 import { formatApproxVND } from '../lib/utils/currency';
-
-const COUNTRIES = [
-  { code: 'VN', name: 'Vietnam' },
-  { code: 'US', name: 'United States (US)' },
-  { code: 'GB', name: 'United Kingdom (UK)' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
-  { code: 'JP', name: 'Japan' },
-  { code: 'SG', name: 'Singapore' },
-  { code: 'KR', name: 'South Korea' },
-  { code: 'TH', name: 'Thailand' },
-  { code: 'MY', name: 'Malaysia' },
-  { code: 'HK', name: 'Hong Kong' },
-  { code: 'TW', name: 'Taiwan' },
-  { code: 'CN', name: 'China' },
-  { code: 'AE', name: 'United Arab Emirates' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'CH', name: 'Switzerland' },
-  { code: 'SE', name: 'Sweden' },
-  { code: 'NO', name: 'Norway' },
-  { code: 'DK', name: 'Denmark' },
-  { code: 'FI', name: 'Finland' },
-  { code: 'AT', name: 'Austria' },
-  { code: 'BE', name: 'Belgium' },
-  { code: 'PT', name: 'Portugal' },
-  { code: 'IE', name: 'Ireland' },
-  { code: 'NZ', name: 'New Zealand' },
-  { code: 'OTHER', name: 'Other' },
-];
+import { CHECKOUT_COUNTRIES, COUNTRY_STATES, COUNTRY_LOCALE } from '../lib/data/woocommerce-regions';
+import { Button } from './Button';
 
 interface BillingForm {
   first_name: string;
@@ -43,6 +12,7 @@ interface BillingForm {
   address_1: string;
   address_2: string;
   city: string;
+  state: string;
   postcode: string;
   phone: string;
   email: string;
@@ -51,10 +21,11 @@ interface BillingForm {
 const EMPTY_FORM: BillingForm = {
   first_name: '',
   last_name: '',
-  country: 'US',
+  country: '',
   address_1: '',
   address_2: '',
   city: '',
+  state: '',
   postcode: '',
   phone: '',
   email: '',
@@ -90,7 +61,27 @@ export function CheckoutPage() {
     return `${symbol}${num.toFixed(2)}`;
   };
 
-  const setField = (field: keyof BillingForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const stateOptions = COUNTRY_STATES[form.country];
+  const stateLocale = COUNTRY_LOCALE[form.country]?.state;
+  const postcodeLocale = COUNTRY_LOCALE[form.country]?.postcode;
+  const stateHidden = stateLocale?.hidden ?? false;
+  const stateRequired = !stateHidden && (stateLocale?.required ?? false);
+  const stateLabel = stateLocale?.label ?? 'State / Province';
+  const postcodeHidden = postcodeLocale?.hidden ?? false;
+  const postcodeRequired = !postcodeHidden && (postcodeLocale?.required ?? false);
+  const postcodeLabel = postcodeLocale?.label ?? 'Postcode / ZIP';
+
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const next = e.target.value;
+    const nextStateOptions = COUNTRY_STATES[next];
+    setForm((f) => ({
+      ...f,
+      country: next,
+      state: nextStateOptions && f.state in nextStateOptions ? f.state : '',
+    }));
+  };
+
+  const setField = (field: keyof BillingForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
   };
 
@@ -107,7 +98,7 @@ export function CheckoutPage() {
         address_1: form.address_1,
         address_2: form.address_2,
         city: form.city,
-        state: '',
+        state: form.state,
         postcode: form.postcode,
         country: form.country,
         phone: form.phone,
@@ -156,12 +147,7 @@ export function CheckoutPage() {
           <p className="text-stone-500 mb-8 max-w-md mx-auto">
             Browse our curated collection of rare vintage watches before proceeding to checkout.
           </p>
-          <a
-            href="/shop"
-            className="inline-block px-8 py-4 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors"
-          >
-            Return to Shop
-          </a>
+          <Button href="/shop">Return to Shop</Button>
         </div>
       </main>
     );
@@ -239,11 +225,11 @@ export function CheckoutPage() {
               id="billing_country"
               required
               value={form.country}
-              onChange={setField('country')}
+              onChange={handleCountryChange}
               className={inputClass}
               autoComplete="country"
             >
-              {COUNTRIES.map((c) => (
+              {CHECKOUT_COUNTRIES.map((c) => (
                 <option key={c.code} value={c.code}>{c.name}</option>
               ))}
             </select>
@@ -277,20 +263,56 @@ export function CheckoutPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5">
-            <div>
-              <label htmlFor="billing_postcode" className={labelClass}>
-                Postcode / ZIP <span className="normal-case text-stone-400">(optional)</span>
+          {!stateHidden && (
+            <div className="mt-5">
+              <label htmlFor="billing_state" className={labelClass}>
+                {stateLabel} {stateRequired ? '*' : <span className="normal-case text-stone-400">(optional)</span>}
               </label>
-              <input
-                id="billing_postcode"
-                type="text"
-                value={form.postcode}
-                onChange={setField('postcode')}
-                className={inputClass}
-                autoComplete="postal-code"
-              />
+              {stateOptions ? (
+                <select
+                  id="billing_state"
+                  required={stateRequired}
+                  value={form.state}
+                  onChange={setField('state')}
+                  className={inputClass}
+                >
+                  <option value="">Select an option…</option>
+                  {Object.entries(stateOptions).map(([code, name]) => (
+                    <option key={code} value={code}>{name}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id="billing_state"
+                  type="text"
+                  required={stateRequired}
+                  value={form.state}
+                  onChange={setField('state')}
+                  className={inputClass}
+                  autoComplete="address-level1"
+                />
+              )}
             </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5">
+            {!postcodeHidden && (
+              <div>
+                <label htmlFor="billing_postcode" className={labelClass}>
+                  {postcodeLabel}{' '}
+                  {postcodeRequired ? '*' : <span className="normal-case text-stone-400">(optional)</span>}
+                </label>
+                <input
+                  id="billing_postcode"
+                  type="text"
+                  required={postcodeRequired}
+                  value={form.postcode}
+                  onChange={setField('postcode')}
+                  className={inputClass}
+                  autoComplete="postal-code"
+                />
+              </div>
+            )}
             <div>
               <label htmlFor="billing_city" className={labelClass}>Town / City *</label>
               <input
@@ -438,10 +460,10 @@ export function CheckoutPage() {
               <p className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs">{submitError}</p>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={submitting || !terms}
-              className="mt-6 w-full py-4 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="mt-6 w-full"
             >
               {submitting ? (
                 <>
@@ -454,7 +476,7 @@ export function CheckoutPage() {
                   Place Order
                 </>
               )}
-            </button>
+            </Button>
 
             <div className="mt-6 pt-4 border-t border-stone-200 space-y-3 text-xs text-stone-600">
               <div className="flex items-center gap-2">

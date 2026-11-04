@@ -1,7 +1,11 @@
 import type { Cart } from './schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from './services/cart';
+import { toastStore } from './toastStore';
 
 const API_BASE = '/wc/store/v1';
+
+const stripHtml = (value: unknown): string =>
+  typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 
 export interface CartState {
   cart: Cart | null;
@@ -134,7 +138,9 @@ class CartStore {
       const newCart = await this.addToCartApi(productId, quantity);
       this.setState({ cart: newCart, isDrawerOpen: true });
     } catch (err) {
-      this.setState({ error: err instanceof Error ? err.message : 'Failed to add item' });
+      const message = err instanceof Error ? err.message : 'Failed to add item';
+      this.setState({ error: message });
+      toastStore.show(message, 'error');
       throw err;
     }
   }
@@ -146,7 +152,9 @@ class CartStore {
       const newCart = await this.updateCartItemApi(key, quantity);
       this.setState({ cart: newCart });
     } catch (err) {
-      this.setState({ error: err instanceof Error ? err.message : 'Failed to update quantity' });
+      const message = err instanceof Error ? err.message : 'Failed to update quantity';
+      this.setState({ error: message });
+      toastStore.show(message, 'error');
       throw err;
     }
   }
@@ -157,7 +165,9 @@ class CartStore {
       const newCart = await this.removeCartItemApi(key);
       this.setState({ cart: newCart });
     } catch (err) {
-      this.setState({ error: err instanceof Error ? err.message : 'Failed to remove item' });
+      const message = err instanceof Error ? err.message : 'Failed to remove item';
+      this.setState({ error: message });
+      toastStore.show(message, 'error');
       throw err;
     }
   }
@@ -168,7 +178,9 @@ class CartStore {
       const newCart = await this.clearCartApi();
       this.setState({ cart: newCart });
     } catch (err) {
-      this.setState({ error: err instanceof Error ? err.message : 'Failed to clear cart' });
+      const message = err instanceof Error ? err.message : 'Failed to clear cart';
+      this.setState({ error: message });
+      toastStore.show(message, 'error');
       throw err;
     }
   }
@@ -182,12 +194,13 @@ class CartStore {
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: 'Checkout failed' }));
-        throw new Error(error.message || 'Checkout failed');
+        throw new Error(stripHtml(error.message) || 'Checkout failed');
       }
       return response.json();
     } catch (err) {
-      this.setState({ error: err instanceof Error ? err.message : 'Checkout failed' });
-      throw err;
+      const message = stripHtml(err instanceof Error ? err.message : 'Checkout failed');
+      this.setState({ error: message });
+      throw new Error(message);
     }
   }
 

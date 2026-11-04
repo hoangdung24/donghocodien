@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '../lib/context/CartContext';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
+import { Button } from './Button';
 
 interface AddToCartButtonProps {
   product: Product;
@@ -36,10 +37,10 @@ export function AddToCartButton({ product, stockText, stockClass }: AddToCartBut
           {stockText || (product.is_in_stock ? 'In stock' : 'Out of stock')}
         </span>
       </div>
-      <button
+      <Button
         onClick={handleAddToCart}
         disabled={!product.is_in_stock || isAdding}
-        className="w-full py-4 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full"
       >
         {isAdding && <Loader2 className="w-5 h-5 animate-spin" />}
         {added && <Check className="w-5 h-5" />}
@@ -47,7 +48,7 @@ export function AddToCartButton({ product, stockText, stockClass }: AddToCartBut
         <span>
           {isAdding ? 'Adding...' : added ? 'Added to Case' : 'Add to Collector\'s Case'}
         </span>
-      </button>
+      </Button>
     </div>
   );
 }

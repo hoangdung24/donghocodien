@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '../lib/context/CartContext';
 import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Truck, Shield, CreditCard, RotateCcw } from 'lucide-react';
 import { formatApproxVND } from '../lib/utils/currency';
+import { Button } from './Button';
 
 export function CartPage() {
   const {
@@ -92,12 +93,7 @@ export function CartPage() {
           <p className="text-stone-500 mb-8 max-w-md mx-auto">
             You haven't added any timepieces to your collector's case yet. Browse our curated collection of rare vintage watches.
           </p>
-          <a
-            href="/shop"
-            className="inline-block px-8 py-4 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors"
-          >
-            Browse Collection
-          </a>
+          <Button href="/shop">Browse Collection</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
@@ -250,25 +246,12 @@ export function CartPage() {
               </div>
 
               <div className="mt-6 space-y-3">
-                <a
-                  href="/checkout"
-                  className="w-full py-3.5 bg-stone-900 text-white font-serif text-sm tracking-wider uppercase hover:bg-stone-800 transition-colors text-center block"
-                >
-                  Proceed to Checkout
-                </a>
-                <button
-                  onClick={clearCart}
-                  className="w-full py-3.5 border border-stone-300 text-stone-800 font-serif text-sm tracking-wider uppercase hover:border-stone-900 transition-colors flex items-center justify-center gap-2"
-                >
+                <Button href="/checkout" className="w-full">Proceed to Checkout</Button>
+                <Button variant="outline" onClick={clearCart} className="w-full">
                   <RotateCcw className="w-4 h-4" />
                   Clear Case
-                </button>
-                <a
-                  href="/shop"
-                  className="w-full py-3.5 text-stone-600 font-serif text-sm tracking-wider uppercase hover:text-stone-900 transition-colors text-center block"
-                >
-                  ← Continue Shopping
-                </a>
+                </Button>
+                <Button variant="ghost" href="/shop" className="w-full">← Continue Shopping</Button>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { ShoppingBag, Loader2, Check } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
 import { formatApproxVND } from '../lib/utils/currency';
 import { cartStore } from '../lib/cartStore';
+import { Button } from './Button';
 
 // Default placeholder: black background with logo (monospace for classic look)
 const DEFAULT_PLACEHOLDER = `data:image/svg+xml;base64,${btoa(`
@@ -116,18 +117,12 @@ export function WatchCard({ product }: WatchCardProps) {
                 {formatApproxVND(product.prices.price)}
               </span>
 
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className="mt-3 w-full sm:w-auto text-xs sm:text-sm uppercase tracking-wider border-2 border-black bg-black text-white px-5 py-2 font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
-              >
+              <Button onClick={handleAddToCart} disabled={isAdding} size="sm" className="mt-3 w-full">
                 {isAdding && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {added && <Check className="w-3.5 h-3.5" />}
                 {!isAdding && !added && <ShoppingBag className="w-3.5 h-3.5" />}
-                <span className="flex-1 text-center">
-                  {isAdding ? 'Adding...' : added ? 'Added' : 'Add to Cart'}
-                </span>
-              </button>
+                <span>{isAdding ? 'Adding...' : added ? 'Added' : 'Add to Cart'}</span>
+              </Button>
             </>
           ) : (
             <span className="mt-3 w-full sm:w-auto block text-xs sm:text-sm uppercase tracking-wider border-2 border-stone-300 bg-white text-stone-500 px-5 py-2 font-medium text-center">
