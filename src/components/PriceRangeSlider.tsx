@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Slider } from '@ark-ui/react/slider';
 import { Loader2 } from 'lucide-react';
 import { withPriceRange } from '../lib/utils/products';
+import { formatPrice } from '../lib/utils/format';
 
 interface PriceRangeSliderProps {
   minPrice: number;
   maxPrice: number;
   defaultMin?: number;
   defaultMax?: number;
+  basePath?: string;
 }
 
 export function PriceRangeSlider({
@@ -15,6 +17,7 @@ export function PriceRangeSlider({
   maxPrice,
   defaultMin,
   defaultMax,
+  basePath = '/watches',
 }: PriceRangeSliderProps) {
   const [min, setMin] = useState(defaultMin ?? minPrice);
   const [max, setMax] = useState(defaultMax ?? maxPrice);
@@ -29,34 +32,23 @@ export function PriceRangeSlider({
     setMax(Math.round(newMax));
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
   const handleApply = () => {
     if (pending) return;
     setPending('apply');
-    window.location.assign(withPriceRange(window.location.search, { min, max }));
+    window.location.assign(withPriceRange(window.location.search, { min, max }, basePath));
   };
 
   const handleClear = () => {
     if (pending) return;
     setPending('clear');
-    window.location.assign(withPriceRange(window.location.search, null));
+    window.location.assign(withPriceRange(window.location.search, null, basePath));
   };
 
   return (
-    <div className='space-y-5'>
+    <div className='flex flex-col gap-5'>
       <div className='flex items-center justify-between'>
-        <span className='text-[11px] font-bold tracking-wider text-black uppercase'>
-          Price Range
-        </span>
-        <span className='text-[12px] font-medium text-black tabular-nums'>
+        <span className='text-[11px] font-bold tracking-wider uppercase'>Price Range</span>
+        <span className='text-[12px] font-medium tabular-nums'>
           {formatPrice(min)} – {formatPrice(max)}
         </span>
       </div>
@@ -103,7 +95,7 @@ export function PriceRangeSlider({
         <button
           onClick={handleClear}
           disabled={pending !== null || !hasAppliedFilter}
-          className='flex h-9 flex-1 cursor-pointer items-center justify-center gap-2 border border-stone-300 bg-white text-[11px] font-medium tracking-widest text-stone-600 uppercase transition-all hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-40'
+          className='flex h-9 flex-1 cursor-pointer items-center justify-center gap-2 border border-stone-300 bg-white text-[11px] font-medium tracking-widest text-stone-600 uppercase transition-all hover:bg-stone-50 hover:text-brand-dark disabled:cursor-not-allowed disabled:opacity-40'
         >
           {pending === 'clear' && <Loader2 className='h-3.5 w-3.5 animate-spin' />}
           {pending === 'clear' ? 'Clearing...' : 'Clear'}

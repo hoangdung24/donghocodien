@@ -38,7 +38,10 @@ export function CartPage() {
 
   const formatPrice = (price: string) => {
     const num = parseFloat(price);
-    return `${currency.symbol}${num.toFixed(currency.code === 'VND' ? 0 : 2)}`;
+    const formatted = Math.round(num)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${currency.symbol}${formatted}`;
   };
 
   const getItemTotal = (item: Cart['items'][number]) => {
@@ -72,7 +75,7 @@ export function CartPage() {
           Home
         </a>
         <span>/</span>
-        <a href='/shop' className='transition-colors hover:text-stone-900'>
+        <a href='/watches' className='transition-colors hover:text-stone-900'>
           Collection
         </a>
         <span>/</span>
@@ -80,7 +83,7 @@ export function CartPage() {
       </nav>
 
       <div className='mb-8'>
-        <h1 className='mb-2 font-serif text-3xl leading-tight font-normal text-stone-950 sm:text-4xl'>
+        <h1 className='mb-2 text-3xl leading-tight font-normal text-stone-950 sm:text-4xl'>
           Collector's Case
         </h1>
         <p className='text-sm text-stone-500'>
@@ -100,16 +103,16 @@ export function CartPage() {
       {!cart || cart.items.length === 0 ? (
         <div className='py-20 text-center'>
           <ShoppingBag className='mx-auto mb-6 h-24 w-24 text-stone-300' />
-          <h2 className='mb-3 font-serif text-2xl text-stone-900'>Your case is empty</h2>
+          <h2 className='mb-3 text-2xl text-stone-900'>Your case is empty</h2>
           <p className='mx-auto mb-8 max-w-md text-stone-500'>
             You haven't added any timepieces to your collector's case yet. Browse our curated
             collection of rare vintage watches.
           </p>
-          <Button href='/shop'>Browse Collection</Button>
+          <Button href='/watches'>Browse Collection</Button>
         </div>
       ) : (
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12'>
-          <div className='space-y-4 lg:col-span-2'>
+          <div className='flex flex-col gap-4 lg:col-span-2'>
             {cart.items.map((item) => (
               <div
                 key={item.key}
@@ -129,7 +132,7 @@ export function CartPage() {
                     <div>
                       <a
                         href={item.permalink}
-                        className='block truncate font-serif text-lg font-medium text-stone-900 transition-colors hover:text-yellow-900'
+                        className='block truncate text-lg font-medium text-stone-900 transition-colors hover:text-yellow-900'
                       >
                         {item.name}
                       </a>
@@ -153,7 +156,7 @@ export function CartPage() {
                       >
                         <Minus className='h-4 w-4' />
                       </button>
-                      <span className='min-w-[3rem] border-x border-stone-200 bg-white px-4 py-1.5 text-center font-mono text-sm font-medium text-stone-900'>
+                      <span className='min-w-12 border-x border-stone-200 bg-white px-4 py-1.5 text-center font-mono text-sm font-medium text-stone-900'>
                         {item.quantity}
                       </span>
                       <button
@@ -179,7 +182,7 @@ export function CartPage() {
 
             {cart.cross_sells.length > 0 && (
               <div className='mt-8 border-t border-stone-200 pt-6'>
-                <h3 className='mb-4 font-serif text-xl text-stone-900'>You may also appreciate</h3>
+                <h3 className='mb-4 text-xl text-stone-900'>You may also appreciate</h3>
                 <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>
                   {cart.cross_sells.slice(0, 4).map((crossSell) => (
                     <a
@@ -194,7 +197,7 @@ export function CartPage() {
                           className='mb-3 h-32 w-full object-cover'
                         />
                       )}
-                      <p className='truncate font-serif text-xs text-stone-900 transition-colors group-hover:text-yellow-900'>
+                      <p className='truncate text-xs text-stone-900 transition-colors group-hover:text-yellow-900'>
                         {crossSell.name}
                       </p>
                       <p className='mt-1 text-xs font-semibold text-yellow-900'>
@@ -210,11 +213,11 @@ export function CartPage() {
 
           <div className='lg:col-span-1'>
             <div className='sticky top-28 border border-stone-200 bg-white p-6'>
-              <h2 className='mb-4 border-b border-stone-200 pb-3 font-serif text-lg text-stone-900'>
+              <h2 className='mb-4 border-b border-stone-200 pb-3 text-lg text-stone-900'>
                 Case Summary
               </h2>
 
-              <dl className='space-y-3 text-sm'>
+              <dl className='flex flex-col gap-3 text-sm'>
                 <div className='flex justify-between'>
                   <dt className='text-stone-600'>Subtotal ({itemCount} items)</dt>
                   <dd className='font-medium text-stone-900'>{formatPrice(subtotal.toFixed(2))}</dd>
@@ -232,8 +235,8 @@ export function CartPage() {
                   </dd>
                 </div>
                 <div className='flex justify-between border-t border-stone-200 pt-3'>
-                  <dt className='font-serif text-base font-medium text-stone-950'>Total</dt>
-                  <dd className='font-serif text-base font-medium text-yellow-900'>
+                  <dt className='text-base font-medium text-stone-950'>Total</dt>
+                  <dd className='text-base font-medium text-yellow-900'>
                     {formatPrice(totalPrice)}
                   </dd>
                 </div>
@@ -244,7 +247,7 @@ export function CartPage() {
                 )}
               </dl>
 
-              <div className='mt-6 space-y-3 border-t border-stone-200 pt-4 text-xs text-stone-600'>
+              <div className='mt-6 flex flex-col gap-3 border-t border-stone-200 pt-4 text-xs text-stone-600'>
                 <div className='flex items-center gap-2'>
                   <Shield className='h-4 w-4 text-green-700' />
                   <span>Authenticated & mechanically verified</span>
@@ -259,7 +262,7 @@ export function CartPage() {
                 </div>
               </div>
 
-              <div className='mt-6 space-y-3'>
+              <div className='mt-6 flex flex-col gap-3'>
                 <Button href='/checkout' className='w-full'>
                   Proceed to Checkout
                 </Button>
@@ -267,7 +270,7 @@ export function CartPage() {
                   <RotateCcw className='h-4 w-4' />
                   Clear Case
                 </Button>
-                <Button variant='ghost' href='/shop' className='w-full'>
+                <Button variant='ghost' href='/watches' className='w-full'>
                   ← Continue Shopping
                 </Button>
               </div>

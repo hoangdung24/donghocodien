@@ -1,0 +1,53 @@
+---
+import { Search } from '@lucide/astro';
+
+interface Props {
+  id: string;
+  value?: string;
+  placeholder?: string;
+  category?: string | null;
+  action?: string;
+  className?: string;
+}
+
+const {
+  id,
+  value,
+  placeholder = 'Search watches…',
+  category,
+  action = '/watches',
+  className = '',
+} = Astro.props;
+---
+
+<form
+  action={action}
+  method='GET'
+  role='search'
+  aria-label={`${id} search`}
+  class={className}
+  data-search-form
+>
+  {category && <input type='hidden' name='category' value={category} />}
+  <label for={id} class='sr-only'>
+    Search watches
+  </label>
+  <div class='flex items-stretch border border-brand-dark bg-stone-50 transition-colors'>
+    <input
+      type='search'
+      name='search'
+      id={id}
+      value={value}
+      placeholder={placeholder}
+      autocomplete='off'
+      class='min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none'
+    />
+    <button
+      type='submit'
+      aria-label='Search'
+      class='flex w-11 shrink-0 cursor-pointer items-center justify-center bg-brand-dark text-white transition-colors hover:bg-stone-700'
+    >
+      <Search class='h-4 w-4' />
+    </button>
+  </div>
+</form>

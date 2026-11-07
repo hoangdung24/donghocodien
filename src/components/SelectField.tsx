@@ -40,7 +40,7 @@ export function SelectField({
     <Select.Root
       collection={collection}
       value={[value]}
-      onValueChange={(e) => onValueChange(e.value[0] ?? '')}
+      onValueChange={(selection) => onValueChange(selection.value[0] ?? '')}
       required={required}
       name={name}
       autoComplete={autoComplete}

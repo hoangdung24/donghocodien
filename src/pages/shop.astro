@@ -1,180 +1,48 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { WatchCard } from '../components/WatchCard';
-import { PriceRangeSlider } from '../components/PriceRangeSlider';
-import { ChevronDown } from '@lucide/astro';
+import CatalogView from '../components/CatalogView.astro';
 import { Effect } from 'effect';
-import { getProducts, getCategories } from '../lib/services/woocommerce';
-import { buildCategoryTree, decodeCategoryName } from '../lib/utils/categories';
-import { countInStockByCategory } from '../lib/utils/products';
-import { CategoryAccordion } from '../components/CategoryAccordion';
+import { getAllProducts, getCategories } from '../lib/services/woocommerce';
+import { filterCatalog } from '../lib/utils/catalog';
+import { parseSearchQuery } from '../lib/utils/search';
+
+export const prerender = true;
+
+const PAGE_SIZE = 20;
+const BASE_PATH = '/shop';
 
 const url = Astro.url;
-const page = Number(url.searchParams.get('page') || '1');
-const search = url.searchParams.get('search') || undefined;
-const rawCategory = url.searchParams.get('category') || url.searchParams.get('status');
+const page = Math.max(1, Number(url.searchParams.get('page') || '1') || 1);
+const search = parseSearchQuery(url.searchParams);
 
-const slugToIdMap: Record<string, number> = {
-  consignment: 1102,
-  archive: 214,
-  'out-of-stock': 214,
-};
-
-const categoryId = rawCategory
-  ? !isNaN(Number(rawCategory))
-    ? Number(rawCategory)
-    : slugToIdMap[rawCategory.toLowerCase()]
-  : undefined;
-
-const minPriceParam = url.searchParams.get('min_price');
-const maxPriceParam = url.searchParams.get('max_price');
-const parsedMinPrice = minPriceParam !== null ? Number(minPriceParam) : NaN;
-const parsedMaxPrice = maxPriceParam !== null ? Number(maxPriceParam) : NaN;
-const hasPriceFilter = !isNaN(parsedMinPrice) && !isNaN(parsedMaxPrice);
-
-const [productsResult, categoriesResult, allProductsResult] = await Effect.runPromise(
-  Effect.all(
-    [
-      Effect.exit(
-        getProducts({
-          page,
-          per_page: 20,
-          search,
-          category: categoryId,
-          min_price: hasPriceFilter ? parsedMinPrice : undefined,
-          max_price: hasPriceFilter ? parsedMaxPrice : undefined,
-        })
-      ),
-      Effect.exit(getCategories),
-      Effect.exit(getProducts({ per_page: 100 })),
-    ],
-    { concurrency: 'unbounded' }
-  )
+const [catalog, categories] = await Effect.runPromise(
+  Effect.all([getAllProducts, getCategories], { concurrency: 'unbounded' })
 );
 
-const allProducts = productsResult._tag === 'Success' ? productsResult.value : [];
-const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
-const allAvailableProducts = allProductsResult._tag === 'Success' ? allProductsResult.value : [];
+const products = filterCatalog(catalog, categories, { page, search, categories }, PAGE_SIZE);
 
-const products = allProducts.filter((p) => p.is_in_stock && Number(p.prices.price) > 0);
-const inStockCounts = countInStockByCategory(allAvailableProducts);
-
-const activeCategory = categoryId ? categories.find((c) => c.id === categoryId) : null;
-const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.name) : null;
-const pageTitle = activeCategory
-  ? activeCategory.id === 214
-    ? 'Archive Watches'
-    : `${activeCategoryName} Watches`
-  : search
-    ? `Search Results for "${search}"`
-    : 'All Watches';
-
-const categoryGroups = buildCategoryTree(categories);
-
-const filteredCategoryGroups = categoryGroups
-  .map((group) => ({
-    ...group,
-    children: group.children.filter((c) => (inStockCounts.get(c.id) || 0) > 0),
-  }))
-  .filter((group) => group.children.length > 0);
-
-const boundPrices = allAvailableProducts
-  .filter((p) => p.is_in_stock && Number(p.prices.price) > 0)
-  .map((p) => Number(p.prices.price));
-const minPrice = boundPrices.length > 0 ? Math.floor(Math.min(...boundPrices) / 100) * 100 : 0;
-const maxPrice = boundPrices.length > 0 ? Math.ceil(Math.max(...boundPrices) / 100) * 100 : 100000;
-
-const pageHref = (p: number) => {
-  const params = new URLSearchParams();
-  if (p > 1) params.set('page', String(p));
-  if (categoryId) params.set('category', String(categoryId));
-  if (search) params.set('search', search);
-  if (hasPriceFilter) {
-    params.set('min_price', String(parsedMinPrice));
-    params.set('max_price', String(parsedMaxPrice));
-  }
-  const qs = params.toString();
-  return `/shop${qs ? `?${qs}` : ''}`;
-};
-
-const hasNextPage = products.length === 20;
+const pageTitle = search ? `Shop results for "${search}"` : 'Shop All Watches';
 ---
 
 <Layout
   title={`${pageTitle} | Spacetime`}
-  description='Explore over 2,300+ vintage timepieces from Switzerland and Japan.'
+  description='Shop authentic vintage Swiss and Japanese timepieces from the Spacetime collection.'
 >
-  <main class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14'>
-    <div class='pb-8 mb-8'>
-      {categories.length > 0 && (
-        <div class='grid grid-cols-1 lg:grid-cols-12 gap-8'>
-          <aside class='lg:col-span-3 space-y-8'>
-            <section class='space-y-4'>
-              <CategoryAccordion
-                client:visible
-                groups={filteredCategoryGroups}
-                activeCategoryId={categoryId}
-                search={search}
-              />
-            </section>
-
-            <PriceRangeSlider
-              client:visible
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              defaultMin={hasPriceFilter ? parsedMinPrice : undefined}
-              defaultMax={hasPriceFilter ? parsedMaxPrice : undefined}
-            />
-          </aside>
-
-          <div class='lg:col-span-9'>
-            {products.length === 0 ? (
-              <div class='py-24 text-center text-xs uppercase tracking-widest text-stone-400'>
-                No timepieces found matching this criteria.
-              </div>
-            ) : (
-              <>
-                <div class='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8'>
-                  {products.map((watch) => (
-                    <WatchCard client:visible product={watch} country={Astro.locals.country} />
-                  ))}
-                </div>
-
-                <nav
-                  class='mt-16 pt-8 border-t border-stone-200 flex items-center justify-between'
-                  aria-label='Pagination'
-                >
-                  {page > 1 ? (
-                    <a
-                      href={pageHref(page - 1)}
-                      class='px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors'
-                    >
-                      &larr; Previous
-                    </a>
-                  ) : (
-                    <div />
-                  )}
-
-                  <span class='text-xs uppercase tracking-widest text-stone-500 font-sans'>
-                    Page {page}
-                  </span>
-
-                  {hasNextPage ? (
-                    <a
-                      href={pageHref(page + 1)}
-                      class='px-5 py-2.5 border border-stone-300 text-xs uppercase tracking-widest text-black hover:bg-stone-100 transition-colors'
-                    >
-                      Next &rarr;
-                    </a>
-                  ) : (
-                    <div />
-                  )}
-                </nav>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+  <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8'>
+    <header class='mb-8 border-b border-stone-200 pb-8'>
+      <h1 class='text-2xl leading-tight font-normal tracking-wide sm:text-3xl'>{pageTitle}</h1>
+    </header>
+    <div class='mb-8 pb-8'>
+      <CatalogView
+        products={products}
+        categories={categories}
+        availableProducts={catalog}
+        activeCategory={null}
+        search={search}
+        page={page}
+        pageSize={PAGE_SIZE}
+        basePath={BASE_PATH}
+      />
     </div>
   </main>
 </Layout>

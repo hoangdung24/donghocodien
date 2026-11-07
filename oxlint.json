@@ -1,5 +1,4 @@
 {
-  "$schema": "https://oxc.rs/oxlint.json",
   "ignorePatterns": ["dist/", "node_modules/", ".astro/", "*.d.ts"],
   "jsPlugins": ["oxlint-tailwindcss"],
   "rules": {

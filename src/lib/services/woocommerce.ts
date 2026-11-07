@@ -7,8 +7,11 @@ import {
 } from '../schema/product';
 import { PagesListSchema, type WpPage } from '../schema/page';
 import { PostSchema, type Post } from '../schema/post';
+import { fetchJsonWithTimeout } from './httpClient';
+import { brandCategories, type BrandCategory } from '../utils/categories';
 
 const PostsListSchema = Schema.Array(PostSchema);
+const SlugsListSchema = Schema.Array(Schema.Struct({ slug: Schema.String }));
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
@@ -39,26 +42,86 @@ export class ProductNotFoundError extends Schema.TaggedError<
 export interface GetProductsParams {
   page?: number;
   per_page?: number;
-  category?: number;
+  category?: number | number[];
   search?: string;
   min_price?: number;
   max_price?: number;
+  stock_status?: 'instock' | 'outofstock' | 'onbackorder';
   order?: 'asc' | 'desc';
   orderby?: 'date' | 'price' | 'title';
 }
 
+const formatCategoryParam = (category: number | number[] | undefined): string | undefined => {
+  if (category === undefined) return undefined;
+  const categoryIds = Array.isArray(category) ? category : [category];
+  const usableIds = categoryIds.filter((categoryId) => Number.isFinite(categoryId));
+  return usableIds.length > 0 ? usableIds.join(',') : undefined;
+};
+
+export interface ProductPage {
+  products: Product[];
+  total: number;
+  totalPages: number;
+}
+
+const buildProductsUrl = (params: GetProductsParams): URL => {
+  const url = new URL(`${API_BASE}/products`);
+  if (params.page) url.searchParams.set('page', String(params.page));
+  if (params.per_page) url.searchParams.set('per_page', String(params.per_page));
+  const categoryParam = formatCategoryParam(params.category);
+  if (categoryParam) url.searchParams.set('category', categoryParam);
+  if (params.search) url.searchParams.set('search', params.search);
+  if (params.min_price !== undefined) url.searchParams.set('min_price', String(params.min_price));
+  if (params.max_price !== undefined) url.searchParams.set('max_price', String(params.max_price));
+  if (params.stock_status) url.searchParams.set('stock_status', params.stock_status);
+  if (params.order) url.searchParams.set('order', params.order);
+  if (params.orderby) url.searchParams.set('orderby', params.orderby);
+  return url;
+};
+
+export const getProductsPage = (params: GetProductsParams = {}) =>
+  Effect.gen(function* () {
+    const url = buildProductsUrl(params);
+    const cacheKey = `product-page:${url.search}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as ProductPage;
+    }
+
+    const response = yield* Effect.tryPromise({
+      try: () => fetchJsonWithTimeout(url.toString()),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
+    });
+
+    if (!response.ok) {
+      return yield* new HttpError({
+        status: response.status,
+        statusText: response.statusText,
+        url: url.toString(),
+      });
+    }
+
+    const raw = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
+    });
+
+    const products = yield* Schema.decodeUnknownEffect(ProductsListSchema)(raw);
+    const reportedTotal = Number(response.headers.get('x-wp-total'));
+    const reportedPages = Number(response.headers.get('x-wp-totalpages'));
+    const page = {
+      products,
+      total: Number.isFinite(reportedTotal) ? reportedTotal : products.length,
+      totalPages: Number.isFinite(reportedPages) && reportedPages > 0 ? reportedPages : 1,
+    };
+
+    cache.set(cacheKey, { data: page, timestamp: Date.now() });
+    return page;
+  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+
 export const getProducts = (params: GetProductsParams = {}) =>
   Effect.gen(function* () {
-    const url = new URL(`${API_BASE}/products`);
-    if (params.page) url.searchParams.set('page', String(params.page));
-    if (params.per_page) url.searchParams.set('per_page', String(params.per_page));
-    if (params.category) url.searchParams.set('category', String(params.category));
-    if (params.search) url.searchParams.set('search', params.search);
-    if (params.min_price !== undefined) url.searchParams.set('min_price', String(params.min_price));
-    if (params.max_price !== undefined) url.searchParams.set('max_price', String(params.max_price));
-    if (params.order) url.searchParams.set('order', params.order);
-    if (params.orderby) url.searchParams.set('orderby', params.orderby);
-
+    const url = buildProductsUrl(params);
     const cacheKey = `products:${url.search}`;
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
@@ -66,13 +129,7 @@ export const getProducts = (params: GetProductsParams = {}) =>
     }
 
     const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(url.toString(), {
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': 'DongHoCoDien-Headless/1.0',
-          },
-        }),
+      try: () => fetchJsonWithTimeout(url.toString()),
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
@@ -96,6 +153,95 @@ export const getProducts = (params: GetProductsParams = {}) =>
 
 const cache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
+let allProductsCache: Product[] | null = null;
+
+export const clearServiceCache = () => {
+  cache.clear();
+  allProductsCache = null;
+};
+
+const SLUGS_PER_PAGE = 100;
+const MAX_SLUG_PAGES = 60;
+const PRODUCT_FETCH_CONCURRENCY = 3;
+
+const fetchSlugPage = (listUrl: string, page: number) =>
+  Effect.gen(function* () {
+    const url = new URL(listUrl);
+    url.searchParams.set('per_page', String(SLUGS_PER_PAGE));
+    url.searchParams.set('page', String(page));
+
+    const response = yield* Effect.tryPromise({
+      try: () => fetchJsonWithTimeout(url.toString()),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
+    });
+
+    if (!response.ok) {
+      return yield* new HttpError({
+        status: response.status,
+        statusText: response.statusText,
+        url: url.toString(),
+      });
+    }
+
+    const raw = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (cause) => new NetworkError({ message: String(cause) }),
+    });
+
+    const slugs = yield* Schema.decodeUnknownEffect(SlugsListSchema)(raw);
+    return {
+      slugs: slugs.map((entry) => entry.slug),
+      totalPages: Number(response.headers.get('x-wp-totalpages') || '1'),
+    };
+  }).pipe(
+    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('120 seconds')
+  );
+
+const getAllSlugs = (endpoint: string, cacheKey: string) =>
+  Effect.gen(function* () {
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as string[];
+    }
+
+    const firstPage = yield* fetchSlugPage(endpoint, 1);
+    const slugs = [...firstPage.slugs];
+    const pagesToFetch = Math.min(firstPage.totalPages, MAX_SLUG_PAGES);
+
+    for (let page = 2; page <= pagesToFetch; page++) {
+      const nextPage = yield* fetchSlugPage(endpoint, page);
+      slugs.push(...nextPage.slugs);
+    }
+
+    cache.set(cacheKey, { data: slugs, timestamp: Date.now() });
+    return slugs;
+  }).pipe(Effect.timeout('300 seconds'));
+
+export const getProductSlugs = getAllSlugs(`${API_BASE}/products`, 'slugs:products').pipe(
+  Effect.orElseSucceed(() => [])
+);
+
+export const getPublishedSlugs = Effect.all(
+  [
+    getAllSlugs(`${WP_API_BASE}/pages`, 'slugs:pages'),
+    getAllSlugs(`${WP_API_BASE}/posts`, 'slugs:posts'),
+  ],
+  { concurrency: 'unbounded' }
+).pipe(
+  Effect.map(([pageSlugs, postSlugs]) => [...pageSlugs, ...postSlugs]),
+  Effect.orElseSucceed(() => [])
+);
+
+export const getStorePageBySlug = (slug: string) =>
+  Effect.gen(function* () {
+    const postResult = yield* Effect.exit(getPostBySlug(slug));
+    if (postResult._tag === 'Success') {
+      return postResult.value satisfies Post;
+    }
+
+    return (yield* getPageBySlug(slug)) satisfies WpPage;
+  });
 
 export const getProductBySlug = (slug: string) =>
   Effect.gen(function* () {
@@ -108,13 +254,7 @@ export const getProductBySlug = (slug: string) =>
     const url = `${API_BASE}/products?slug=${encodeURIComponent(slug)}`;
 
     const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(url, {
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': 'DongHoCoDien-Headless/1.0',
-          },
-        }),
+      try: () => fetchJsonWithTimeout(url),
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
@@ -141,6 +281,58 @@ export const getProductBySlug = (slug: string) =>
     cache.set(cacheKey, { data: product, timestamp: Date.now() });
     return product;
   }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+
+export const getAllProducts = Effect.gen(function* () {
+  if (allProductsCache) {
+    return allProductsCache;
+  }
+
+  const fetchPage = (page: number) =>
+    Effect.gen(function* () {
+      const url = new URL(`${API_BASE}/products`);
+      url.searchParams.set('per_page', String(SLUGS_PER_PAGE));
+      url.searchParams.set('page', String(page));
+
+      const response = yield* Effect.tryPromise({
+        try: () => fetchJsonWithTimeout(url.toString()),
+        catch: (cause) => new NetworkError({ message: String(cause) }),
+      });
+
+      if (!response.ok) {
+        return yield* new HttpError({
+          status: response.status,
+          statusText: response.statusText,
+          url: url.toString(),
+        });
+      }
+
+      const raw = yield* Effect.tryPromise({
+        try: () => response.json(),
+        catch: (cause) => new NetworkError({ message: String(cause) }),
+      });
+
+      const products = yield* Schema.decodeUnknownEffect(ProductsListSchema)(raw);
+      return {
+        products,
+        totalPages: Number(response.headers.get('x-wp-totalpages') || '1'),
+      };
+    }).pipe(
+      Effect.retry({ times: 5, while: (error) => error._tag === 'NetworkError' }),
+      Effect.timeout('120 seconds')
+    );
+
+  const firstPage = yield* fetchPage(1);
+  const totalPages = Math.min(firstPage.totalPages, MAX_SLUG_PAGES);
+  const remainingPages = Array.from({ length: totalPages - 1 }, (_, offset) => offset + 2);
+
+  const remaining = yield* Effect.forEach(remainingPages, fetchPage, {
+    concurrency: PRODUCT_FETCH_CONCURRENCY,
+  });
+
+  const products = [firstPage.products, ...remaining.map((page) => page.products)].flat();
+  allProductsCache = products;
+  return products;
+}).pipe(Effect.timeout('300 seconds'));
 
 const MAX_CATEGORY_PAGES = 5;
 
@@ -199,7 +391,15 @@ export const getCategories = Effect.gen(function* () {
 
   cache.set(cacheKey, { data: categories, timestamp: Date.now() });
   return categories;
-}).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+}).pipe(
+  Effect.retry({ times: 3, while: (error) => error._tag === 'NetworkError' }),
+  Effect.timeout('180 seconds')
+);
+
+export const getBrandCategories = getCategories.pipe(
+  Effect.map((categories) => brandCategories(categories)),
+  Effect.orElseSucceed(() => [] as BrandCategory[])
+);
 
 export class PageNotFoundError extends Schema.TaggedError<
   PageNotFoundError,
@@ -219,13 +419,7 @@ export const getPageBySlug = (slug: string) =>
     const url = `${WP_API_BASE}/pages?slug=${encodeURIComponent(slug)}`;
 
     const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(url, {
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': 'DongHoCoDien-Headless/1.0',
-          },
-        }),
+      try: () => fetchJsonWithTimeout(url),
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
@@ -251,7 +445,10 @@ export const getPageBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: page, timestamp: Date.now() });
     return page;
-  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+  }).pipe(
+    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('120 seconds')
+  );
 
 export class PostNotFoundError extends Schema.TaggedError<
   PostNotFoundError,
@@ -283,13 +480,7 @@ export const getPosts = (params: GetPostsParams = {}) =>
     const url = `${WP_API_BASE}/posts?${query.toString()}`;
 
     const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(url, {
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': 'DongHoCoDien-Headless/1.0',
-          },
-        }),
+      try: () => fetchJsonWithTimeout(url),
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
@@ -309,7 +500,10 @@ export const getPosts = (params: GetPostsParams = {}) =>
     const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
     cache.set(cacheKey, { data: posts, timestamp: Date.now() });
     return posts;
-  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+  }).pipe(
+    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('120 seconds')
+  );
 
 export const getPostBySlug = (slug: string) =>
   Effect.gen(function* () {
@@ -322,13 +516,7 @@ export const getPostBySlug = (slug: string) =>
     const url = `${WP_API_BASE}/posts?slug=${encodeURIComponent(slug)}&_embed=1`;
 
     const response = yield* Effect.tryPromise({
-      try: () =>
-        fetch(url, {
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': 'DongHoCoDien-Headless/1.0',
-          },
-        }),
+      try: () => fetchJsonWithTimeout(url),
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
@@ -354,4 +542,7 @@ export const getPostBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: post, timestamp: Date.now() });
     return post;
-  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+  }).pipe(
+    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('120 seconds')
+  );

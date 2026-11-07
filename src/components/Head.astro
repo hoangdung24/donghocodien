@@ -1,4 +1,6 @@
 ---
+import { SOCIAL } from '../lib/constants';
+
 interface Props {
   title?: string;
   description?: string;
@@ -161,10 +163,7 @@ const twitterHandle = '@spacetime_vintage';
         addressLocality: 'Ho Chi Minh City',
         addressCountry: 'VN',
       },
-      sameAs: [
-        'https://www.facebook.com/spacetime.vintagewatch',
-        'https://www.instagram.com/spacetime.vintagewatch/',
-      ],
+      sameAs: [SOCIAL.facebook, SOCIAL.instagram],
     })}
   />
 )}
@@ -182,7 +181,7 @@ const twitterHandle = '@spacetime_vintage';
           '@type': 'ListItem',
           position: 2,
           name: 'Collection',
-          item: 'https://donghocodien.com/shop',
+          item: 'https://donghocodien.com/watches',
         },
         {
           '@type': 'ListItem',

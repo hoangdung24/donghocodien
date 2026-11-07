@@ -29,6 +29,7 @@ Guidelines for AI agents working on **donghocodien.com** (Spacetime Vintage Watc
 - **Icon Packages**:
   - In Astro templates (`*.astro`): Strictly use `@lucide/astro` (zero client JS overhead).
   - In React components (`*.tsx`): Use `lucide-react`.
+  - **Search Before You Create an Icon**: Icons may already exist as shared components in `src/components/` (e.g. `SocialIcon.astro` for brand icons) or as lucide icons. Before writing any inline SVG, importing an icon, or creating a new icon component, SEARCH the codebase (`src/components/`, `src/lib/`, and `grep` for the icon/data) first. If a shared icon already exists, reuse it — never duplicate or scatter the same icon inline across files. Only create a new shared icon when none exists.
 - **Styling**: **Tailwind CSS v4** with CSS-first `@theme` in `src/styles/global.css`.
 - **Typography**: Signature font `elle-futura-book` bundled in `public/fonts/`. Never replace with generic default sans-serif.
 - **Deployment**: Cloudflare Workers via `@astrojs/cloudflare` adapter.
@@ -58,6 +59,8 @@ Red (Failing Test) ➔ Green (Minimal Implementation) ➔ Refactor
 
 ## 4. Visual & Responsive Design Standards (`frontend-design`)
 
+- **Solid Colors Only — No Gradients**: Use solid flat colors exclusively. Never use gradient color patterns (`bg-linear-to-*`, `bg-gradient-to-*`, `from-*`/`to-*`/`via-*` color stops, `linear-gradient()`, or `bg-clip-text`). For legibility overlays (e.g. hero captions), use a solid semi-transparent background such as `bg-black/40` instead of a gradient scrim. Apply color via Tailwind color utilities or the `brand-*` tokens in `src/styles/global.css`; never inline raw hex in styles.
+- **Dark Text Color — Use `brand-dark`, Never Raw Black**: The canonical dark text color is the `--color-brand-dark` token (`#111111`), which equals the `body` default color. Do NOT write `text-black` / `hover:text-black` (raw `#000`) — use `text-brand-dark` / `hover:text-brand-dark` instead. Because it equals the inherited body color, most element-level `text-brand-dark` classes are redundant: declare it once on a container root (e.g. `<footer>`, `<main>`) and let children inherit; only keep it on elements that must escape a differently-colored ancestor (e.g. inside a `text-stone-*` nav) or as a `hover:`/`group-hover:` target. Before adding a new `text-brand-dark`, check whether inheritance already provides it.
 - **Centered Logo Layout**: Desktop header must maintain the centered brand logo (`/images/logo.png`) with balanced split navigation.
 - **Responsive Product Grids**:
   - Mobile (<640px): 2 columns (`grid-cols-2`)
@@ -147,6 +150,10 @@ Agents should consult these specialized skill guidelines before modifying releva
 ## 7. Code Cleanliness & Commenting Policy
 
 - **No Code Comments**: Do not write comments in code (`//`, `/* */`, `{/* ... */}`, `<!-- ... -->`). Code must be clean, self-documenting, and concise without explanatory narrative or section labels.
+- **Readable Variable Names — No Single-Letter Identifiers**: Every variable, parameter, and arrow-function argument MUST use a descriptive, self-documenting name (e.g. `product`, `category`, `page`, `order`, `event`, `country`, `current`). Never name a variable with a single letter such as `p`, `c`, `o`, `e`, `f`, `b`, `n`, `t`, or `g`. This applies everywhere, including arrow callbacks (`(product) => …`), event handlers (`(event) => …`), reducer/sort callbacks (`(categoryA, categoryB) => …`), and test callbacks (`(toast) => …`).
+  - **Anti-examples (forbidden)**: `(p) => p.prices.price`, `setForm((f) => ({ ...f }))`, `.map((c) => c.name)`, `(e) => e.target.value`.
+  - **Good examples**: `(product) => product.prices.price`, `setForm((current) => ({ ...current }))`, `.map((category) => category.name)`, `(event) => event.target.value`.
+  - When writing new code or editing existing code, audit nearby callbacks and renames for any lingering single-letter identifiers.
 
 ---
 

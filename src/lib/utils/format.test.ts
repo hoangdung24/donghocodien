@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatUSD, calculateDiscountPercentage, formatHeaderClock } from './format';
+import { formatUSD, calculateDiscountPercentage, formatHeaderClock, formatPrice } from './format';
 
 describe('formatUSD', () => {
   it('formats whole dollar amounts correctly with comma separation', () => {
@@ -10,6 +10,25 @@ describe('formatUSD', () => {
 
   it('handles zero and undefined gracefully', () => {
     expect(formatUSD(0)).toBe('$0');
+  });
+});
+
+describe('formatPrice', () => {
+  it('formats whole dollar amounts with dot thousands separator', () => {
+    expect(formatPrice(6500)).toBe('$6.500');
+    expect(formatPrice(1200)).toBe('$1.200');
+    expect(formatPrice(499)).toBe('$499');
+    expect(formatPrice(1234567)).toBe('$1.234.567');
+  });
+
+  it('handles string input and zero', () => {
+    expect(formatPrice('8500')).toBe('$8.500');
+    expect(formatPrice(0)).toBe('$0');
+  });
+
+  it('returns $0 for invalid input', () => {
+    expect(formatPrice(NaN)).toBe('$0');
+    expect(formatPrice('abc')).toBe('$0');
   });
 });
 

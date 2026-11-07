@@ -5,54 +5,50 @@ import { AddToCartButton } from '../../components/AddToCartButton';
 import { ProductTabs } from '../../components/ProductTabs';
 import { RelatedProducts } from '../../components/RelatedProducts';
 import { Effect } from 'effect';
-import { getProductBySlug, getProducts } from '../../lib/services/woocommerce';
+import type { Product, ProductCategory } from '../../lib/schema/product';
+import { getAllProducts, getBrandCategories, getCategories } from '../../lib/services/woocommerce';
+import { findBrandCategory } from '../../lib/utils/categories';
 import { sanitizeWordPressHtml } from '../../lib/utils/html';
 import { cleanTitle } from '../../lib/utils/text';
 
-const { slug } = Astro.params;
+export const prerender = true;
 
-if (!slug) {
-  return Astro.redirect('/404');
-}
+export const getStaticPaths = async () => {
+  const [catalog, categories, brands] = await Effect.runPromise(
+    Effect.all([getAllProducts, getCategories, getBrandCategories], { concurrency: 'unbounded' })
+  );
 
-const result = await Effect.runPromiseExit(getProductBySlug(slug));
+  const brandIds = brands.map((brand) => brand.id);
+  const availableProducts = catalog.filter(
+    (product) => product.is_in_stock && Number(product.prices.price) > 0
+  );
 
-if (result._tag === 'Failure') {
-  console.error('[Error] getProductBySlug failed for slug:', slug, String(result.cause));
-  return Astro.redirect('/404');
-}
+  return availableProducts.map((product) => ({
+    params: { slug: decodeURIComponent(product.slug) },
+    props: { product, catalog, categories, brandIds },
+  }));
+};
 
-const product = result.value;
+const product: Product = Astro.props.product;
+const allProducts: Product[] = Astro.props.catalog;
+const categories: ProductCategory[] = Astro.props.categories;
+const brandIds: number[] = Astro.props.brandIds;
 
 const cleanName = cleanTitle(product.name);
-const hideApproxPrice = Astro.locals.country === 'US';
 const cleanDescription = await sanitizeWordPressHtml(product.description || '');
 const cleanShortDescription = await sanitizeWordPressHtml(product.short_description || '');
-const primaryBrand =
-  product.categories.find((c) =>
-    [
-      'Omega',
-      'Rolex',
-      'Cartier',
-      'Edox',
-      'Eterna',
-      'Seiko',
-      'Farve-Leuba',
-      'Zenith',
-      'Longines',
-    ].some((b) => c.name.toLowerCase().includes(b.toLowerCase()))
-  ) || product.categories[0];
+const primaryBrand = findBrandCategory(product, categories);
 
-// Fetch related products from same primary category
-let relatedProducts: (typeof result.value)[] = [];
-if (primaryBrand) {
-  const relatedResult = await Effect.runPromiseExit(
-    getProducts({ category: primaryBrand.id, per_page: 4 })
-  );
-  if (relatedResult._tag === 'Success') {
-    relatedProducts = relatedResult.value.filter((p) => p.id !== product.id).slice(0, 4);
-  }
-}
+const relatedProducts = primaryBrand
+  ? allProducts
+      .filter(
+        (relatedProduct) =>
+          relatedProduct.id !== product.id &&
+          relatedProduct.is_in_stock &&
+          relatedProduct.categories.some((category) => brandIds.includes(category.id))
+      )
+      .slice(0, 4)
+  : [];
 
 const stockText = product.is_in_stock
   ? `${product.low_stock_remaining ? `${product.low_stock_remaining} in stock` : 'In stock'}`
@@ -80,69 +76,64 @@ const productSchema = {
   type='product'
   product={productSchema}
 >
-  <main class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16'>
-    <nav class='flex items-center gap-2 text-xs uppercase tracking-wider text-stone-500 mb-8 font-sans'>
-      <a href='/' class='hover:text-stone-900 transition-colors'>
+  <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+    <nav class='mb-8 flex items-center gap-2 font-sans text-xs tracking-wider text-stone-500 uppercase'>
+      <a href='/' class='transition-colors hover:text-stone-900'>
         Home
       </a>
       <span>/</span>
-      <a href='/shop' class='hover:text-stone-900 transition-colors'>
+      <a href='/watches' class='transition-colors hover:text-stone-900'>
         Collection
       </a>
       {primaryBrand && (
         <>
           <span>/</span>
           <a
-            href={`/shop?category=${primaryBrand.id}`}
-            class='hover:text-stone-900 transition-colors'
+            href={`/watches?category=${primaryBrand.slug}`}
+            class='transition-colors hover:text-stone-900'
           >
             {cleanTitle(primaryBrand.name)}
           </a>
         </>
       )}
       <span>/</span>
-      <span class='text-stone-900 truncate max-w-xs'>{cleanName}</span>
+      <span class='max-w-xs truncate text-stone-900'>{cleanName}</span>
     </nav>
 
-    <div class='grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16'>
+    <div class='grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16'>
       <div class='lg:col-span-7'>
         <WatchGallery client:visible images={product.images} title={cleanName} />
       </div>
 
-      <div class='lg:col-span-5 flex flex-col'>
+      <div class='flex flex-col lg:col-span-5'>
         {primaryBrand && (
-          <p class='text-xs uppercase tracking-[0.25em] text-black font-medium mb-3'>
+          <p class='mb-4 text-xs font-medium tracking-[0.25em] uppercase'>
             {cleanTitle(primaryBrand.name)}
           </p>
         )}
 
-        <h1 class='font-serif text-3xl sm:text-4xl text-stone-950 font-normal leading-tight mb-5'>
+        <h1 class='mb-7 text-3xl leading-tight font-normal text-stone-950 sm:text-4xl'>
           {cleanName}
         </h1>
 
         <div class='flex flex-col'>
           <div class='flex items-baseline gap-4'>
-            <span class='font-serif text-3xl font-medium text-stone-900'>
-              ${product.prices.price}
-            </span>
+            <span class='text-3xl font-medium text-stone-900'>${product.prices.price}</span>
             {product.on_sale && product.prices.regular_price && (
               <span class='text-base text-stone-400 line-through'>
                 ${product.prices.regular_price}
               </span>
             )}
-            <span class='text-xs text-stone-500 font-mono ml-auto'>
-              {product.is_in_stock ? 'In Stock & Ready to Ship' : 'Sold / Reserved'}
-            </span>
           </div>
         </div>
 
         {cleanShortDescription && (
-          <div class='mt-8 pt-6 border-t border-stone-200 text-sm text-stone-700 leading-relaxed'>
+          <div class='mt-10 border-t border-stone-200 pt-7 text-sm leading-relaxed text-stone-700'>
             <div set:html={cleanShortDescription} />
           </div>
         )}
 
-        <div class='mt-8'>
+        <div class='mt-10'>
           <AddToCartButton
             client:visible
             product={product}
@@ -153,7 +144,7 @@ const productSchema = {
       </div>
     </div>
 
-    <div class='mt-16 lg:mt-24'>
+    <div class='mt-12 lg:mt-16'>
       <ProductTabs
         client:visible
         descriptionHtml={cleanDescription}
@@ -166,7 +157,8 @@ const productSchema = {
           client:visible
           products={relatedProducts}
           title='Similar Watches'
-          country={Astro.locals.country}
+          country={null}
+          className='mt-12'
         />
       )}
     </div>

@@ -218,7 +218,7 @@ Define reusable custom utilities:
 
 /* Custom utility for text gradients */
 @utility text-gradient {
-  @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  @apply from-primary to-accent bg-gradient-to-r bg-clip-text text-transparent;
 }
 ```
 

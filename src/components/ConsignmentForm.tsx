@@ -20,13 +20,13 @@ export function ConsignmentForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
 
     if (file.size > 4 * 1024 * 1024) {
@@ -52,8 +52,8 @@ export function ConsignmentForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setStatus('submitting');
     setErrorMessage(null);
 
@@ -89,12 +89,12 @@ export function ConsignmentForm() {
 
   if (status === 'success') {
     return (
-      <div className='animate-fade-in space-y-5 border border-stone-200 bg-stone-50 p-8 text-center sm:p-10'>
+      <div className='flex animate-fade-in flex-col gap-5 border border-stone-200 bg-stone-50 p-8 text-center sm:p-10'>
         <div className='mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-800'>
           <CheckCircle2 className='h-8 w-8' />
         </div>
-        <div className='space-y-2'>
-          <h3 className='font-serif text-xl tracking-wide text-stone-900 uppercase'>
+        <div className='flex flex-col gap-2'>
+          <h3 className='text-xl tracking-wide text-stone-900 uppercase'>
             Consignment Inquiry Received
           </h3>
           <p className='mx-auto max-w-md text-xs leading-relaxed text-stone-600'>
@@ -138,7 +138,7 @@ export function ConsignmentForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-6'>
+    <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
       {errorMessage && (
         <div className='flex items-start gap-3 border border-red-200 bg-red-50 p-4 text-xs text-red-800'>
           <AlertCircle className='mt-0.5 h-4 w-4 shrink-0' />
@@ -272,7 +272,7 @@ export function ConsignmentForm() {
               >
                 <X className='h-3.5 w-3.5' />
               </button>
-              <p className='mt-1 max-w-[128px] truncate text-[10px] text-stone-500'>
+              <p className='mt-1 max-w-32 truncate text-[10px] text-stone-500'>
                 {selectedFile?.name}
               </p>
             </div>

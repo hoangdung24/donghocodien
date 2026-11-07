@@ -43,7 +43,7 @@ export function CartProvider({
     } else {
       cartStore.loadCart();
     }
-    const unsubscribe = cartStore.subscribe(() => forceUpdate((n) => n + 1));
+    const unsubscribe = cartStore.subscribe(() => forceUpdate((count) => count + 1));
     return unsubscribe;
   }, [initialCart]);
 

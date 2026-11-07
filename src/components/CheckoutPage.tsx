@@ -11,10 +11,12 @@ import {
 import { Button } from './Button';
 import { SelectField, type SelectOption } from './SelectField';
 
-const COUNTRY_OPTIONS: SelectOption[] = CHECKOUT_COUNTRIES.filter((c) => c.code).map((c) => ({
-  value: c.code,
-  label: c.name,
-}));
+const COUNTRY_OPTIONS: SelectOption[] = CHECKOUT_COUNTRIES.filter((country) => country.code).map(
+  (country) => ({
+    value: country.code,
+    label: country.name,
+  })
+);
 
 const decodeEntities = (value: string) => {
   if (typeof window === 'undefined' || !value.includes('&')) return value;
@@ -71,36 +73,39 @@ export function CheckoutPage() {
   const formatPrice = (price: string) => {
     const num = parseFloat(price);
     const symbol = cart?.totals.currency_symbol ?? '$';
-    return `${symbol}${num.toFixed(2)}`;
+    const formatted = Math.round(num)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${symbol}${formatted}`;
   };
 
   const stateOptions = COUNTRY_STATES[form.country];
   const stateLocale = COUNTRY_LOCALE[form.country]?.state;
   const postcodeLocale = COUNTRY_LOCALE[form.country]?.postcode;
   const stateHidden = stateLocale?.hidden ?? false;
-  const stateRequired = !stateHidden && (stateLocale?.required ?? false);
+  const stateRequired = !stateHidden;
   const stateLabel = stateLocale?.label ?? 'State / Province';
   const postcodeHidden = postcodeLocale?.hidden ?? false;
-  const postcodeRequired = !postcodeHidden && (postcodeLocale?.required ?? false);
+  const postcodeRequired = !postcodeHidden;
   const postcodeLabel = postcodeLocale?.label ?? 'Postcode / ZIP';
 
   const handleCountryChange = (next: string) => {
     const nextStateOptions = COUNTRY_STATES[next];
-    setForm((f) => ({
-      ...f,
+    setForm((current) => ({
+      ...current,
       country: next,
-      state: nextStateOptions && f.state in nextStateOptions ? f.state : '',
+      state: nextStateOptions && current.state in nextStateOptions ? current.state : '',
     }));
   };
 
   const setField =
     (field: keyof BillingForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setForm((f) => ({ ...f, [field]: e.target.value }));
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!cart || submitting) return;
     setSubmitting(true);
     setSubmitError(null);
@@ -182,11 +187,11 @@ export function CheckoutPage() {
       <main className='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
         <div className='py-20 text-center'>
           <ShoppingBag className='mx-auto mb-6 h-24 w-24 text-stone-300' />
-          <h2 className='mb-3 font-serif text-2xl text-stone-900'>Your cart is currently empty</h2>
+          <h2 className='mb-3 text-2xl text-stone-900'>Your cart is currently empty</h2>
           <p className='mx-auto mb-8 max-w-md text-stone-500'>
             Browse our curated collection of rare vintage watches before proceeding to checkout.
           </p>
-          <Button href='/shop'>Return to Shop</Button>
+          <Button href='/watches'>Return to Shop</Button>
         </div>
       </main>
     );
@@ -209,7 +214,7 @@ export function CheckoutPage() {
 
       <form onSubmit={handleSubmit} className='grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12'>
         <div className='lg:col-span-3'>
-          <h2 className='mb-6 border-b border-stone-200 pb-3 font-serif text-2xl text-stone-950'>
+          <h2 className='mb-6 border-b border-stone-200 pb-3 text-2xl text-stone-950'>
             Billing Details
           </h2>
 
@@ -224,6 +229,7 @@ export function CheckoutPage() {
                 required
                 value={form.first_name}
                 onChange={setField('first_name')}
+                placeholder='First name'
                 className={inputClass}
                 autoComplete='given-name'
               />
@@ -238,6 +244,7 @@ export function CheckoutPage() {
                 required
                 value={form.last_name}
                 onChange={setField('last_name')}
+                placeholder='Last name'
                 className={inputClass}
                 autoComplete='family-name'
               />
@@ -283,6 +290,7 @@ export function CheckoutPage() {
               type='text'
               value={form.address_2}
               onChange={setField('address_2')}
+              placeholder='Apartment, suite, unit, etc.'
               className={inputClass}
               autoComplete='address-line2'
             />
@@ -301,7 +309,7 @@ export function CheckoutPage() {
                     label: name,
                   }))}
                   value={form.state}
-                  onValueChange={(value) => setForm((f) => ({ ...f, state: value }))}
+                  onValueChange={(value) => setForm((current) => ({ ...current, state: value }))}
                 />
               ) : (
                 <>
@@ -319,6 +327,7 @@ export function CheckoutPage() {
                     required={stateRequired}
                     value={form.state}
                     onChange={setField('state')}
+                    placeholder={stateLabel}
                     className={inputClass}
                     autoComplete='address-level1'
                   />
@@ -344,6 +353,7 @@ export function CheckoutPage() {
                   required={postcodeRequired}
                   value={form.postcode}
                   onChange={setField('postcode')}
+                  placeholder={postcodeLabel}
                   className={inputClass}
                   autoComplete='postal-code'
                 />
@@ -359,6 +369,7 @@ export function CheckoutPage() {
                 required
                 value={form.city}
                 onChange={setField('city')}
+                placeholder='Town / City'
                 className={inputClass}
                 autoComplete='address-level2'
               />
@@ -376,6 +387,7 @@ export function CheckoutPage() {
                 required
                 value={form.phone}
                 onChange={setField('phone')}
+                placeholder='+84 94 162 5653'
                 className={inputClass}
                 autoComplete='tel'
               />
@@ -390,6 +402,7 @@ export function CheckoutPage() {
                 required
                 value={form.email}
                 onChange={setField('email')}
+                placeholder='you@example.com'
                 className={inputClass}
                 autoComplete='email'
               />
@@ -404,7 +417,7 @@ export function CheckoutPage() {
               id='order_notes'
               rows={4}
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(event) => setNotes(event.target.value)}
               placeholder='Notes about your order, e.g. special notes for delivery.'
               className={`${inputClass} resize-none`}
             />
@@ -413,7 +426,7 @@ export function CheckoutPage() {
 
         <div className='lg:col-span-2'>
           <div className='border border-stone-200 bg-white p-6 lg:sticky lg:top-28'>
-            <h2 className='mb-4 border-b border-stone-200 pb-3 font-serif text-lg text-stone-900'>
+            <h2 className='mb-4 border-b border-stone-200 pb-3 text-lg text-stone-900'>
               Your Order
             </h2>
 
@@ -428,9 +441,7 @@ export function CheckoutPage() {
                     />
                   )}
                   <div className='min-w-0 flex-1'>
-                    <p className='truncate font-serif text-sm text-stone-900'>
-                      {decodeEntities(item.name)}
-                    </p>
+                    <p className='truncate text-sm text-stone-900'>{decodeEntities(item.name)}</p>
                     <p className='mt-0.5 text-xs text-stone-400'>Qty: {item.quantity}</p>
                     {approx && (
                       <span
@@ -448,7 +459,7 @@ export function CheckoutPage() {
               ))}
             </div>
 
-            <dl className='space-y-3 border-t border-stone-200 pt-4 text-sm'>
+            <dl className='flex flex-col gap-3 border-t border-stone-200 pt-4 text-sm'>
               <div className='flex justify-between'>
                 <dt className='text-stone-600'>Subtotal ({itemCount} items)</dt>
                 <dd className='font-medium text-stone-900'>{formatPrice(subtotal.toFixed(2))}</dd>
@@ -468,8 +479,8 @@ export function CheckoutPage() {
                 </dd>
               </div>
               <div className='flex justify-between border-t border-stone-200 pt-3'>
-                <dt className='font-serif text-base font-medium text-stone-950'>Total</dt>
-                <dd className='font-serif text-base font-medium text-yellow-900'>
+                <dt className='text-base font-medium text-stone-950'>Total</dt>
+                <dd className='text-base font-medium text-yellow-900'>
                   {formatPrice(total.toFixed(2))}
                 </dd>
               </div>
@@ -484,7 +495,7 @@ export function CheckoutPage() {
               <input
                 type='checkbox'
                 checked={terms}
-                onChange={(e) => setTerms(e.target.checked)}
+                onChange={(event) => setTerms(event.target.checked)}
                 required
                 className='mt-0.5 accent-stone-900'
               />
@@ -517,7 +528,7 @@ export function CheckoutPage() {
               )}
             </Button>
 
-            <div className='mt-6 space-y-3 border-t border-stone-200 pt-4 text-xs text-stone-600'>
+            <div className='mt-6 flex flex-col gap-3 border-t border-stone-200 pt-4 text-xs text-stone-600'>
               <div className='flex items-center gap-2'>
                 <Shield className='h-4 w-4 text-green-700' />
                 <span>Authenticated &amp; mechanically verified</span>

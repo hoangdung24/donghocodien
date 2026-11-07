@@ -40,6 +40,7 @@ export const ProductSchema = Schema.Struct({
   short_description: Schema.String,
   on_sale: Schema.Boolean,
   is_in_stock: Schema.Boolean,
+  low_stock_remaining: Schema.optional(Schema.NullOr(Schema.Finite)),
   prices: ProductPricesSchema,
   price_html: Schema.optional(Schema.String),
   images: Schema.Array(ProductImageSchema),

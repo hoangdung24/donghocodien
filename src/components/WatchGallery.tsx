@@ -2,16 +2,23 @@ import { Carousel } from '@ark-ui/react/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ProductImage } from '../lib/schema/product';
 
+const DEFAULT_PLACEHOLDER = '/images/placeholder.jpeg';
+
 interface WatchGalleryProps {
-  images: ProductImage[];
+  images: readonly ProductImage[];
   title: string;
 }
 
 export function WatchGallery({ images, title }: WatchGalleryProps) {
   if (!images || images.length === 0) {
     return (
-      <div className='flex aspect-4/5 items-center justify-center bg-stone-100 font-serif text-stone-400'>
-        No images available
+      <div className='relative flex aspect-4/5 items-center justify-center overflow-hidden border border-stone-200/80 bg-stone-50'>
+        <img
+          src={DEFAULT_PLACEHOLDER}
+          alt={`${title} placeholder image`}
+          className='h-full w-full object-cover'
+          loading='eager'
+        />
       </div>
     );
   }
@@ -35,10 +42,10 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
 
       {images.length > 1 && (
         <Carousel.Control className='pointer-events-none absolute inset-0 flex items-center justify-between px-3'>
-          <Carousel.PrevTrigger className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-stone-200/60 bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white'>
+          <Carousel.PrevTrigger className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white'>
             <ChevronLeft className='h-5 w-5' />
           </Carousel.PrevTrigger>
-          <Carousel.NextTrigger className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-stone-200/60 bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white'>
+          <Carousel.NextTrigger className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white'>
             <ChevronRight className='h-5 w-5' />
           </Carousel.NextTrigger>
         </Carousel.Control>

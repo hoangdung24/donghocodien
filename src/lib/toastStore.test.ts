@@ -39,7 +39,7 @@ describe('ToastStore', () => {
     store.show('first');
     store.show('second');
     store.dismiss(store.getState()[0].id);
-    expect(store.getState().map((t) => t.message)).toEqual(['second']);
+    expect(store.getState().map((toast) => toast.message)).toEqual(['second']);
     vi.advanceTimersByTime(4000);
     expect(store.getState()).toHaveLength(0);
   });

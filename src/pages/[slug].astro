@@ -1,57 +1,45 @@
 ---
+import type { WpPage } from '../lib/schema/page';
+import type { Post } from '../lib/schema/post';
 import Layout from '../layouts/Layout.astro';
 import { Effect } from 'effect';
-import { getPageBySlug, getPostBySlug } from '../lib/services/woocommerce';
+import { getPublishedSlugs, getStorePageBySlug } from '../lib/services/woocommerce';
 import { sanitizeWordPressHtml } from '../lib/utils/html';
 import { cleanTitle } from '../lib/utils/text';
 
-const { slug } = Astro.params;
+export const prerender = true;
 
-if (!slug) {
-  return Astro.redirect('/404');
-}
+export const getStaticPaths = async () => {
+  const publishedSlugs = await Effect.runPromise(getPublishedSlugs);
 
-const postResult = await Effect.runPromiseExit(getPostBySlug(slug));
-let contentItem: {
-  title: string;
-  content: string;
-  date?: string;
-  modified?: string;
-  image?: string;
-  isPost: boolean;
-} | null = null;
+  const contentEntries = await Effect.runPromise(
+    Effect.forEach(
+      [...new Set(publishedSlugs)],
+      (slug) =>
+        Effect.gen(function* () {
+          const entry = yield* Effect.exit(getStorePageBySlug(slug));
+          return entry._tag === 'Success' ? { slug, entry: entry.value } : null;
+        }),
+      { concurrency: 4 }
+    )
+  );
 
-if (postResult._tag === 'Success') {
-  const post = postResult.value;
-  contentItem = {
-    title: post.title.rendered,
-    content: post.content.rendered,
-    date: post.date,
-    image: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
-    isPost: true,
-  };
-} else {
-  const pageResult = await Effect.runPromiseExit(getPageBySlug(slug));
-  if (pageResult._tag === 'Success') {
-    const page = pageResult.value;
-    contentItem = {
-      title: page.title.rendered,
-      content: page.content.rendered,
-      date: page.date,
-      modified: page.modified,
-      isPost: false,
-    };
-  }
-}
+  return contentEntries.flatMap((contentEntry) =>
+    contentEntry
+      ? [{ params: { slug: contentEntry.slug }, props: { entry: contentEntry.entry } }]
+      : []
+  );
+};
+const entry: WpPage | Post = Astro.props.entry;
+const isPost = 'excerpt' in entry;
+const title = cleanTitle(entry.title.rendered);
+const cleanHtmlContent = await sanitizeWordPressHtml(entry.content.rendered);
+const image = isPost ? entry._embedded?.['wp:featuredmedia']?.[0]?.source_url : undefined;
+const date = entry.date;
+const modified = isPost ? entry.date : entry.modified;
 
-if (!contentItem) {
-  return Astro.redirect('/404');
-}
-
-const cleanItemTitle = cleanTitle(contentItem.title);
-const cleanHtmlContent = await sanitizeWordPressHtml(contentItem.content);
-const formattedDate = contentItem.date
-  ? new Date(contentItem.date).toLocaleDateString('en-US', {
+const formattedDate = date
+  ? new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -59,12 +47,12 @@ const formattedDate = contentItem.date
   : null;
 
 const articleSchema =
-  contentItem.isPost && contentItem.date
+  isPost && date
     ? {
-        title: cleanItemTitle,
+        title,
         author: 'Spacetime Editorial',
-        publishedTime: contentItem.date,
-        modifiedTime: contentItem.modified || contentItem.date,
+        publishedTime: date,
+        modifiedTime: modified || date,
         section: 'Horology',
         tags: ['vintage watches', 'horology', 'collecting'],
       }
@@ -72,49 +60,49 @@ const articleSchema =
 ---
 
 <Layout
-  title={`${cleanItemTitle} | Spacetime`}
-  description={`${cleanItemTitle} — Spacetime Vintage Watch Atelier`}
-  type={contentItem.isPost ? 'article' : 'website'}
+  title={`${title} | Spacetime`}
+  description={`${title} — Spacetime Vintage Watch Atelier`}
+  type={isPost ? 'article' : 'website'}
   article={articleSchema}
 >
-  <main class='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16'>
-    <nav class='text-[11px] uppercase tracking-wider text-stone-400 mb-6'>
+  <main class='mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8'>
+    <nav class='mb-6 text-[11px] tracking-wider text-stone-400 uppercase'>
       <a href='/' class='hover:text-stone-800'>
         Home
       </a>{' '}
       /
-      {contentItem.isPost ? (
+      {isPost ? (
         <>
           <a href='/articles' class='hover:text-stone-800'>
             Articles
           </a>{' '}
-          /<span class='text-stone-800'>{cleanItemTitle}</span>
+          /<span class='text-stone-800'>{title}</span>
         </>
       ) : (
-        <span class='text-stone-800'>{cleanItemTitle}</span>
+        <span class='text-stone-800'>{title}</span>
       )}
     </nav>
 
-    <div class='border-b border-stone-200 pb-6 mb-8'>
-      <h1 class='text-2xl sm:text-4xl text-stone-900 font-serif font-normal uppercase tracking-[0.1em] leading-snug mb-3'>
-        {cleanItemTitle}
+    <div class='mb-8 border-b border-stone-200 pb-6'>
+      <h1 class='mb-3 text-2xl leading-snug font-normal tracking-widest text-stone-900 uppercase sm:text-4xl'>
+        {title}
       </h1>
 
       {formattedDate && (
-        <p class='text-xs uppercase tracking-widest text-stone-400 font-sans'>
+        <p class='font-sans text-xs tracking-widest text-stone-400 uppercase'>
           Published on {formattedDate} &bull; Editorial Horology
         </p>
       )}
     </div>
 
-    {contentItem.image && (
-      <div class='mb-10 aspect-[16/9] overflow-hidden bg-stone-100 shadow-sm border border-stone-100'>
-        <img src={contentItem.image} alt={cleanItemTitle} class='w-full h-full object-cover' />
+    {image && (
+      <div class='mb-10 aspect-video overflow-hidden border border-stone-100 bg-stone-100 shadow-sm'>
+        <img src={image} alt={title} class='h-full w-full object-cover' />
       </div>
     )}
 
     <article
-      class='prose prose-stone max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:tracking-wide prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm sm:prose-p:text-base prose-p:leading-relaxed prose-p:text-stone-700 prose-img:rounded-none prose-img:shadow-sm prose-table:w-full prose-table:border-collapse prose-td:py-2.5 prose-td:border-b prose-td:border-stone-100'
+      class='prose max-w-none prose-stone prose-headings:font-normal prose-headings:tracking-wide prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm prose-p:leading-relaxed prose-p:text-stone-700 sm:prose-p:text-base prose-table:w-full prose-table:border-collapse prose-td:border-b prose-td:border-stone-100 prose-td:py-2.5 prose-img:rounded-none prose-img:shadow-sm'
       set:html={cleanHtmlContent}
     />
   </main>

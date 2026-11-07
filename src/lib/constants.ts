@@ -15,13 +15,57 @@ export const CONTACT = {
   phoneLink: 'tel:+84941625653',
   emailLink: 'mailto:spacetime.donghocodien@gmail.com',
   location: 'Ho Chi Minh City, Vietnam',
-  hours: 'Monday – Saturday: 09:30 – 19:30 (GMT+7)',
 } as const;
 
 export const SOCIAL = {
   facebook: 'https://www.facebook.com/spacetime.vintagewatch',
   instagram: 'https://www.instagram.com/spacetime.vintagewatch/',
 } as const;
+
+export const FOOTER_POLICY_LINKS = [
+  {
+    href: '/warranty-policy',
+    featureTitle: '6 MONTHS WARRANTY',
+    label: 'Warranty Policy',
+  },
+  {
+    href: '/payment-shipping-methods',
+    featureTitle: 'SHIPPING WORLDWIDE',
+    label: 'Payment & Shipping Methods',
+  },
+  {
+    href: '/exchange-policy',
+    featureTitle: 'EXCHANGE POLICY',
+    label: 'Exchange Policy',
+  },
+] as const;
+
+export const FOOTER_SOCIAL_LINKS = [
+  {
+    href: SOCIAL.facebook,
+    label: 'Facebook',
+    icon: 'facebook',
+    external: true,
+  },
+  {
+    href: SOCIAL.instagram,
+    label: 'Instagram',
+    icon: 'instagram',
+    external: true,
+  },
+  {
+    href: CONTACT.emailLink,
+    label: 'Send us an email',
+    icon: 'email',
+    external: false,
+  },
+  {
+    href: CONTACT.phoneLink,
+    label: 'Call us',
+    icon: 'phone',
+    external: true,
+  },
+] as const;
 
 export const SEO = {
   defaultTitle: 'Spacetime - Vintage Watch | Authentic Swiss & Japanese Timepieces',

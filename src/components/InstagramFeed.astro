@@ -1,0 +1,72 @@
+---
+import SocialIcon from './SocialIcon.astro';
+import { SOCIAL } from '../lib/constants';
+import type { InstagramPost } from '../lib/schema/instagram';
+
+interface Props {
+  posts: readonly InstagramPost[];
+  handle?: string;
+}
+
+const { posts, handle = 'spacetime.vintagewatch' } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class='bg-brand-surface py-16 text-brand-dark lg:py-24'>
+    <div class='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+      <div class='mb-8 flex flex-col items-center gap-3 text-center sm:mb-12'>
+        <a
+          href={SOCIAL.instagram}
+          target='_blank'
+          rel='noopener noreferrer'
+          class='inline-flex items-center gap-2 text-xl font-normal tracking-[0.2em] uppercase transition-colors hover:text-brand-gray sm:text-2xl lg:text-3xl'
+        >
+          <SocialIcon name='instagram' class='h-5 w-5 sm:h-6 sm:w-6' strokeWidth={1.8} />
+          FOLLOW ON INSTAGRAM
+        </a>
+        <p class='font-sans text-xs text-brand-gray italic sm:text-sm'>@{handle}</p>
+      </div>
+
+      <ul class='grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 lg:grid-cols-6'>
+        {posts.map((post) => (
+          <li>
+            <a
+              href={post.href}
+              target='_blank'
+              rel='noopener noreferrer'
+              aria-label={post.caption.slice(0, 120) || 'View post on Instagram'}
+              class='group relative block aspect-square overflow-hidden bg-brand-surface-subtle'
+            >
+              <img
+                src={post.image}
+                alt={post.caption.slice(0, 120) || 'Spacetime vintage watch post'}
+                width={640}
+                height={640}
+                loading='lazy'
+                decoding='async'
+                referrerpolicy='no-referrer'
+                class='h-full w-full object-cover'
+              />
+              <span class='absolute inset-0 flex items-end bg-brand-dark/40 p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100'>
+                <span class='line-clamp-3 font-sans text-[11px] leading-snug text-brand-surface'>
+                  {post.caption}
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class='mt-14 text-center'>
+        <a
+          href={SOCIAL.instagram}
+          target='_blank'
+          rel='noopener noreferrer'
+          class='inline-block border border-brand-dark px-10 py-3.5 text-xs font-medium tracking-[0.2em] uppercase transition-colors hover:bg-brand-dark hover:text-brand-surface'
+        >
+          Follow @{handle} &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+)}

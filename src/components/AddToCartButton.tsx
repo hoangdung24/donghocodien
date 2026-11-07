@@ -30,7 +30,7 @@ export function AddToCartButton({ product, stockText, stockClass }: AddToCartBut
   };
 
   return (
-    <div className='w-full space-y-3'>
+    <div className='flex w-full flex-col gap-3'>
       <div className='flex items-center justify-between text-sm'>
         <span className='font-medium text-stone-900'>Availability:</span>
         <span

@@ -5,6 +5,13 @@ export function formatUSD(amount: number | string): string {
   return `$${rounded.toLocaleString('en-US')}`;
 }
 
+export function formatPrice(amount: number | string): string {
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+  if (isNaN(num)) return '$0';
+  const rounded = Math.round(num);
+  return `$${rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+}
+
 export function calculateDiscountPercentage(
   regularPrice: number | string,
   salePrice: number | string

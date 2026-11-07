@@ -13,6 +13,16 @@ describe('Product Schema Seam (Effect v4)', () => {
     expect(decoded.prices.currency_code).toBe('USD');
     expect(decoded.images.length).toBeGreaterThan(0);
     expect(decoded.categories.length).toBeGreaterThan(0);
+    expect(decoded.low_stock_remaining).toBe(1);
+  });
+
+  it('decodes low_stock_remaining as null for non-low-stock products', () => {
+    const decoded = Schema.decodeSync(ProductSchema)({
+      ...sampleProduct,
+      low_stock_remaining: null,
+    });
+
+    expect(decoded.low_stock_remaining).toBeNull();
   });
 
   it('fails gracefully when required fields are missing', () => {

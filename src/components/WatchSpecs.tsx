@@ -15,7 +15,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
     >
       <Accordion.Item value='specs' className='py-4'>
         <Accordion.ItemTrigger className='group flex w-full cursor-pointer items-center justify-between text-left'>
-          <span className='flex items-center gap-2 font-serif text-lg tracking-wide text-stone-900 transition-colors group-hover:text-black'>
+          <span className='flex items-center gap-2 text-lg tracking-wide text-stone-900 transition-colors group-hover:text-brand-dark'>
             <Clock className='h-4 w-4 text-stone-500' />
             Technical Specifications &amp; Details
           </span>
@@ -38,7 +38,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
 
       <Accordion.Item value='authenticity' className='py-4'>
         <Accordion.ItemTrigger className='group flex w-full cursor-pointer items-center justify-between text-left'>
-          <span className='flex items-center gap-2 font-serif text-lg tracking-wide text-stone-900 transition-colors group-hover:text-black'>
+          <span className='flex items-center gap-2 text-lg tracking-wide text-stone-900 transition-colors group-hover:text-brand-dark'>
             <ShieldCheck className='h-4 w-4 text-stone-500' />
             Authenticity &amp; Mechanical Warranty
           </span>
@@ -46,13 +46,13 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
             <ChevronDown className='h-4 w-4 text-stone-500 transition-transform duration-300 data-[state=open]:rotate-180' />
           </Accordion.ItemIndicator>
         </Accordion.ItemTrigger>
-        <Accordion.ItemContent className='space-y-2 pt-3 text-sm leading-relaxed text-stone-600'>
+        <Accordion.ItemContent className='flex flex-col gap-2 pt-3 text-sm leading-relaxed text-stone-600'>
           <p>
             Every timepiece at <strong>Dong Ho Co Dien</strong> is rigorously inspected,
             authenticated, and verified for mechanical health prior to being offered to
             international collectors.
           </p>
-          <ul className='list-disc space-y-1 pl-5 text-xs text-stone-600'>
+          <ul className='flex list-disc flex-col gap-1 pl-5 text-xs text-stone-600'>
             <li>Guaranteed 100% authentic and original components for life.</li>
             <li>Fully demagnetized, timed, and serviced by master watchmakers.</li>
             <li>Complimentary mechanical warranty included.</li>
@@ -62,7 +62,7 @@ export function WatchSpecs({ descriptionHtml, sku }: WatchSpecsProps) {
 
       <Accordion.Item value='shipping' className='py-4'>
         <Accordion.ItemTrigger className='group flex w-full cursor-pointer items-center justify-between text-left'>
-          <span className='flex items-center gap-2 font-serif text-lg tracking-wide text-stone-900 transition-colors group-hover:text-black'>
+          <span className='flex items-center gap-2 text-lg tracking-wide text-stone-900 transition-colors group-hover:text-brand-dark'>
             <RefreshCw className='h-4 w-4 text-stone-500' />
             Worldwide Express Shipping &amp; Returns
           </span>

@@ -1,0 +1,169 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { WatchCard } from './WatchCard';
+import SearchBox from './SearchBox.astro';
+import { CategoryAccordion } from './CategoryAccordion';
+import { MobileFilterDrawer } from './MobileFilterDrawer';
+import { Button } from './Button';
+import type { Product, ProductCategory } from '../lib/schema/product';
+import { ARCHIVE_PATH, archiveHref, buildCategoryTree } from '../lib/utils/categories';
+
+interface Props {
+  products: Product[];
+  categories: ProductCategory[];
+  activeCategoryId?: number;
+  search?: string;
+  requestedPage: number;
+  hasNextPage: boolean;
+}
+
+const { products, categories, activeCategoryId, search, requestedPage, hasNextPage } = Astro.props;
+
+const searchQuery = search ?? '';
+const activeCategory = activeCategoryId
+  ? categories.find((category) => category.id === activeCategoryId)
+  : null;
+const activeCategoryName = activeCategory ? activeCategory.name.replace(/&amp;/g, '&') : null;
+const canonicalCategory = activeCategory?.slug;
+
+const pageTitle = activeCategoryName
+  ? `${activeCategoryName} Archive`
+  : search
+    ? `Archive Results for "${search}"`
+    : 'Archive';
+
+const pageHref = (pageNumber: number) =>
+  archiveHref({ category: canonicalCategory, search, page: pageNumber });
+
+const visibleCategoryGroups = buildCategoryTree(categories);
+---
+
+<Layout
+  title={`${pageTitle} | Spacetime`}
+  description='Browse the Spacetime archive of vintage timepieces that have found their owners.'
+>
+  <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8'>
+    <header class='mb-10'>
+      <h1 class='text-2xl leading-tight font-normal tracking-wide sm:text-3xl'>{pageTitle}</h1>
+      <p class='mt-3 text-sm leading-relaxed text-stone-600'>
+        Every piece below has already found its owner — a private record of the vintage watches we
+        have sourced and sold. Browse the collection for timepieces still available.
+      </p>
+      <div class='mt-6'>
+        <Button href='/watches' variant='outline' size='sm'>
+          Shop Available Watches
+        </Button>
+      </div>
+    </header>
+
+    <div class='grid grid-cols-1 gap-8 lg:grid-cols-12'>
+      <aside class='hidden lg:col-span-3 lg:flex lg:flex-col lg:gap-8'>
+        <SearchBox
+          id='archive-search'
+          value={searchQuery}
+          placeholder='Search the archive…'
+          action={ARCHIVE_PATH}
+          category={canonicalCategory}
+        />
+
+        <section class='flex flex-col gap-4'>
+          <a
+            href={archiveHref({ search })}
+            class={`text-[11px] font-bold tracking-wider uppercase transition-colors hover:text-brand-dark ${
+              activeCategoryId ? 'text-stone-500' : ''
+            }`}
+          >
+            All Categories
+          </a>
+
+          <CategoryAccordion
+            client:only='react'
+            groups={visibleCategoryGroups}
+            activeCategoryId={activeCategoryId}
+            search={search}
+            basePath={ARCHIVE_PATH}
+          />
+        </section>
+      </aside>
+
+      <div class='lg:col-span-9'>
+        <MobileFilterDrawer
+          client:only='react'
+          resultCount={products.length}
+          resultLabel='archived'
+          clearHref={ARCHIVE_PATH}
+        >
+          <SearchBox
+            slot='searchBox'
+            id='archive-search-mobile'
+            value={searchQuery}
+            placeholder='Search the archive…'
+            action={ARCHIVE_PATH}
+            category={canonicalCategory}
+          />
+
+          <div slot='categoryAccordion'>
+            <CategoryAccordion
+              client:only='react'
+              groups={visibleCategoryGroups}
+              activeCategoryId={activeCategoryId}
+              search={search}
+              basePath={ARCHIVE_PATH}
+            />
+          </div>
+        </MobileFilterDrawer>
+
+        {products.length === 0 ? (
+          <div class='border border-stone-200 bg-white px-6 py-24 text-center'>
+            <p class='text-xs tracking-widest text-stone-500 uppercase'>
+              No archived timepieces found.
+            </p>
+            <a
+              href={ARCHIVE_PATH}
+              class='mt-6 inline-block border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+            >
+              View the full archive
+            </a>
+          </div>
+        ) : (
+          <div class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
+            {products.map((watch) => (
+              <WatchCard client:visible product={watch} country={null} showStatus={false} />
+            ))}
+          </div>
+        )}
+
+        <nav
+          class='mt-16 flex items-center justify-between border-t border-stone-200 pt-8'
+          aria-label='Pagination'
+        >
+          {requestedPage > 1 ? (
+            <a
+              href={pageHref(requestedPage - 1)}
+              class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+            >
+              &larr; Previous
+            </a>
+          ) : (
+            <div />
+          )}
+
+          <span class='font-sans text-xs tracking-widest text-stone-500 uppercase'>
+            Page {requestedPage}
+          </span>
+
+          {hasNextPage ? (
+            <a
+              href={pageHref(requestedPage + 1)}
+              class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+            >
+              Next &rarr;
+            </a>
+          ) : (
+            <div />
+          )}
+        </nav>
+      </div>
+    </div>
+  </main>
+</Layout>

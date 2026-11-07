@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CatalogView from './CatalogView.astro';
+import type { Product, ProductCategory } from '../lib/schema/product';
+import { cleanTitle } from '../lib/utils/text';
+
+interface Props {
+  products: Product[];
+  categories: ProductCategory[];
+  availableProducts: Product[];
+  activeCategory: ProductCategory | null;
+  search?: string;
+  page: number;
+  pageSize: number;
+  basePath: string;
+}
+
+const {
+  products,
+  categories,
+  availableProducts,
+  activeCategory,
+  search,
+  page,
+  pageSize,
+  basePath,
+} = Astro.props;
+
+const pageTitle = activeCategory
+  ? `${cleanTitle(activeCategory.name)} Watches`
+  : search
+    ? `Search Results for "${search}"`
+    : 'All Watches';
+---
+
+<Layout
+  title={`${pageTitle} | Spacetime`}
+  description='Explore over 2,300+ vintage timepieces from Switzerland and Japan.'
+>
+  <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8'>
+    <div class='mb-8 pb-8'>
+      <CatalogView
+        products={products}
+        categories={categories}
+        availableProducts={availableProducts}
+        activeCategory={activeCategory}
+        search={search}
+        page={page}
+        pageSize={pageSize}
+        basePath={basePath}
+      />
+    </div>
+  </main>
+</Layout>

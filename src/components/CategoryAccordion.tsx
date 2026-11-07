@@ -1,22 +1,30 @@
 import { Accordion } from '@ark-ui/react/accordion';
 import { ChevronDown } from 'lucide-react';
-import type { CategoryGroup } from '../lib/utils/categories';
+import { categoryHref, type CategoryGroup } from '../lib/utils/categories';
 
 interface CategoryAccordionProps {
   groups: CategoryGroup[];
   activeCategoryId?: number;
   search?: string;
+  basePath?: string;
 }
 
-export function CategoryAccordion({ groups, activeCategoryId, search }: CategoryAccordionProps) {
+export function CategoryAccordion({
+  groups,
+  activeCategoryId,
+  search,
+  basePath = '/watches',
+}: CategoryAccordionProps) {
   const activeValues = groups
     .flatMap((group) => {
       const isActiveParent = activeCategoryId === group.parent.id;
-      const isActiveChild = group.children.some((c) => c.id === activeCategoryId);
+      const isActiveChild = group.children.some((category) => category.id === activeCategoryId);
       if (isActiveParent || isActiveChild) {
         return [
           group.parent.slug,
-          ...group.children.filter((c) => c.id === activeCategoryId).map((c) => String(c.id)),
+          ...group.children
+            .filter((category) => category.id === activeCategoryId)
+            .map((category) => String(category.id)),
         ];
       }
       return [];
@@ -24,18 +32,18 @@ export function CategoryAccordion({ groups, activeCategoryId, search }: Category
     .filter(Boolean);
 
   return (
-    <Accordion.Root multiple defaultValue={activeValues} className='space-y-1'>
+    <Accordion.Root multiple defaultValue={activeValues} className='flex flex-col gap-1'>
       {groups.map((group) => (
         <Accordion.Item key={group.parent.id} value={group.parent.slug}>
           <div className='flex items-center justify-between'>
             <a
-              href={`/shop?category=${group.parent.id}${search ? `&search=${search}` : ''}`}
-              className='px-2 py-1.5 text-[11px] font-bold tracking-wider text-black uppercase transition-colors hover:text-black'
+              href={categoryHref(group.parent.slug, search, basePath)}
+              className='py-1.5 text-[11px] font-bold tracking-wider uppercase'
             >
               {group.parent.displayName}
             </a>
             <Accordion.ItemTrigger
-              className='-ml-2 flex min-h-[44px] min-w-[44px] flex-1 items-center justify-end p-1.5 text-stone-600 transition-colors hover:text-black'
+              className='flex min-h-11 min-w-11 flex-1 items-center justify-end text-stone-600 transition-colors hover:text-brand-dark'
               aria-label={`Toggle ${group.parent.displayName} subcategories`}
             >
               <Accordion.ItemIndicator className='h-4 w-4'>
@@ -44,18 +52,18 @@ export function CategoryAccordion({ groups, activeCategoryId, search }: Category
             </Accordion.ItemTrigger>
           </div>
           <Accordion.ItemContent className='overflow-hidden'>
-            <div className='space-y-1 pt-1 pl-2'>
-              {group.children.map((c) => (
+            <div className='flex flex-col gap-1 pt-1 pl-2'>
+              {group.children.map((category) => (
                 <a
-                  key={c.id}
-                  href={`/shop?category=${c.id}${search ? `&search=${search}` : ''}`}
+                  key={category.id}
+                  href={categoryHref(category.slug, search, basePath)}
                   className={`block border-l-2 border-transparent py-1.5 pl-3 text-[11px] tracking-wider uppercase transition-colors ${
-                    activeCategoryId === c.id
-                      ? 'border-black bg-stone-50 font-bold text-black'
+                    activeCategoryId === category.id
+                      ? 'border-black bg-stone-50 font-bold'
                       : 'border-transparent bg-transparent text-stone-600 hover:bg-stone-50'
                   }`}
                 >
-                  {c.displayName}
+                  {category.displayName}
                 </a>
               ))}
             </div>

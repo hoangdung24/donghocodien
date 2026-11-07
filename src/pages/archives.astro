@@ -1,0 +1,27 @@
+---
+import ArchivePage from '../components/ArchivePage.astro';
+import { Effect } from 'effect';
+import { getCategories, getProductsPage } from '../lib/services/woocommerce';
+
+export const prerender = true;
+
+const PAGE_SIZE = 20;
+
+const [categoriesResult, productsResult] = await Effect.runPromise(
+  Effect.all(
+    [Effect.exit(getCategories), Effect.exit(getProductsPage({ page: 1, per_page: PAGE_SIZE }))],
+    { concurrency: 'unbounded' }
+  )
+);
+
+const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
+const fetchedProducts = productsResult._tag === 'Success' ? productsResult.value.products : [];
+const products = fetchedProducts.filter((product) => !product.is_in_stock);
+---
+
+<ArchivePage
+  products={products}
+  categories={categories}
+  requestedPage={1}
+  hasNextPage={fetchedProducts.length === PAGE_SIZE}
+/>

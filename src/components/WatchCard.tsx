@@ -2,43 +2,21 @@ import React, { useState } from 'react';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
 import type { Product } from '../lib/schema/product';
 import { formatApproxPrice } from '../lib/utils/currency';
+import { formatPrice } from '../lib/utils/format';
 import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
 import { cartStore } from '../lib/cartStore';
 import { Button } from './Button';
 import { cleanTitle } from '../lib/utils/text';
 
-// Default placeholder: black background with logo (monospace for classic look)
-const DEFAULT_PLACEHOLDER = `data:image/svg+xml;base64,${btoa(`
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750">
-  <rect width="600" height="750" fill="#111"/>
-  <text x="300" y="350" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="28" font-weight="500" fill="#fff" text-anchor="middle" letter-spacing="0.15em">SPACETIME</text>
-  <text x="300" y="395" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#888" text-anchor="middle" letter-spacing="0.2em">VINTAGE WATCH</text>
-</svg>
-`)}`;
+const DEFAULT_PLACEHOLDER = '/images/placeholder.jpeg';
 
 interface WatchCardProps {
   product: Product;
   country?: string | null;
+  showStatus?: boolean;
 }
 
-export function WatchCard({ product, country }: WatchCardProps) {
-  const primaryCategory =
-    product.categories.find((c) =>
-      [
-        'Omega',
-        'Rolex',
-        'Cartier',
-        'Edox',
-        'Eterna',
-        'Seiko',
-        'Farve-Leuba',
-        'Zenith',
-        'Longines',
-        'Universal Geneve',
-        'Tudor',
-      ].some((b) => c.name.toLowerCase().includes(b.toLowerCase()))
-    ) || product.categories[0];
-
+export function WatchCard({ product, country, showStatus = true }: WatchCardProps) {
   const mainImage = product.images[0]?.src || DEFAULT_PLACEHOLDER;
   const hoverImage = product.images[1]?.src || mainImage;
   const cleanName = cleanTitle(product.name);
@@ -47,8 +25,8 @@ export function WatchCard({ product, country }: WatchCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleAddToCart = async (event: React.MouseEvent) => {
+    event.preventDefault();
     if (!product.is_in_stock || isAdding) return;
 
     setIsAdding(true);
@@ -73,13 +51,13 @@ export function WatchCard({ product, country }: WatchCardProps) {
           src={mainImage}
           alt={cleanName}
           loading='lazy'
-          className={`h-full w-full object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0 ${!product.is_in_stock ? 'grayscale-50 opacity-60' : ''}`}
+          className={`h-full w-full object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0 ${!product.is_in_stock && showStatus ? 'opacity-60 grayscale-50' : ''}`}
         />
         <img
           src={hoverImage}
           alt={`${cleanName} alternate angle`}
           loading='lazy'
-          className={`absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 ${!product.is_in_stock ? 'grayscale-50 opacity-60' : ''}`}
+          className={`absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 ${!product.is_in_stock && showStatus ? 'opacity-60 grayscale-50' : ''}`}
         />
 
         <div className='absolute top-2 left-2 z-10 flex flex-col gap-1'>
@@ -97,19 +75,15 @@ export function WatchCard({ product, country }: WatchCardProps) {
       </a>
 
       <div className='flex flex-1 flex-col px-1 pt-3 pb-4 text-center sm:text-left'>
-        {primaryCategory && (
-          <p className='mb-1 truncate text-[10px] tracking-[0.15em] text-stone-400 uppercase sm:text-[11px]'>
-            {cleanTitle(primaryCategory.name)}
-          </p>
-        )}
-
-        <h3 className='mb-1.5 line-clamp-2 text-xs leading-snug tracking-normal text-black sm:text-sm'>
+        <h3 className='mb-1.5 line-clamp-2 min-h-[2.75em] text-xs leading-snug tracking-normal sm:text-sm'>
           <a href={`/product/${product.slug}`} className='transition-colors hover:text-stone-500'>
             {cleanName}
           </a>
         </h3>
 
-        <div className='mt-auto flex flex-col items-center pt-1 font-serif sm:items-start'>
+        <div
+          className={`mt-auto flex flex-col items-center pt-1 sm:items-start ${showStatus ? '' : 'hidden'}`}
+        >
           {Number(product.prices.price) > 0 && product.is_in_stock ? (
             <>
               <div className='flex items-baseline gap-2'>
@@ -118,8 +92,8 @@ export function WatchCard({ product, country }: WatchCardProps) {
                     ${product.prices.regular_price}
                   </span>
                 )}
-                <span className='text-sm font-semibold text-black sm:text-base'>
-                  ${product.prices.price}
+                <span className='text-sm font-semibold sm:text-base'>
+                  {formatPrice(product.prices.price)}
                 </span>
               </div>
               {approx && (

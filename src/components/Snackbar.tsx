@@ -36,7 +36,7 @@ export function Snackbar() {
             <button
               onClick={() => toastStore.dismiss(toast.id)}
               aria-label='Dismiss notification'
-              className='flex items-center px-3 text-stone-400 transition-colors duration-200 hover:bg-stone-100 hover:text-black'
+              className='flex items-center px-3 text-stone-400 transition-colors duration-200 hover:bg-stone-100 hover:text-brand-dark'
             >
               <X className='h-4 w-4' />
             </button>

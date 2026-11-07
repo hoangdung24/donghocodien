@@ -1,5 +1,4 @@
 {
-  "$schema": "https://oxc.rs/oxfmt.json",
   "printWidth": 100,
   "tabWidth": 2,
   "useTabs": false,
@@ -11,5 +10,10 @@
   "arrowParens": "always",
   "endOfLine": "lf",
   "astro": true,
-  "plugins": ["astro", "jsx", "typescript"]
+  "plugins": ["astro", "jsx", "typescript"],
+  "sortTailwindcss": {
+    "stylesheet": "./src/styles/global.css",
+    "functions": ["clsx", "cn"],
+    "preserveWhitespace": true
+  }
 }

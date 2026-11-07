@@ -10,13 +10,14 @@ import {
 import { BANK, CONTACT } from '../lib/constants';
 
 const summaryOrder: Array<[string, (order: LastOrder) => string]> = [
-  ['Order number', (o) => `#${o.orderId}`],
-  ['Date', (o) => o.date ?? ''],
-  ['Email', (o) => o.email ?? ''],
-  ['Total', (o) => formatOrderTotal(o.total, o.currencySymbol)],
+  ['Order number', (order) => `#${order.orderId}`],
+  ['Date', (order) => order.date ?? ''],
+  ['Email', (order) => order.email ?? ''],
+  ['Total', (order) => formatOrderTotal(order.total, order.currencySymbol)],
   [
     'Payment method',
-    (o) => (o.paymentMethod === 'bacs' ? 'Direct bank transfer' : (o.paymentMethod ?? '')),
+    (order) =>
+      order.paymentMethod === 'bacs' ? 'Direct bank transfer' : (order.paymentMethod ?? ''),
   ],
 ];
 
@@ -41,7 +42,7 @@ function CopyValue({ label, value }: { label: string; value: string }) {
   return (
     <div key={label} className='contents'>
       <dt className='pt-0.5 font-sans text-xs tracking-wider text-stone-500 uppercase'>{label}</dt>
-      <dd className='flex items-center gap-2 font-serif wrap-break-word text-stone-950'>
+      <dd className='flex items-center gap-2 wrap-break-word text-stone-950'>
         <span>{value}</span>
         <button
           type='button'
@@ -82,10 +83,10 @@ export function OrderComplete() {
   return (
     <main className='mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-20 lg:px-8'>
       <div className='mb-10 text-center'>
-        <h1 className='mb-3 font-serif text-3xl text-stone-950 sm:text-4xl'>
+        <h1 className='mb-3 text-3xl text-stone-950 sm:text-4xl'>
           Thank you. Your order has been received.
         </h1>
-        <p className='mx-auto max-w-md text-sm text-stone-500'>
+        <p className='mx-auto max-w-md text-sm'>
           A confirmation has been sent to your email address with your order details and payment
           instructions.
         </p>
@@ -102,7 +103,7 @@ export function OrderComplete() {
                   <dt className='mb-1 font-sans text-xs tracking-wider text-stone-500 uppercase'>
                     {label}
                   </dt>
-                  <dd className='font-serif text-sm wrap-break-word text-stone-950'>{value}</dd>
+                  <dd className='text-sm wrap-break-word text-stone-950'>{value}</dd>
                 </div>
               );
             })}
@@ -114,7 +115,7 @@ export function OrderComplete() {
         <div className='mb-8 border border-stone-200 bg-white p-6 sm:p-8'>
           <div className='mb-3 flex items-center gap-2'>
             <CreditCard className='h-4 w-4 text-stone-600' />
-            <h2 className='font-serif text-lg text-stone-950'>Direct bank transfer</h2>
+            <h2 className='text-lg text-stone-950'>Direct bank transfer</h2>
           </div>
           <p className='text-sm leading-relaxed text-stone-600'>
             Make your payment directly into our bank account. Please use your order number{' '}
@@ -136,13 +137,13 @@ export function OrderComplete() {
       )}
 
       <div className='flex flex-col items-center justify-center gap-3 sm:flex-row'>
-        <Button href='/shop' className='w-full sm:w-auto'>
+        <Button href='/watches' className='w-full sm:w-auto'>
           Continue Shopping
           <ArrowRight className='h-4 w-4' />
         </Button>
       </div>
 
-      <div className='mt-12 border-t border-stone-200 pt-8 text-center text-sm text-stone-500'>
+      <div className='mt-12 border-t border-stone-200 pt-8 text-center text-sm'>
         <span>
           Questions about your order? Email{' '}
           <a href={CONTACT.emailLink} className='underline-offset-2 hover:underline'>
