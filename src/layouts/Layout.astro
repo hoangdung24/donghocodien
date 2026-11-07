@@ -42,8 +42,11 @@ const { title, description, image, type = 'website', itunesAppId, product } = As
     />
   </head>
   <body class='flex min-h-screen flex-col bg-stone-50 text-stone-900'>
+    <a class='skip-link' href='#main-content'>
+      Skip to content
+    </a>
     <Header />
-    <div class='flex-1'>
+    <div id='main-content' class='flex-1' tabindex='-1'>
       <Providers client:only='react'>
         <slot />
       </Providers>

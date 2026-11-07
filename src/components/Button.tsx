@@ -4,7 +4,7 @@ export type ButtonVariant = 'primary' | 'outline' | 'ghost';
 export type ButtonSize = 'sm' | 'md';
 
 const base =
-  'inline-flex items-center justify-center gap-2 uppercase text-center transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 uppercase text-center transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark';
 
 const variants: Record<ButtonVariant, string> = {
   primary: 'bg-stone-900 text-white hover:bg-stone-800',

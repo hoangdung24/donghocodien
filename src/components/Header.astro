@@ -19,14 +19,17 @@ const activeCategory = Astro.url.searchParams.get('category');
           type='button'
           id='mobile-menu-toggle'
           aria-label='Open navigation menu'
-          class='cursor-pointer p-1.5 lg:hidden'
+          aria-expanded='false'
+          aria-controls='mobile-drawer'
+          class='inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center p-1.5 lg:hidden'
         >
-          <Menu class='h-5 w-5' />
+          <Menu class='h-5 w-5' aria-hidden='true' />
         </button>
 
         <span
           id='header-live-clock'
           class='hidden font-mono text-xs font-light tracking-wider text-stone-500 select-none sm:landscape:inline-block'
+          aria-hidden='true'
         >
           {formatHeaderClock(new Date())}
         </span>
@@ -35,15 +38,15 @@ const activeCategory = Astro.url.searchParams.get('category');
           href={SOCIAL.instagram}
           target='_blank'
           rel='noopener noreferrer'
-          aria-label='Instagram @spacetime.vintagewatch'
-          class='hidden p-1.5 transition-colors hover:text-stone-500 sm:inline-flex'
+          aria-label='Instagram @spacetime.vintagewatch (opens in a new tab)'
+          class='inline-flex min-h-11 min-w-11 items-center justify-center p-1.5 transition-colors hover:text-stone-500'
         >
           <SocialIcon name='instagram' class='h-5 w-5' strokeWidth={1.8} />
         </a>
       </div>
 
       <div class='flex-initial text-center'>
-        <a href='/' class='group inline-block py-1' title='Spacetime - Vintage Watch'>
+        <a href='/' class='group inline-block py-1' aria-label='Spacetime Vintage Watch, home'>
           <span class='block text-xl leading-none font-normal tracking-[0.38em] sm:text-2xl'>
             SPACETIME
           </span>
@@ -63,9 +66,9 @@ const activeCategory = Astro.url.searchParams.get('category');
             aria-label='Open search'
             aria-expanded='false'
             aria-controls='header-search-panel'
-            class='inline-flex cursor-pointer p-1.5 transition-colors hover:text-stone-500'
+            class='inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center p-1.5 transition-colors hover:text-stone-500'
           >
-            <Search class='h-4 w-4' />
+            <Search class='h-4 w-4' aria-hidden='true' />
           </button>
 
           <div
@@ -88,23 +91,29 @@ const activeCategory = Astro.url.searchParams.get('category');
 
   <div class='relative hidden border-t border-stone-100 lg:block' id='tier2-nav-container'>
     <div class='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-      <nav class='flex items-stretch justify-center gap-8 text-xs font-medium tracking-[0.18em] text-stone-700 uppercase'>
+      <nav
+        aria-label='Main'
+        class='flex items-stretch justify-center gap-8 text-xs font-medium tracking-[0.18em] text-stone-700 uppercase'
+      >
         <div id='watches-menu-wrapper' class='group flex items-center py-3.5'>
           <a
             href='/watches'
             id='watches-menu-trigger'
+            aria-expanded='false'
+            aria-controls='watches-mega-menu'
             class='inline-flex cursor-pointer items-center gap-1 py-1 transition-colors hover:text-brand-dark'
           >
             <span>Watches</span>
             <ChevronDown
               id='watches-chevron'
-              class='h-3.5 w-3.5 text-stone-400 transition-transform duration-200 group-hover:rotate-180'
+              class='h-3.5 w-3.5 shrink-0 text-stone-600 transition-transform duration-200 motion-safe:group-hover:rotate-180'
+              aria-hidden='true'
             />
           </a>
 
           <div
             id='watches-mega-menu'
-            class="pointer-events-none invisible absolute top-full left-1/2 z-50 w-screen max-w-5xl -translate-x-1/2 px-4 opacity-0 transition-all duration-200 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100 before:absolute before:-top-4 before:right-0 before:left-0 before:block before:h-4 before:content-[''] sm:px-6 lg:px-8"
+            class="pointer-events-none invisible absolute top-full left-1/2 z-50 w-screen max-w-5xl -translate-x-1/2 px-4 opacity-0 transition-all duration-200 ease-out group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100 before:absolute before:-top-4 before:right-0 before:left-0 before:block before:h-4 before:content-[''] sm:px-6 lg:px-8"
           >
             <div class='w-full border border-stone-200 bg-white p-8 shadow-2xl sm:p-10'>
               <div class='grid grid-cols-6 gap-6'>
@@ -114,9 +123,9 @@ const activeCategory = Astro.url.searchParams.get('category');
                       href={column.href}
                       class='mb-2 block border-b border-stone-100 pb-3 transition-opacity hover:opacity-70'
                     >
-                      <h4 class='text-[11px] font-bold tracking-[0.2em] whitespace-nowrap text-brand-dark uppercase'>
+                      <h3 class='text-[11px] font-bold tracking-[0.2em] whitespace-nowrap text-brand-dark uppercase'>
                         {column.title}
-                      </h4>
+                      </h3>
                     </a>
                     <ul class='divide-y divide-stone-100 text-xs'>
                       {column.items.map((item) => {
@@ -125,6 +134,7 @@ const activeCategory = Astro.url.searchParams.get('category');
                           <li class='py-2.5'>
                             <a
                               href={item.href}
+                              aria-current={isActive ? 'page' : undefined}
                               class={`block tracking-wide whitespace-nowrap transition-colors ${
                                 isActive
                                   ? 'font-bold text-brand-dark'
@@ -166,6 +176,9 @@ const activeCategory = Astro.url.searchParams.get('category');
   >
     <div
       id='mobile-drawer-content'
+      role='dialog'
+      aria-modal='true'
+      aria-label='Site navigation'
       class='fixed inset-y-0 left-0 flex w-4/5 max-w-md -translate-x-full transform flex-col overflow-y-auto bg-white p-6 shadow-2xl transition-transform duration-300 ease-out'
     >
       <div class='flex items-center justify-between border-b border-stone-200 pb-4'>
@@ -174,39 +187,43 @@ const activeCategory = Astro.url.searchParams.get('category');
           type='button'
           id='mobile-menu-close'
           aria-label='Close menu'
-          class='cursor-pointer p-2 text-stone-500 hover:text-brand-dark'
+          class='inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center p-2 text-stone-500 hover:text-brand-dark'
         >
-          <X class='h-5 w-5' />
+          <X class='h-5 w-5' aria-hidden='true' />
         </button>
       </div>
 
-      <nav class='flex flex-col gap-4 py-6 text-xs tracking-[0.18em] uppercase'>
+      <nav aria-label='Mobile' class='flex flex-col gap-4 py-6 text-xs tracking-[0.18em] uppercase'>
         <div>
           <button
             type='button'
             id='mobile-watches-toggle'
-            class='flex w-full cursor-pointer items-center justify-between py-2 font-bold'
+            aria-expanded='false'
+            aria-controls='mobile-watches-content'
+            class='flex min-h-11 w-full cursor-pointer items-center justify-between py-2 font-bold'
           >
             <span>Watches</span>
             <ChevronDown
               id='mobile-watches-icon'
-              class='h-4 w-4 text-stone-400 transition-transform duration-200'
+              class='h-4 w-4 shrink-0 text-stone-600 transition-transform duration-200'
+              aria-hidden='true'
             />
           </button>
 
           <div id='mobile-watches-content' class='hidden'>
             <div class='flex flex-col gap-3'>
-              {megaMenuData.map((col) => (
+              {megaMenuData.map((column) => (
                 <div class='flex flex-col gap-2'>
-                  <a href={col.href} class='block'>
-                    <p class='text-[10px] font-bold tracking-wider'>{col.title}</p>
+                  <a href={column.href} class='block'>
+                    <p class='text-[10px] font-bold tracking-wider'>{column.title}</p>
                   </a>
                   <div class='flex flex-col gap-1 pl-2'>
-                    {col.items.map((item) => {
+                    {column.items.map((item) => {
                       const isActive = currentPath === item.href;
                       return (
                         <a
                           href={item.href}
+                          aria-current={isActive ? 'page' : undefined}
                           class={`block text-[11px] normal-case transition-colors ${
                             isActive
                               ? 'font-bold'
@@ -263,6 +280,9 @@ const activeCategory = Astro.url.searchParams.get('category');
     setInterval(tick, 1000);
   }
 
+  const FOCUSABLE_SELECTOR =
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
   const toggleBtn = document.getElementById('mobile-menu-toggle');
   const closeBtn = document.getElementById('mobile-menu-close');
   const drawer = document.getElementById('mobile-drawer');
@@ -272,9 +292,17 @@ const activeCategory = Astro.url.searchParams.get('category');
   const watchesIcon = document.getElementById('mobile-watches-icon');
 
   const watchesWrapper = document.getElementById('watches-menu-wrapper');
+  const watchesTrigger = document.getElementById('watches-menu-trigger');
   const watchesMegaMenu = document.getElementById('watches-mega-menu');
   const watchesChevron = document.getElementById('watches-chevron');
   let closeTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function getFocusable(container: HTMLElement | null): HTMLElement[] {
+    if (!container) return [];
+    return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+      (element) => element.offsetParent !== null || element === document.activeElement
+    );
+  }
 
   function showMegaMenu() {
     if (closeTimer) {
@@ -284,14 +312,20 @@ const activeCategory = Astro.url.searchParams.get('category');
     watchesMegaMenu?.classList.remove('invisible', 'opacity-0', 'pointer-events-none');
     watchesMegaMenu?.classList.add('visible', 'opacity-100', 'pointer-events-auto');
     watchesChevron?.classList.add('rotate-180');
+    watchesTrigger?.setAttribute('aria-expanded', 'true');
+  }
+
+  function hideMegaMenu() {
+    watchesMegaMenu?.classList.remove('visible', 'opacity-100', 'pointer-events-auto');
+    watchesMegaMenu?.classList.add('invisible', 'opacity-0', 'pointer-events-none');
+    watchesChevron?.classList.remove('rotate-180');
+    watchesTrigger?.setAttribute('aria-expanded', 'false');
   }
 
   function scheduleHideMegaMenu() {
     if (closeTimer) clearTimeout(closeTimer);
     closeTimer = setTimeout(() => {
-      watchesMegaMenu?.classList.remove('visible', 'opacity-100', 'pointer-events-auto');
-      watchesMegaMenu?.classList.add('invisible', 'opacity-0', 'pointer-events-none');
-      watchesChevron?.classList.remove('rotate-180');
+      hideMegaMenu();
       closeTimer = null;
     }, 280);
   }
@@ -301,26 +335,69 @@ const activeCategory = Astro.url.searchParams.get('category');
   watchesMegaMenu?.addEventListener('mouseenter', showMegaMenu);
   watchesMegaMenu?.addEventListener('mouseleave', scheduleHideMegaMenu);
 
-  function openMenu() {
+  watchesTrigger?.addEventListener('focus', () => {
+    showMegaMenu();
+  });
+
+  watchesWrapper?.addEventListener('focusout', (event) => {
+    const nextFocus = (event as FocusEvent).relatedTarget;
+    if (nextFocus instanceof Node && watchesWrapper.contains(nextFocus)) return;
+    hideMegaMenu();
+  });
+
+  watchesWrapper?.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    hideMegaMenu();
+    watchesTrigger?.focus();
+  });
+
+  let mobileTriggerElement: HTMLElement | null = null;
+
+  function openMenu(trigger: HTMLElement | null) {
+    mobileTriggerElement = trigger;
     drawer?.classList.remove('opacity-0', 'pointer-events-none');
     drawer?.classList.add('opacity-100');
     drawerContent?.classList.remove('-translate-x-full');
     drawerContent?.classList.add('translate-x-0');
     document.body.style.overflow = 'hidden';
+    toggleBtn?.setAttribute('aria-expanded', 'true');
+    closeBtn?.focus();
   }
 
-  function closeMenu() {
+  function closeMenu(restoreFocus = true) {
     drawer?.classList.add('opacity-0', 'pointer-events-none');
     drawer?.classList.remove('opacity-100');
     drawerContent?.classList.add('-translate-x-full');
     drawerContent?.classList.remove('translate-x-0');
     document.body.style.overflow = '';
+    toggleBtn?.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) mobileTriggerElement?.focus();
+    mobileTriggerElement = null;
   }
 
-  toggleBtn?.addEventListener('click', openMenu);
-  closeBtn?.addEventListener('click', closeMenu);
+  toggleBtn?.addEventListener('click', () => openMenu(toggleBtn));
+  closeBtn?.addEventListener('click', () => closeMenu());
   drawer?.addEventListener('click', (event) => {
     if (event.target === drawer) closeMenu();
+  });
+
+  drawerContent?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeMenu();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = getFocusable(drawerContent);
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 
   watchesToggle?.addEventListener('click', () => {
@@ -328,9 +405,11 @@ const activeCategory = Astro.url.searchParams.get('category');
     if (isHidden) {
       watchesContent?.classList.remove('hidden');
       watchesIcon?.classList.add('rotate-180');
+      watchesToggle.setAttribute('aria-expanded', 'true');
     } else {
       watchesContent?.classList.add('hidden');
       watchesIcon?.classList.remove('rotate-180');
+      watchesToggle.setAttribute('aria-expanded', 'false');
     }
   });
 
@@ -343,20 +422,19 @@ const activeCategory = Astro.url.searchParams.get('category');
     searchPanel?.classList.remove('invisible', 'opacity-0', 'pointer-events-none', 'translate-y-1');
     searchPanel?.classList.add('visible', 'opacity-100', 'pointer-events-auto', 'translate-y-0');
     searchToggle?.setAttribute('aria-expanded', 'true');
-    const panelHeight = searchPanel?.offsetHeight;
-    if (panelHeight !== undefined && document.activeElement !== searchInput) searchInput?.focus();
+    searchInput?.focus();
   }
 
-  function closeSearchPanel() {
+  function closeSearchPanel(restoreFocus = true) {
     searchPanel?.classList.remove('visible', 'opacity-100', 'pointer-events-auto', 'translate-y-0');
     searchPanel?.classList.add('invisible', 'opacity-0', 'pointer-events-none', 'translate-y-1');
     searchToggle?.setAttribute('aria-expanded', 'false');
+    if (restoreFocus && searchToggle) searchToggle.focus();
   }
 
   searchToggle?.addEventListener('click', () => {
     if (searchToggle.getAttribute('aria-expanded') === 'true') {
       closeSearchPanel();
-      searchToggle.focus();
     } else {
       openSearchPanel();
     }
@@ -365,14 +443,13 @@ const activeCategory = Astro.url.searchParams.get('category');
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && searchToggle?.getAttribute('aria-expanded') === 'true') {
       closeSearchPanel();
-      searchToggle.focus();
     }
   });
 
   document.addEventListener('click', (event) => {
     if (searchToggle?.getAttribute('aria-expanded') !== 'true') return;
     if (event.target instanceof Node && searchWrapper?.contains(event.target)) return;
-    closeSearchPanel();
+    closeSearchPanel(false);
   });
 
   document.addEventListener('keydown', (event) => {

@@ -1,5 +1,6 @@
 import type { APIContext, MiddlewareNext } from 'astro';
 import { handleStoreApiProxy } from '@/lib/storeApiProxy';
+import { cacheControlFor, resolveCacheScope } from '@/lib/utils/cachePolicy';
 import { COUNTRY_COOKIE, COUNTRY_CODE_PATTERN } from '@/lib/utils/geo';
 
 const COUNTRY_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -29,12 +30,14 @@ export const onRequest = async (context: APIContext, next: MiddlewareNext): Prom
     return proxied;
   }
 
+  const cacheScope = resolveCacheScope(context.url.pathname);
+
   const cfCountry = import.meta.env.DEV ? null : getCloudflareCountry(context);
   const cookieCountry = normalizeCountry(context.cookies.get(COUNTRY_COOKIE)?.value);
 
   const country = cfCountry ?? cookieCountry;
 
-  if (country && country !== cookieCountry) {
+  if (country && country !== cookieCountry && cacheScope !== 'shared') {
     context.cookies.set(COUNTRY_COOKIE, country, {
       path: '/',
       maxAge: COUNTRY_COOKIE_MAX_AGE,
@@ -43,5 +46,11 @@ export const onRequest = async (context: APIContext, next: MiddlewareNext): Prom
   }
 
   context.locals.country = country;
-  return next();
+
+  const response = await next();
+
+  if (!import.meta.env.DEV && !response.headers.has('Cache-Control')) {
+    response.headers.set('Cache-Control', cacheControlFor(cacheScope, response.status));
+  }
+  return response;
 };

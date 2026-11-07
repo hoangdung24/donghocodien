@@ -54,6 +54,7 @@ export function WatchCard({
       <a
         href={`/watches/${product.slug}`}
         className='relative block aspect-300/375 overflow-hidden bg-stone-50'
+        aria-label={`View ${cleanName}`}
       >
         <img
           src={mainImage}
@@ -63,7 +64,8 @@ export function WatchCard({
         />
         <img
           src={hoverImage}
-          alt={`${cleanName} alternate angle`}
+          alt=''
+          aria-hidden='true'
           loading='lazy'
           className={`absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 ${!product.is_in_stock && showStatus ? 'opacity-60 grayscale-50' : ''}`}
         />
@@ -74,7 +76,7 @@ export function WatchCard({
               Sale
             </span>
           )}
-          {!product.is_in_stock && (
+          {!product.is_in_stock && showStatus && (
             <span className='bg-black/80 px-2 py-0.5 font-sans text-[9px] tracking-widest text-white uppercase sm:text-[10px]'>
               Sold
             </span>
@@ -106,8 +108,8 @@ export function WatchCard({
             <>
               <div className='flex items-baseline gap-2'>
                 {product.on_sale && product.prices.regular_price && (
-                  <span className='text-xs text-stone-400 line-through'>
-                    ${product.prices.regular_price}
+                  <span className='text-xs text-stone-600 line-through'>
+                    <span className='sr-only'>Was </span>${product.prices.regular_price}
                   </span>
                 )}
                 <span className='text-sm font-semibold sm:text-base'>
@@ -115,7 +117,11 @@ export function WatchCard({
                 </span>
               </div>
               {approx && (
-                <span className='approximate-vnd' data-usd-price={product.prices.price}>
+                <span
+                  className='approximate-vnd'
+                  data-usd-price={product.prices.price}
+                  aria-hidden='true'
+                >
                   {formatApproxPrice(product.prices.price, approx.currency, approx.rates)}
                 </span>
               )}
@@ -125,11 +131,17 @@ export function WatchCard({
                 disabled={isAdding}
                 size='sm'
                 className='mt-3 w-full'
+                aria-label={`Add ${cleanName} to your collector's case`}
               >
-                {isAdding && <Loader2 className='h-3.5 w-3.5 animate-spin' />}
-                {added && <Check className='h-3.5 w-3.5' />}
-                {!isAdding && !added && <ShoppingBag className='h-3.5 w-3.5' />}
-                <span>{isAdding ? 'Adding...' : added ? 'Added' : 'Add to Cart'}</span>
+                {isAdding && <Loader2 className='h-3.5 w-3.5 animate-spin' aria-hidden='true' />}
+                {added && <Check className='h-3.5 w-3.5' aria-hidden='true' />}
+                {!isAdding && !added && <ShoppingBag className='h-3.5 w-3.5' aria-hidden='true' />}
+                <span aria-hidden='true'>
+                  {isAdding ? 'Adding…' : added ? 'Added' : 'Add to Cart'}
+                </span>
+                <span role='status' className='sr-only'>
+                  {added ? `${cleanName} added to your collector's case` : ''}
+                </span>
               </Button>
             </>
           ) : (

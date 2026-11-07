@@ -32,22 +32,31 @@ export function CategoryAccordion({
     .filter(Boolean);
 
   return (
-    <Accordion.Root multiple defaultValue={activeValues} className='flex flex-col gap-1'>
+    <Accordion.Root
+      multiple
+      defaultValue={activeValues}
+      className='flex flex-col gap-1'
+      aria-label='Filter by category'
+    >
       {groups.map((group) => (
         <Accordion.Item key={group.parent.id} value={group.parent.slug}>
           <div className='flex items-center justify-between'>
             <a
               href={categoryHref(group.parent.slug, search, basePath)}
+              aria-current={activeCategoryId === group.parent.id ? 'page' : undefined}
               className='py-1.5 text-[11px] font-bold tracking-wider uppercase'
             >
               {group.parent.displayName}
             </a>
             <Accordion.ItemTrigger
               className='flex min-h-11 min-w-11 flex-1 items-center justify-end text-stone-600 transition-colors hover:text-brand-dark'
-              aria-label={`Toggle ${group.parent.displayName} subcategories`}
+              aria-label={`Show ${group.parent.displayName} categories`}
             >
               <Accordion.ItemIndicator className='h-4 w-4'>
-                <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                <ChevronDown
+                  className='h-4 w-4 transition-transform duration-200'
+                  aria-hidden='true'
+                />
               </Accordion.ItemIndicator>
             </Accordion.ItemTrigger>
           </div>
@@ -57,9 +66,10 @@ export function CategoryAccordion({
                 <a
                   key={category.id}
                   href={categoryHref(category.slug, search, basePath)}
-                  className={`block border-l-2 border-transparent py-1.5 pl-3 text-[11px] tracking-wider uppercase transition-colors ${
+                  aria-current={activeCategoryId === category.id ? 'page' : undefined}
+                  className={`block border-l-2 border-transparent py-2 pl-3 text-[11px] tracking-wider uppercase transition-colors ${
                     activeCategoryId === category.id
-                      ? 'border-black bg-stone-50 font-bold'
+                      ? 'border-brand-dark bg-stone-50 font-bold'
                       : 'border-transparent bg-transparent text-stone-600 hover:bg-stone-50'
                   }`}
                 >

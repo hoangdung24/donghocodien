@@ -5,28 +5,33 @@ import SocialIcon from '@/components/SocialIcon.astro';
 ---
 
 <footer id='footer' class='w-full bg-white text-brand-dark'>
-  <section class='w-full'>
-    <div class='grid grid-cols-1 divide-y divide-stone-200 border-b border-stone-200 bg-white md:grid-cols-3 md:divide-y-0'>
+  <section class='w-full' aria-labelledby='footer-highlights'>
+    <h2 id='footer-highlights' class='sr-only'>
+      Service highlights
+    </h2>
+    <ul class='grid grid-cols-1 divide-y divide-stone-200 border-b border-stone-200 bg-white md:grid-cols-3 md:divide-y-0'>
       {FOOTER_POLICY_LINKS.map((link) => (
-        <div class='bg-stone-50 py-4 text-center'>
-          <h3 class='m-0 text-base leading-normal font-bold tracking-wider uppercase sm:text-lg md:text-xl'>
-            <a href={link.href} class='block py-4 transition-colors hover:text-stone-600'>
-              {link.featureTitle}
-            </a>
-          </h3>
-        </div>
+        <li class='bg-stone-50 py-4 text-center'>
+          <a
+            href={link.href}
+            class='block py-4 text-base leading-normal font-bold tracking-wider uppercase transition-colors hover:text-stone-600 sm:text-lg md:text-xl'
+          >
+            {link.featureTitle}
+          </a>
+        </li>
       ))}
-    </div>
+    </ul>
   </section>
 
-  <section class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8'>
+  <section class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8' aria-label='Footer'>
     <div class='grid grid-cols-1 gap-8 text-center md:grid-cols-3 md:gap-6'>
-      <div>
-        <div class='mb-4'>
-          <span class='inline-block border-b border-black pb-1.5 text-base font-normal uppercase sm:text-lg'>
-            ABOUT US
-          </span>
-        </div>
+      <nav aria-labelledby='footer-about-heading'>
+        <h2
+          id='footer-about-heading'
+          class='mb-4 inline-block border-b border-brand-dark pb-1.5 text-base font-normal uppercase sm:text-lg'
+        >
+          About Us
+        </h2>
         <ul class='flex flex-col gap-2 text-sm sm:text-base'>
           {FOOTER_POLICY_LINKS.map((link) => (
             <li>
@@ -36,14 +41,15 @@ import SocialIcon from '@/components/SocialIcon.astro';
             </li>
           ))}
         </ul>
-      </div>
+      </nav>
 
-      <div>
-        <div class='mb-4'>
-          <span class='inline-block border-b border-black pb-1.5 text-base font-normal uppercase sm:text-lg'>
-            CONTACT
-          </span>
-        </div>
+      <div aria-labelledby='footer-contact-heading'>
+        <h2
+          id='footer-contact-heading'
+          class='mb-4 inline-block border-b border-brand-dark pb-1.5 text-base font-normal uppercase sm:text-lg'
+        >
+          Contact
+        </h2>
         <div class='flex flex-col gap-2 text-sm sm:text-base'>
           <p>
             <strong>Email:</strong>{' '}
@@ -65,12 +71,13 @@ import SocialIcon from '@/components/SocialIcon.astro';
         </div>
       </div>
 
-      <div>
-        <div class='mb-4'>
-          <span class='inline-block border-b border-black pb-1.5 text-base font-normal uppercase sm:text-lg'>
-            FOLLOW US
-          </span>
-        </div>
+      <div aria-labelledby='footer-follow-heading'>
+        <h2
+          id='footer-follow-heading'
+          class='mb-4 inline-block border-b border-brand-dark pb-1.5 text-base font-normal uppercase sm:text-lg'
+        >
+          Follow Us
+        </h2>
         <ul class='mb-3 flex items-center justify-center gap-2'>
           {FOOTER_SOCIAL_LINKS.map((channel) => (
             <li>
@@ -79,12 +86,12 @@ import SocialIcon from '@/components/SocialIcon.astro';
                 target={channel.external ? '_blank' : undefined}
                 rel={channel.external ? 'noopener noreferrer' : undefined}
                 aria-label={channel.label}
-                class='flex h-9 w-9 items-center justify-center rounded-full bg-black text-white transition-opacity hover:opacity-80'
+                class='flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition-opacity hover:opacity-80'
               >
                 {channel.icon === 'facebook' && <SocialIcon name='facebook' />}
                 {channel.icon === 'instagram' && <SocialIcon name='instagram' />}
-                {channel.icon === 'email' && <Mail class='h-4 w-4' />}
-                {channel.icon === 'phone' && <Phone class='h-4 w-4' />}
+                {channel.icon === 'email' && <Mail class='h-4 w-4' aria-hidden='true' />}
+                {channel.icon === 'phone' && <Phone class='h-4 w-4' aria-hidden='true' />}
               </a>
             </li>
           ))}
@@ -92,16 +99,16 @@ import SocialIcon from '@/components/SocialIcon.astro';
         <div>
           <a
             class='mt-1 inline-block'
-            title='Content Protection by DMCA.com'
             href='https://www.dmca.com/Protection/Status.aspx?ID=08160f1f-e048-492b-b3bb-004826bba1f9&refurl=https://donghocodien.com/'
             target='_blank'
             rel='noopener noreferrer'
           >
             <img
               src='https://images.dmca.com/Badges/dmca-badge-w100-5x1-02.png?ID=08160f1f-e048-492b-b3bb-004826bba1f9'
-              alt='Content Protection by DMCA.com'
+              alt='DMCA protected: verify content protection status (opens in a new tab)'
               width='100'
               height='20'
+              loading='lazy'
               class='mx-auto'
             />
           </a>

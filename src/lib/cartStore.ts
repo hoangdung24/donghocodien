@@ -1,6 +1,7 @@
 import type { Cart } from '@/lib/schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from '@/lib/services/cart';
 import { toastStore } from '@/lib/toastStore';
+import { resolveToastDuration } from '@/lib/toastDuration';
 
 const API_BASE = '/wc/store/v1';
 const CART_TOKEN_KEY = 'wc-cart-token';
@@ -163,7 +164,7 @@ export class CartStore {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to add item';
       this.setState({ error: message });
-      toastStore.show(message, 'error');
+      toastStore.show(message, 'error', resolveToastDuration('error'));
       throw err;
     }
   }
@@ -177,7 +178,7 @@ export class CartStore {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update quantity';
       this.setState({ error: message });
-      toastStore.show(message, 'error');
+      toastStore.show(message, 'error', resolveToastDuration('error'));
       throw err;
     }
   }
@@ -190,7 +191,7 @@ export class CartStore {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to remove item';
       this.setState({ error: message });
-      toastStore.show(message, 'error');
+      toastStore.show(message, 'error', resolveToastDuration('error'));
       throw err;
     }
   }
@@ -203,7 +204,7 @@ export class CartStore {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to clear cart';
       this.setState({ error: message });
-      toastStore.show(message, 'error');
+      toastStore.show(message, 'error', resolveToastDuration('error'));
       throw err;
     }
   }

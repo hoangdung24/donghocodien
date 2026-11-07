@@ -78,7 +78,7 @@ const pageHref = (pageNumber: number): string | null => {
 
 {availableCategoryCounts || availableProducts.length > 0 ? (
   <div class='grid grid-cols-1 gap-8 lg:grid-cols-12'>
-    <aside class='hidden lg:col-span-3 lg:flex lg:flex-col lg:gap-8'>
+    <aside aria-label='Filter timepieces' class='hidden lg:col-span-3 lg:flex lg:flex-col lg:gap-8'>
       <SearchBox
         id='shop-search'
         value={searchQuery}
@@ -86,15 +86,13 @@ const pageHref = (pageNumber: number): string | null => {
         action={basePath}
       />
 
-      <section class='flex flex-col gap-4'>
-        <CategoryAccordion
-          client:visible
-          groups={categoryGroups}
-          activeCategoryId={categoryId}
-          search={search}
-          basePath={basePath}
-        />
-      </section>
+      <CategoryAccordion
+        client:visible
+        groups={categoryGroups}
+        activeCategoryId={categoryId}
+        search={search}
+        basePath={basePath}
+      />
 
       <PriceRangeSlider
         client:visible
@@ -138,17 +136,25 @@ const pageHref = (pageNumber: number): string | null => {
     </MobileFilterDrawer>
 
     <div class='lg:col-span-9'>
+      <p
+        role='status'
+        class='mb-4 hidden font-sans text-xs tracking-widest text-stone-600 uppercase lg:block'
+      >
+        {products.length} {products.length === 1 ? 'timepiece' : 'timepieces'}
+      </p>
       {products.length === 0 ? (
-        <div class='py-24 text-center text-xs tracking-widest text-stone-400 uppercase'>
+        <div class='py-24 text-center text-xs tracking-widest text-stone-600 uppercase'>
           No timepieces found matching this criteria.
         </div>
       ) : (
         <>
-          <div class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
+          <ul class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
             {products.map((watch) => (
-              <WatchCard client:visible product={watch} categories={categories} country={null} />
+              <li>
+                <WatchCard client:visible product={watch} categories={categories} country={null} />
+              </li>
             ))}
-          </div>
+          </ul>
 
           {(page > 1 || hasNextPage) && (
             <nav
@@ -159,28 +165,26 @@ const pageHref = (pageNumber: number): string | null => {
                 <a
                   href={pageHref(page - 1)}
                   rel='prev'
-                  class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+                  class='inline-flex min-h-11 items-center border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
                 >
-                  &larr; Previous
+                  &larr; Previous<span class='sr-only'> page</span>
                 </a>
               ) : (
-                <div />
+                <div aria-hidden='true' />
               )}
 
-              <span class='font-sans text-xs tracking-widest text-stone-500 uppercase'>
-                Page {page}
-              </span>
+              <p class='font-sans text-xs tracking-widest text-stone-600 uppercase'>Page {page}</p>
 
               {hasNextPage ? (
                 <a
                   href={pageHref(page + 1)}
                   rel='next'
-                  class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+                  class='inline-flex min-h-11 items-center border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
                 >
-                  Next &rarr;
+                  Next<span class='sr-only'> page</span> &rarr;
                 </a>
               ) : (
-                <div />
+                <div aria-hidden='true' />
               )}
             </nav>
           )}
@@ -188,4 +192,8 @@ const pageHref = (pageNumber: number): string | null => {
       )}
     </div>
   </div>
-) : null}
+) : (
+  <p class='border border-stone-200 bg-white px-6 py-24 text-center text-xs tracking-widest text-stone-600 uppercase'>
+    No timepieces are available right now. Please try again shortly.
+  </p>
+)}

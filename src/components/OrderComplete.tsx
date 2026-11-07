@@ -47,15 +47,18 @@ function CopyValue({ label, value }: { label: string; value: string }) {
         <button
           type='button'
           onClick={handleCopy}
-          aria-label={`Copy ${label}`}
-          className='p-1 text-stone-400 transition-colors hover:text-stone-900'
+          aria-label={`Copy ${label.toLowerCase()}`}
+          className='flex min-h-9 min-w-9 items-center justify-center p-1 text-stone-600 transition-colors hover:text-stone-900'
         >
           {copied ? (
-            <Check className='h-3.5 w-3.5 text-green-700' />
+            <Check className='h-3.5 w-3.5 text-green-700' aria-hidden='true' />
           ) : (
-            <Copy className='h-3.5 w-3.5' />
+            <Copy className='h-3.5 w-3.5' aria-hidden='true' />
           )}
         </button>
+        <span role='status' className='sr-only'>
+          {copied ? `${label} copied to clipboard` : ''}
+        </span>
       </dd>
     </div>
   );
@@ -75,7 +78,12 @@ export function OrderComplete() {
   if (!loaded) {
     return (
       <main className='mx-auto flex min-h-[50vh] max-w-3xl items-center justify-center px-4 py-12 sm:px-6 sm:py-20 lg:px-8'>
-        <div className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent' />
+        <div
+          role='status'
+          className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
+        >
+          <span className='sr-only'>Loading your order confirmation</span>
+        </div>
       </main>
     );
   }
@@ -114,7 +122,7 @@ export function OrderComplete() {
       {(order?.paymentMethod === 'bacs' || !order) && (
         <div className='mb-8 border border-stone-200 bg-white p-6 sm:p-8'>
           <div className='mb-3 flex items-center gap-2'>
-            <CreditCard className='h-4 w-4 text-stone-600' />
+            <CreditCard className='h-4 w-4 text-stone-600' aria-hidden='true' />
             <h2 className='text-lg text-stone-950'>Direct bank transfer</h2>
           </div>
           <p className='text-sm leading-relaxed text-stone-600'>
@@ -139,7 +147,7 @@ export function OrderComplete() {
       <div className='flex flex-col items-center justify-center gap-3 sm:flex-row'>
         <Button href='/watches' className='w-full sm:w-auto'>
           Continue Shopping
-          <ArrowRight className='h-4 w-4' />
+          <ArrowRight className='h-4 w-4' aria-hidden='true' />
         </Button>
       </div>
 

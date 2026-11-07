@@ -57,7 +57,10 @@ const visibleCategoryGroups = buildCategoryTree(categories);
     </header>
 
     <div class='grid grid-cols-1 gap-8 lg:grid-cols-12'>
-      <aside class='hidden lg:col-span-3 lg:flex lg:flex-col lg:gap-8'>
+      <aside
+        aria-label='Filter archived timepieces'
+        class='hidden lg:col-span-3 lg:flex lg:flex-col lg:gap-8'
+      >
         <SearchBox
           id='archive-search'
           value={searchQuery}
@@ -104,28 +107,30 @@ const visibleCategoryGroups = buildCategoryTree(categories);
 
         {products.length === 0 ? (
           <div class='border border-stone-200 bg-white px-6 py-24 text-center'>
-            <p class='text-xs tracking-widest text-stone-500 uppercase'>
+            <p class='text-xs tracking-widest text-stone-600 uppercase'>
               No archived timepieces found.
             </p>
             <a
               href={ARCHIVE_PATH}
-              class='mt-6 inline-block border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+              class='mt-6 inline-flex min-h-11 items-center border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
             >
               View the full archive
             </a>
           </div>
         ) : (
-          <div class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
+          <ul class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
             {products.map((watch) => (
-              <WatchCard
-                client:visible
-                product={watch}
-                categories={categories}
-                country={null}
-                showStatus={false}
-              />
+              <li>
+                <WatchCard
+                  client:visible
+                  product={watch}
+                  categories={categories}
+                  country={null}
+                  showStatus={false}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
 
         <nav
@@ -135,27 +140,29 @@ const visibleCategoryGroups = buildCategoryTree(categories);
           {requestedPage > 1 ? (
             <a
               href={pageHref(requestedPage - 1)}
-              class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+              rel='prev'
+              class='inline-flex min-h-11 items-center border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
             >
-              &larr; Previous
+              &larr; Previous<span class='sr-only'> page</span>
             </a>
           ) : (
-            <div />
+            <div aria-hidden='true' />
           )}
 
-          <span class='font-sans text-xs tracking-widest text-stone-500 uppercase'>
+          <p class='font-sans text-xs tracking-widest text-stone-600 uppercase'>
             Page {requestedPage}
-          </span>
+          </p>
 
           {hasNextPage ? (
             <a
               href={pageHref(requestedPage + 1)}
-              class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+              rel='next'
+              class='inline-flex min-h-11 items-center border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
             >
-              Next &rarr;
+              Next<span class='sr-only'> page</span> &rarr;
             </a>
           ) : (
-            <div />
+            <div aria-hidden='true' />
           )}
         </nav>
       </div>

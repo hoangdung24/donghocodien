@@ -47,7 +47,7 @@ const EMPTY_FORM: BillingForm = {
 };
 
 const inputClass =
-  'w-full px-4 py-3 border border-stone-300 bg-white text-stone-900 text-sm focus:outline-none focus:border-stone-900 transition-colors placeholder:text-stone-400';
+  'w-full px-4 py-3 border border-stone-300 bg-white text-stone-900 text-sm focus:outline-none focus:border-stone-900 focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2 transition-colors placeholder:text-stone-400';
 
 const labelClass = 'block text-xs uppercase tracking-wider text-stone-500 mb-2 font-sans';
 
@@ -103,6 +103,11 @@ export function CheckoutPage() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!cart || submitting) return;
+    if (!terms) {
+      setSubmitError('Please read and accept the terms and conditions before placing your order.');
+      document.getElementById('checkout_terms')?.focus();
+      return;
+    }
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -173,7 +178,12 @@ export function CheckoutPage() {
   if (!mounted || (isLoading && !cart)) {
     return (
       <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-        <div className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent' />
+        <div
+          role='status'
+          className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
+        >
+          <span className='sr-only'>Loading checkout</span>
+        </div>
       </main>
     );
   }
@@ -182,8 +192,8 @@ export function CheckoutPage() {
     return (
       <main className='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
         <div className='py-20 text-center'>
-          <ShoppingBag className='mx-auto mb-6 h-24 w-24 text-stone-300' />
-          <h2 className='mb-3 text-2xl text-stone-900'>Your cart is currently empty</h2>
+          <ShoppingBag className='mx-auto mb-6 h-24 w-24 text-stone-300' aria-hidden='true' />
+          <h1 className='mb-3 text-2xl text-stone-900'>Your cart is currently empty</h1>
           <p className='mx-auto mb-8 max-w-md text-stone-500'>
             Browse our curated collection of rare vintage watches before proceeding to checkout.
           </p>
@@ -196,28 +206,38 @@ export function CheckoutPage() {
   const subtotal = parseFloat(cart.totals.total_items);
   const discount = parseFloat(cart.totals.total_discount);
   const total = parseFloat(cart.totals.total_price);
+  const termsErrorId = 'checkout-terms-error';
 
   return (
     <main className='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+      <h1 className='sr-only'>Checkout</h1>
       {error && (
-        <div className='mb-6 flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-900'>
+        <div
+          role='alert'
+          className='mb-6 flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-900'
+        >
           <span>{error}</span>
-          <button onClick={refreshCart} className='text-sm font-medium hover:underline'>
-            Retry
+          <button
+            type='button'
+            onClick={refreshCart}
+            className='text-sm font-medium hover:underline'
+          >
+            Retry loading your cart
           </button>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className='grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12'>
-        <div className='lg:col-span-3'>
-          <h2 className='mb-6 border-b border-stone-200 pb-3 text-2xl text-stone-950'>
+        <fieldset className='lg:col-span-3'>
+          <legend className='mb-6 w-full border-b border-stone-200 pb-3 text-2xl text-stone-950'>
             Billing Details
-          </h2>
+          </legend>
 
           <div className='grid grid-cols-1 gap-5 sm:grid-cols-2'>
             <div>
               <label htmlFor='billing_first_name' className={labelClass}>
-                First name *
+                First name
+                <span className='text-stone-600'> (required)</span>
               </label>
               <input
                 id='billing_first_name'
@@ -279,7 +299,7 @@ export function CheckoutPage() {
           <div className='mt-5'>
             <label htmlFor='billing_address_2' className={labelClass}>
               Apartment, suite, unit, etc.{' '}
-              <span className='text-stone-400 normal-case'>(optional)</span>
+              <span className='text-stone-600 normal-case'>(optional)</span>
             </label>
             <input
               id='billing_address_2'
@@ -314,7 +334,7 @@ export function CheckoutPage() {
                     {stateRequired ? (
                       '*'
                     ) : (
-                      <span className='text-stone-400 normal-case'>(optional)</span>
+                      <span className='text-stone-600 normal-case'>(optional)</span>
                     )}
                   </label>
                   <input
@@ -340,7 +360,7 @@ export function CheckoutPage() {
                   {postcodeRequired ? (
                     '*'
                   ) : (
-                    <span className='text-stone-400 normal-case'>(optional)</span>
+                    <span className='text-stone-600 normal-case'>(optional)</span>
                   )}
                 </label>
                 <input
@@ -407,7 +427,7 @@ export function CheckoutPage() {
 
           <div className='mt-5'>
             <label htmlFor='order_notes' className={labelClass}>
-              Order notes <span className='text-stone-400 normal-case'>(optional)</span>
+              Order notes <span className='text-stone-600 normal-case'>(optional)</span>
             </label>
             <textarea
               id='order_notes'
@@ -418,31 +438,38 @@ export function CheckoutPage() {
               className={`${inputClass} resize-none`}
             />
           </div>
-        </div>
+        </fieldset>
 
-        <div className='lg:col-span-2'>
+        <section aria-labelledby='order-summary-heading' className='lg:col-span-2'>
           <div className='border border-stone-200 bg-white p-6 lg:sticky lg:top-28'>
-            <h2 className='mb-4 border-b border-stone-200 pb-3 text-lg text-stone-900'>
+            <h2
+              id='order-summary-heading'
+              className='mb-4 border-b border-stone-200 pb-3 text-lg text-stone-900'
+            >
               Your Order
             </h2>
 
-            <div className='divide-y divide-stone-200'>
+            <ul className='divide-y divide-stone-200'>
               {cart.items.map((item) => (
-                <div key={item.key} className='flex items-center gap-4 py-4'>
+                <li key={item.key} className='flex items-center gap-4 py-4'>
                   {item.images[0] && (
                     <img
                       src={item.images[0].thumbnail ?? item.images[0].src}
-                      alt={item.name}
+                      alt={decodeEntities(item.name)}
                       className='h-20 w-16 shrink-0 border border-stone-200 object-cover'
                     />
                   )}
                   <div className='min-w-0 flex-1'>
                     <p className='truncate text-sm text-stone-900'>{decodeEntities(item.name)}</p>
-                    <p className='mt-0.5 text-xs text-stone-400'>Qty: {item.quantity}</p>
+                    <p className='mt-0.5 text-xs text-stone-600'>
+                      <span className='sr-only'>Quantity: </span>
+                      Qty: {item.quantity}
+                    </p>
                     {approx && (
                       <span
                         className='approximate-vnd block'
                         data-usd-price={item.totals.line_total}
+                        aria-hidden='true'
                       >
                         {formatApproxPrice(item.totals.line_total, approx.currency, approx.rates)}
                       </span>
@@ -451,9 +478,9 @@ export function CheckoutPage() {
                   <span className='text-sm font-semibold whitespace-nowrap text-yellow-900'>
                     {formatPrice(item.totals.line_total)}
                   </span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
             <dl className='flex flex-col gap-3 border-t border-stone-200 pt-4 text-sm'>
               <div className='flex justify-between'>
@@ -481,44 +508,67 @@ export function CheckoutPage() {
                 </dd>
               </div>
               {approx && (
-                <dd className='approximate-vnd text-right' data-usd-price={total.toFixed(2)}>
-                  {formatApproxPrice(total.toFixed(2), approx.currency, approx.rates)}
-                </dd>
+                <div className='text-right'>
+                  <dt className='sr-only'>Approximate total</dt>
+                  <dd
+                    className='approximate-vnd'
+                    data-usd-price={total.toFixed(2)}
+                    aria-hidden='true'
+                  >
+                    {formatApproxPrice(total.toFixed(2), approx.currency, approx.rates)}
+                  </dd>
+                </div>
               )}
             </dl>
 
-            <label className='mt-6 flex cursor-pointer items-start gap-3 text-xs text-stone-600'>
+            <div className='mt-6 flex items-start gap-3 text-xs text-stone-600'>
               <input
+                id='checkout_terms'
                 type='checkbox'
                 checked={terms}
-                onChange={(event) => setTerms(event.target.checked)}
+                onChange={(event) => {
+                  setTerms(event.target.checked);
+                  if (event.target.checked) setSubmitError(null);
+                }}
                 required
-                className='mt-0.5 accent-stone-900'
+                className='mt-0.5 h-5 w-5 shrink-0 accent-stone-900'
               />
-              <span>
+              <label htmlFor='checkout_terms' className='cursor-pointer'>
                 I have read and agree to the website{' '}
                 <a href='/payment-shipping-methods' className='underline hover:text-stone-900'>
                   terms and conditions
                 </a>{' '}
                 *
-              </span>
-            </label>
+              </label>
+            </div>
 
-            {submitError && (
-              <p className='mt-4 border border-red-200 bg-red-50 p-3 text-xs text-red-700'>
-                {submitError}
+            {!terms && submitError && (
+              <p id={termsErrorId} className='mt-2 text-xs font-medium text-red-700'>
+                Tick the terms and conditions box to place your order.
               </p>
             )}
 
-            <Button type='submit' disabled={submitting || !terms} className='mt-6 w-full'>
+            {submitError && (
+              <div
+                role='alert'
+                className='mt-4 border border-red-200 bg-red-50 p-3 text-xs text-red-700'
+              >
+                {submitError}
+              </div>
+            )}
+
+            <Button type='submit' aria-disabled={submitting || undefined} className='mt-6 w-full'>
               {submitting ? (
                 <>
-                  <span className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
+                  <span
+                    aria-hidden='true'
+                    className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'
+                  />
                   Processing…
                 </>
               ) : (
                 <>
-                  <Check className='h-4 w-4' />
+                  <Check className='h-4 w-4' aria-hidden='true' />
                   Place Order
                 </>
               )}
@@ -526,20 +576,20 @@ export function CheckoutPage() {
 
             <div className='mt-6 flex flex-col gap-3 border-t border-stone-200 pt-4 text-xs text-stone-600'>
               <div className='flex items-center gap-2'>
-                <Shield className='h-4 w-4 text-green-700' />
+                <Shield className='h-4 w-4 text-green-700' aria-hidden='true' />
                 <span>Authenticated &amp; mechanically verified</span>
               </div>
               <div className='flex items-center gap-2'>
-                <Truck className='h-4 w-4 text-green-700' />
+                <Truck className='h-4 w-4 text-green-700' aria-hidden='true' />
                 <span>Worldwide insured delivery</span>
               </div>
               <div className='flex items-center gap-2'>
-                <CreditCard className='h-4 w-4 text-green-700' />
+                <CreditCard className='h-4 w-4 text-green-700' aria-hidden='true' />
                 <span>Secure checkout</span>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </form>
     </main>
   );

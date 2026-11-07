@@ -11,6 +11,8 @@ export class ToastStore {
   private listeners: Set<Listener> = new Set();
   private nextId = 1;
   private timers = new Map<number, ReturnType<typeof setTimeout>>();
+  private durations = new Map<number, number>();
+  private paused = false;
 
   constructor(private readonly durationMs = 4000) {}
 
@@ -29,14 +31,35 @@ export class ToastStore {
     this.listeners.forEach((listener) => listener());
   }
 
-  show(message: string, variant: Toast['variant'] = 'error'): void {
+  private scheduleDismiss(id: number, durationMs: number): void {
+    if (this.paused) return;
+    this.durations.set(id, durationMs);
+    this.timers.set(
+      id,
+      setTimeout(() => this.dismiss(id), durationMs)
+    );
+  }
+
+  show(message: string, variant: Toast['variant'] = 'error', durationMs = this.durationMs): void {
     const toast: Toast = { id: this.nextId++, message, variant };
     this.toasts = [...this.toasts, toast];
-    this.timers.set(
-      toast.id,
-      setTimeout(() => this.dismiss(toast.id), this.durationMs)
-    );
+    this.scheduleDismiss(toast.id, durationMs);
     this.notify();
+  }
+
+  pause(): void {
+    this.paused = true;
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.timers.clear();
+  }
+
+  resume(): void {
+    if (!this.paused) return;
+    this.paused = false;
+    for (const [id, durationMs] of this.durations) {
+      if (this.timers.has(id)) continue;
+      this.scheduleDismiss(id, durationMs);
+    }
   }
 
   dismiss(id: number): void {
@@ -45,6 +68,7 @@ export class ToastStore {
       clearTimeout(timer);
       this.timers.delete(id);
     }
+    this.durations.delete(id);
     if (!this.toasts.some((toast) => toast.id === id)) return;
     this.toasts = this.toasts.filter((toast) => toast.id !== id);
     this.notify();

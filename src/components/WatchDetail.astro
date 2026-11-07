@@ -1,5 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import { ApproxPrice } from '@/components/ApproxPrice';
 import { WatchGallery } from '@/components/WatchGallery';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { ProductTabs } from '@/components/ProductTabs';
@@ -9,7 +10,11 @@ import { Mail, MessageCircle } from '@lucide/astro';
 import type { Product, ProductCategory } from '@/lib/schema/product';
 import { findBrandCategory } from '@/lib/utils/categories';
 import { CONTACT } from '@/lib/constants';
-import { sanitizeWordPressHtml } from '@/lib/utils/html';
+import {
+  demoteEmbeddedHeadings,
+  leadHeadingRepeatsSection,
+  sanitizeWordPressHtml,
+} from '@/lib/utils/html';
 import { cleanTitle } from '@/lib/utils/text';
 
 interface Props {
@@ -21,8 +26,11 @@ interface Props {
 const { product, relatedProducts, categories } = Astro.props;
 
 const cleanName = cleanTitle(product.name);
-const cleanDescription = await sanitizeWordPressHtml(product.description || '');
+const cleanDescription = await demoteEmbeddedHeadings(
+  await sanitizeWordPressHtml(product.description || '')
+);
 const cleanShortDescription = await sanitizeWordPressHtml(product.short_description || '');
+const descriptionRepeatsHeading = leadHeadingRepeatsSection(cleanDescription, 'Description');
 const primaryBrand = findBrandCategory(product, categories);
 
 const stockText = product.is_in_stock
@@ -61,27 +69,37 @@ const productSchema = {
   product={productSchema}
 >
   <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-    <nav class='mb-8 flex items-center gap-2 font-sans text-xs tracking-wider text-stone-500 uppercase'>
-      <a href='/' class='transition-colors hover:text-stone-900'>
-        Home
-      </a>
-      <span>/</span>
-      <a href='/watches' class='transition-colors hover:text-stone-900'>
-        Collection
-      </a>
-      {primaryBrand && (
-        <>
-          <span>/</span>
-          <a
-            href={`/watches?category=${primaryBrand.slug}`}
-            class='transition-colors hover:text-stone-900'
-          >
-            {cleanTitle(primaryBrand.name)}
+    <nav aria-label='Breadcrumb' class='mb-8'>
+      <ol class='flex flex-wrap items-center gap-2 font-sans text-xs tracking-wider text-stone-600 uppercase'>
+        <li>
+          <a href='/' class='transition-colors hover:text-stone-900'>
+            Home
           </a>
-        </>
-      )}
-      <span>/</span>
-      <span class='max-w-xs truncate text-stone-900'>{cleanName}</span>
+        </li>
+        <li aria-hidden='true'>/</li>
+        <li>
+          <a href='/watches' class='transition-colors hover:text-stone-900'>
+            Collection
+          </a>
+        </li>
+        {primaryBrand && (
+          <>
+            <li aria-hidden='true'>/</li>
+            <li>
+              <a
+                href={`/watches?category=${primaryBrand.slug}`}
+                class='transition-colors hover:text-stone-900'
+              >
+                {cleanTitle(primaryBrand.name)}
+              </a>
+            </li>
+          </>
+        )}
+        <li aria-hidden='true'>/</li>
+        <li class='max-w-xs truncate text-stone-900' aria-current='page'>
+          {cleanName}
+        </li>
+      </ol>
     </nav>
 
     <div class='grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16'>
@@ -106,8 +124,8 @@ const productSchema = {
               <>
                 <span class='text-3xl font-medium text-stone-900'>${product.prices.price}</span>
                 {product.on_sale && product.prices.regular_price && (
-                  <span class='text-base text-stone-400 line-through'>
-                    ${product.prices.regular_price}
+                  <span class='text-base text-stone-500 line-through'>
+                    <span class='sr-only'>Original price: </span>${product.prices.regular_price}
                   </span>
                 )}
               </>
@@ -120,6 +138,7 @@ const productSchema = {
               </div>
             )}
           </div>
+          {hasPrice && <ApproxPrice client:visible usdPrice={product.prices.price} />}
         </div>
 
         {cleanShortDescription && (
@@ -153,14 +172,14 @@ const productSchema = {
                   rel='noopener noreferrer'
                   class={buttonClass('primary', 'md', 'w-full sm:w-auto')}
                 >
-                  <MessageCircle className='h-5 w-5' />
+                  <MessageCircle class='h-5 w-5' aria-hidden='true' />
                   Ask on WhatsApp
                 </a>
                 <a
                   href={`${CONTACT.emailLink}?subject=${soldEmailSubject}`}
                   class={buttonClass('outline', 'md', 'w-full sm:w-auto')}
                 >
-                  <Mail className='h-5 w-5' />
+                  <Mail class='h-5 w-5' aria-hidden='true' />
                   Email Us
                 </a>
               </div>
@@ -176,6 +195,7 @@ const productSchema = {
         descriptionHtml={cleanDescription}
         sku={product.sku}
         shortDescription={cleanShortDescription}
+        hideHeading={descriptionRepeatsHeading}
       />
 
       {relatedProducts.length > 0 && (

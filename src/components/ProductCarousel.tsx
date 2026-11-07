@@ -41,13 +41,21 @@ export function ProductCarousel({ products, categories }: ProductCarouselProps) 
   }
 
   return (
-    <div className='group/carousel relative'>
+    <div
+      className='group/carousel relative'
+      role='region'
+      aria-roledescription='carousel'
+      aria-label='Featured timepieces'
+    >
       <div className='overflow-hidden px-1' ref={emblaRef}>
         <div className='-ml-4 flex touch-pan-y py-2 sm:-ml-6'>
-          {products.map((product) => (
+          {products.map((product, index) => (
             <div
               key={product.id}
               className='min-w-0 flex-[0_0_80%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_25%]'
+              role='group'
+              aria-roledescription='slide'
+              aria-label={`${index + 1} of ${products.length}`}
             >
               <WatchCard product={product} categories={categories} />
             </div>
@@ -59,28 +67,28 @@ export function ProductCarousel({ products, categories }: ProductCarouselProps) 
         type='button'
         onClick={scrollPrev}
         disabled={prevBtnDisabled}
-        aria-label='Previous products'
-        className={`absolute top-1/2 -left-3 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-stone-800 shadow-md transition-all sm:-left-5 sm:h-11 sm:w-11 ${
+        aria-label='Scroll to previous timepieces'
+        className={`absolute top-1/2 -left-3 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-stone-800 shadow-md transition-all sm:-left-5 ${
           prevBtnDisabled
             ? 'pointer-events-none opacity-0'
             : 'cursor-pointer hover:bg-brand-dark hover:text-white'
         }`}
       >
-        <ChevronLeft className='h-4 w-4 sm:h-5 sm:w-5' />
+        <ChevronLeft className='h-4 w-4 sm:h-5 sm:w-5' aria-hidden='true' />
       </button>
 
       <button
         type='button'
         onClick={scrollNext}
         disabled={nextBtnDisabled}
-        aria-label='Next products'
-        className={`absolute top-1/2 -right-3 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-stone-800 shadow-md transition-all sm:-right-5 sm:h-11 sm:w-11 ${
+        aria-label='Scroll to next timepieces'
+        className={`absolute top-1/2 -right-3 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-stone-800 shadow-md transition-all sm:-right-5 ${
           nextBtnDisabled
             ? 'pointer-events-none opacity-0'
             : 'cursor-pointer hover:bg-brand-dark hover:text-white'
         }`}
       >
-        <ChevronRight className='h-4 w-4 sm:h-5 sm:w-5' />
+        <ChevronRight className='h-4 w-4 sm:h-5 sm:w-5' aria-hidden='true' />
       </button>
     </div>
   );

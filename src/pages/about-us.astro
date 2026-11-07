@@ -10,6 +10,7 @@ export const prerender = true;
   description='Vintage watches have long left deep imprints across time — marking decades, even centuries — evoking memories of a bygone era. Spacetime – Vintage Watch.'
 >
   <main class='mx-auto max-w-4xl px-4 pt-16 pb-16 font-sans text-brand-dark sm:px-6 sm:pt-24 sm:pb-24 lg:px-8'>
+    <h1 class='sr-only'>About Spacetime Vintage Watch</h1>
     <div class='flex flex-col gap-6 text-sm leading-relaxed text-stone-700 sm:text-base'>
       <p>
         Vintage watches have long left deep imprints across time — marking decades, even centuries —
@@ -25,7 +26,7 @@ export const prerender = true;
       </p>
 
       <div class='flex flex-col gap-2 pt-6'>
-        <h4 class='text-base font-bold sm:text-lg'>{SITE.fullName}</h4>
+        <h2 class='text-base font-bold sm:text-lg'>{SITE.fullName}</h2>
         <p class='text-sm text-stone-700'>
           <strong>Email:</strong>{' '}
           <a href={CONTACT.emailLink} class='hover:underline'>

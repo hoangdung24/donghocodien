@@ -6,7 +6,7 @@ import Layout from '@/layouts/Layout.astro';
 import { SEO, SITE } from '@/lib/constants';
 import { getCategories, getProducts } from '@/lib/services/woocommerce';
 
-export const prerender = true;
+export const prerender = false;
 
 const [productsResult, categoriesResult] = await Effect.runPromise(
   Effect.all([Effect.exit(getProducts({ per_page: 12 })), Effect.exit(getCategories)], {
@@ -17,18 +17,28 @@ const [productsResult, categoriesResult] = await Effect.runPromise(
 const products = productsResult._tag === 'Success' ? productsResult.value : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 const hasProductError = productsResult._tag === 'Failure';
+
+if (productsResult._tag !== 'Success' || categoriesResult._tag !== 'Success') {
+  Astro.response.headers.set('Cache-Control', 'private, no-store');
+}
 ---
 
 <Layout title={SEO.defaultTitle} description={SEO.defaultDescription}>
-  <section class='relative w-full'>
+  <h1 class='sr-only'>
+    Spacetime Vintage Watch — authentic Swiss and Japanese timepieces for global collectors
+  </h1>
+  <section class='relative w-full' aria-label='Featured watches'>
     <HeroCarousel client:load />
   </section>
 
-  <section class='bg-white py-16 lg:py-24'>
+  <section aria-labelledby='brand-story-heading' class='bg-white py-16 lg:py-24'>
     <div class='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
       <div class='grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16'>
         <div class='flex flex-col gap-6 lg:col-span-7'>
-          <h2 class='text-lg leading-snug tracking-[0.12em] uppercase sm:text-2xl lg:text-3xl'>
+          <h2
+            id='brand-story-heading'
+            class='text-lg leading-snug tracking-[0.12em] uppercase sm:text-2xl lg:text-3xl'
+          >
             SPACETIME – A MISSION TO BRING ELEGANCE TO MILLIONS OF WRISTS
           </h2>
 
@@ -70,19 +80,25 @@ const hasProductError = productsResult._tag === 'Failure';
     </div>
   </section>
 
-  <section class='bg-white py-16 lg:py-24'>
+  <section aria-labelledby='shop-now-heading' class='bg-white py-16 lg:py-24'>
     <div class='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
       <div class='mb-8 text-center sm:mb-12'>
-        <h2 class='text-xl font-normal tracking-[0.2em] uppercase sm:text-2xl lg:text-3xl'>
+        <h2
+          id='shop-now-heading'
+          class='text-xl font-normal tracking-[0.2em] uppercase sm:text-2xl lg:text-3xl'
+        >
           <a href='/watches' class='transition-colors hover:text-stone-500'>
             SHOP NOW
           </a>
         </h2>
-        <p class='mt-2 text-xs text-stone-500 italic sm:text-sm'>Come visit our online store</p>
+        <p class='mt-2 text-xs text-stone-600 italic sm:text-sm'>Come visit our online store</p>
       </div>
 
       {hasProductError && (
-        <div class='mx-auto max-w-lg border border-red-200 bg-red-50 p-6 text-center text-xs text-red-700'>
+        <div
+          role='alert'
+          class='mx-auto max-w-lg border border-red-200 bg-red-50 p-6 text-center text-xs text-red-700'
+        >
           Temporary latency connecting to WooCommerce API. Please refresh the page.
         </div>
       )}

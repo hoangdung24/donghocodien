@@ -65,4 +65,51 @@ describe('ToastStore', () => {
     vi.advanceTimersByTime(4000);
     expect(calls).toBe(2);
   });
+
+  it('honours a per-toast duration instead of the store default', () => {
+    const store = new ToastStore(4000);
+    store.show('Confirming', 'success', 12000);
+    vi.advanceTimersByTime(4000);
+    expect(store.getState()).toHaveLength(1);
+    vi.advanceTimersByTime(8000);
+    expect(store.getState()).toHaveLength(0);
+  });
+
+  it('pause keeps a toast on screen past its timer while the pointer rests on it', () => {
+    const store = new ToastStore(4000);
+    store.show('Failed to add item');
+    store.pause();
+    vi.advanceTimersByTime(60000);
+    expect(store.getState()).toHaveLength(1);
+    store.resume();
+    vi.advanceTimersByTime(3999);
+    expect(store.getState()).toHaveLength(1);
+    vi.advanceTimersByTime(1);
+    expect(store.getState()).toHaveLength(0);
+  });
+
+  it('resume after pause restores the remaining dwell time of the original duration', () => {
+    const store = new ToastStore(4000);
+    store.show('Confirming', 'success', 12000);
+    vi.advanceTimersByTime(1000);
+    store.pause();
+    store.resume();
+    vi.advanceTimersByTime(11999);
+    expect(store.getState()).toHaveLength(1);
+    vi.advanceTimersByTime(1);
+    expect(store.getState()).toHaveLength(0);
+  });
+
+  it('resume without a pause does not notify or restart timers', () => {
+    const store = new ToastStore(4000);
+    let calls = 0;
+    store.subscribe(() => {
+      calls += 1;
+    });
+    store.show('msg');
+    store.resume();
+    vi.advanceTimersByTime(4000);
+    expect(store.getState()).toHaveLength(0);
+    expect(calls).toBe(2);
+  });
 });

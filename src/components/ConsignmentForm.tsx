@@ -1,7 +1,21 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Effect } from 'effect';
 import { submitConsignment, type ConsignmentPayload } from '@/lib/services/consignment';
 import { Upload, CheckCircle2, AlertCircle, Loader2, MessageCircle, Send, X } from 'lucide-react';
+
+const QUALITY_FIELD_CLASS =
+  'w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2';
+
+const labels = {
+  clientName: 'Your full name',
+  email: 'Email address',
+  phone: 'Phone or WhatsApp number',
+  brand: 'Watch brand',
+  model: 'Model or reference',
+  price: 'Expected price (USD or VND)',
+  description: 'Timepiece condition and details',
+  photo: 'Watch photograph, maximum 4 MB',
+} as const;
 
 export function ConsignmentForm() {
   const [formData, setFormData] = useState({
@@ -14,15 +28,15 @@ export function ConsignmentForm() {
     description: '',
   });
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((previous) => ({ ...previous, [name]: value }));
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +44,7 @@ export function ConsignmentForm() {
     if (!file) return;
 
     if (file.size > 4 * 1024 * 1024) {
-      setErrorMessage('Image size exceeds 4MB limit. Please choose a smaller photo.');
+      setErrorMessage('Image size exceeds the 4 MB limit. Please choose a smaller photograph.');
       return;
     }
 
@@ -75,7 +89,7 @@ export function ConsignmentForm() {
     } else {
       setStatus('error');
       setErrorMessage(
-        'Unable to submit consignment form. Please try again or reach out directly via WhatsApp (+84 94 162 5653).'
+        'Unable to submit the consignment form. Please try again or reach out directly via WhatsApp (+84 94 162 5653).'
       );
     }
   };
@@ -89,8 +103,14 @@ export function ConsignmentForm() {
 
   if (status === 'success') {
     return (
-      <div className='flex animate-fade-in flex-col gap-5 border border-stone-200 bg-stone-50 p-8 text-center sm:p-10'>
-        <div className='mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-800'>
+      <div
+        role='status'
+        className='flex flex-col gap-5 border border-stone-200 bg-stone-50 p-8 text-center motion-safe:animate-fade-in sm:p-10'
+      >
+        <div
+          aria-hidden='true'
+          className='mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-800'
+        >
           <CheckCircle2 className='h-8 w-8' />
         </div>
         <div className='flex flex-col gap-2'>
@@ -109,8 +129,8 @@ export function ConsignmentForm() {
             rel='noopener noreferrer'
             className='inline-flex items-center justify-center gap-2 bg-green-800 px-5 py-3 text-xs tracking-wider text-white uppercase transition-colors hover:bg-green-700'
           >
-            <MessageCircle className='h-4 w-4' />
-            <span>Send Extra Photos on WhatsApp</span>
+            <MessageCircle className='h-4 w-4' aria-hidden='true' />
+            <span>Send extra photos on WhatsApp</span>
           </a>
           <button
             type='button'
@@ -130,7 +150,7 @@ export function ConsignmentForm() {
             }}
             className='cursor-pointer border border-stone-300 px-5 py-3 text-xs tracking-wider text-stone-700 uppercase transition-colors hover:bg-stone-100'
           >
-            Submit Another Timepiece
+            Submit another timepiece
           </button>
         </div>
       </div>
@@ -138,159 +158,206 @@ export function ConsignmentForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
+    <form onSubmit={handleSubmit} aria-label='Consign a watch' className='flex flex-col gap-6'>
+      <p className='text-xs text-stone-600'>
+        <span className='font-medium text-stone-900'>Required fields</span> are marked with an
+        asterisk.
+      </p>
+
       {errorMessage && (
-        <div className='flex items-start gap-3 border border-red-200 bg-red-50 p-4 text-xs text-red-800'>
-          <AlertCircle className='mt-0.5 h-4 w-4 shrink-0' />
+        <div
+          role='alert'
+          className='flex items-start gap-3 border border-red-200 bg-red-50 p-4 text-xs text-red-800'
+        >
+          <AlertCircle className='mt-0.5 h-4 w-4 shrink-0' aria-hidden='true' />
           <div className='flex-1'>{errorMessage}</div>
         </div>
       )}
 
       <div>
-        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-          Your Full Name *
+        <label
+          htmlFor='consignment-client-name'
+          className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+        >
+          {labels.clientName} *
         </label>
         <input
+          id='consignment-client-name'
           type='text'
           name='clientName'
           required
+          autoComplete='name'
           value={formData.clientName}
           onChange={handleInputChange}
           placeholder='e.g. Jean-Luc Dubois'
-          className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+          className={QUALITY_FIELD_CLASS}
         />
       </div>
 
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <div>
-          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-            Email Address *
+          <label
+            htmlFor='consignment-email'
+            className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+          >
+            {labels.email} *
           </label>
           <input
+            id='consignment-email'
             type='email'
             name='email'
             required
+            autoComplete='email'
+            spellCheck={false}
             value={formData.email}
             onChange={handleInputChange}
             placeholder='e.g. collector@spacetime.com'
-            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+            className={QUALITY_FIELD_CLASS}
           />
         </div>
         <div>
-          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-            Phone / WhatsApp *
+          <label
+            htmlFor='consignment-phone'
+            className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+          >
+            {labels.phone} *
           </label>
           <input
+            id='consignment-phone'
             type='tel'
             name='phone'
             required
+            autoComplete='tel'
             value={formData.phone}
             onChange={handleInputChange}
             placeholder='e.g. +84 94 162 5653'
-            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+            className={QUALITY_FIELD_CLASS}
           />
         </div>
       </div>
 
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <div>
-          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-            Watch Brand *
+          <label
+            htmlFor='consignment-brand'
+            className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+          >
+            {labels.brand} *
           </label>
           <input
+            id='consignment-brand'
             type='text'
             name='brand'
             required
             value={formData.brand}
             onChange={handleInputChange}
             placeholder='e.g. Rolex, Cartier, Omega'
-            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+            className={QUALITY_FIELD_CLASS}
           />
         </div>
         <div>
-          <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-            Model / Reference *
+          <label
+            htmlFor='consignment-model'
+            className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+          >
+            {labels.model} *
           </label>
           <input
+            id='consignment-model'
             type='text'
             name='model'
             required
             value={formData.model}
             onChange={handleInputChange}
             placeholder='e.g. Cellini ref 4127 18K Gold'
-            className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+            className={QUALITY_FIELD_CLASS}
           />
         </div>
       </div>
 
       <div>
-        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-          Expected Price (USD or VND) *
+        <label
+          htmlFor='consignment-price'
+          className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+        >
+          {labels.price} *
         </label>
         <input
+          id='consignment-price'
           type='text'
           name='price'
           required
+          inputMode='decimal'
           value={formData.price}
           onChange={handleInputChange}
           placeholder='e.g. $4,500 or 110,000,000 VND'
-          className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+          className={QUALITY_FIELD_CLASS}
         />
       </div>
 
       <div>
-        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-          Timepiece Condition &amp; Details
+        <label
+          htmlFor='consignment-description'
+          className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+        >
+          {labels.description}
         </label>
         <textarea
+          id='consignment-description'
           name='description'
           rows={4}
           value={formData.description}
           onChange={handleInputChange}
-          placeholder='Please describe case condition, dial state, servicing history, presence of original box/papers...'
-          className='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-stone-900 focus:outline-none'
+          placeholder='Please describe case condition, dial state, servicing history, presence of original box and papers…'
+          className={QUALITY_FIELD_CLASS}
         />
       </div>
 
       <div>
-        <label className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'>
-          Watch Photograph (Max 4MB)
+        <label
+          htmlFor='consignment-photo'
+          className='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
+        >
+          {labels.photo}
         </label>
         <div className='mt-1'>
           {filePreview ? (
             <div className='relative inline-block border border-stone-200 bg-stone-50 p-2'>
               <img
                 src={filePreview}
-                alt='Selected watch preview'
+                alt={`Preview of ${selectedFile?.name ?? 'the selected watch photograph'}`}
                 className='h-32 w-32 border border-stone-100 object-cover'
               />
               <button
                 type='button'
                 onClick={handleRemoveFile}
-                className='absolute -top-2 -right-2 cursor-pointer rounded-full bg-stone-900 p-1 text-white transition-colors hover:bg-stone-700'
-                aria-label='Remove image'
+                className='absolute -top-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-stone-900 text-white transition-colors hover:bg-stone-700'
+                aria-label='Remove the selected photograph'
               >
-                <X className='h-3.5 w-3.5' />
+                <X className='h-3.5 w-3.5' aria-hidden='true' />
               </button>
               <p className='mt-1 max-w-32 truncate text-[10px] text-stone-500'>
                 {selectedFile?.name}
               </p>
             </div>
           ) : (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className='cursor-pointer border border-dashed border-stone-300 bg-stone-50 p-6 text-center transition-colors hover:border-stone-900 hover:bg-stone-100/50'
-            >
-              <Upload className='mx-auto mb-2 h-6 w-6 text-stone-400' />
-              <p className='text-xs font-medium text-stone-700'>Click or drag watch image here</p>
-              <p className='mt-1 text-[10px] text-stone-400'>JPG, PNG, or JPEG up to 4MB</p>
+            <div className='relative flex cursor-pointer flex-col items-center border border-dashed border-stone-300 bg-stone-50 p-6 text-center transition-colors focus-within:border-stone-900 focus-within:ring-2 focus-within:ring-brand-dark focus-within:ring-offset-2 hover:border-stone-900 hover:bg-stone-100/50'>
+              <Upload className='mb-2 h-6 w-6 text-stone-500' aria-hidden='true' />
+              <p className='text-xs font-medium text-stone-700'>Choose a watch photograph</p>
+              <p className='mt-1 text-[10px] text-stone-500'>JPG, PNG or JPEG, up to 4 MB</p>
               <input
                 ref={fileInputRef}
+                id='consignment-photo'
                 type='file'
+                name='photo'
                 accept='image/png,image/jpeg,image/jpg'
                 onChange={handleFileChange}
-                className='hidden'
+                aria-describedby='consignment-photo-hint'
+                className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
               />
+              <span id='consignment-photo-hint' className='sr-only'>
+                Photos stay on your device until you submit the form.
+              </span>
             </div>
           )}
         </div>
@@ -304,13 +371,13 @@ export function ConsignmentForm() {
         >
           {status === 'submitting' ? (
             <>
-              <Loader2 className='h-4 w-4 animate-spin' />
-              <span>Transmitting...</span>
+              <Loader2 className='h-4 w-4 animate-spin' aria-hidden='true' />
+              <span>Transmitting…</span>
             </>
           ) : (
             <>
-              <Send className='h-4 w-4' />
-              <span>Submit Consignment</span>
+              <Send className='h-4 w-4' aria-hidden='true' />
+              <span>Submit consignment</span>
             </>
           )}
         </button>
@@ -321,7 +388,7 @@ export function ConsignmentForm() {
           rel='noopener noreferrer'
           className='flex items-center justify-center gap-2 border border-green-700 px-5 py-3.5 text-xs font-medium tracking-wider text-green-800 uppercase transition-colors hover:bg-green-50'
         >
-          <MessageCircle className='h-4 w-4' />
+          <MessageCircle className='h-4 w-4' aria-hidden='true' />
           <span>Consign via WhatsApp</span>
         </a>
       </div>

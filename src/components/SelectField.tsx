@@ -21,7 +21,7 @@ interface SelectFieldProps {
 }
 
 const itemClass =
-  'flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-stone-900 cursor-pointer outline-none data-[highlighted]:bg-stone-100 data-[state=checked]:font-medium';
+  'flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-stone-900 cursor-pointer outline-none data-[highlighted]:bg-stone-100 data-[state=checked]:font-medium focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-dark';
 
 export function SelectField({
   label,
@@ -48,26 +48,33 @@ export function SelectField({
       positioning={{ fitViewport: true, sameWidth: true, placement: 'bottom-start' }}
       id={id}
     >
-      <Select.Label className='mb-2 block font-sans text-xs tracking-wider text-stone-500 uppercase [&_span]:text-stone-400 [&_span]:normal-case'>
+      <Select.Label className='mb-2 block font-sans text-xs tracking-wider text-stone-500 uppercase [&_span]:text-stone-600 [&_span]:normal-case'>
         {label}
-        {required ? ' *' : <span> (optional)</span>}
+        {required ? (
+          <>
+            {' '}
+            <span className='text-stone-600 normal-case'>(required)</span>
+          </>
+        ) : (
+          <span> (optional)</span>
+        )}
       </Select.Label>
       <Select.Control>
-        <Select.Trigger className='flex w-full items-center justify-between gap-3 border border-stone-300 bg-white px-4 py-3 text-left text-sm text-stone-900 transition-colors outline-none data-focus:border-stone-900 data-open:border-stone-900'>
+        <Select.Trigger className='flex w-full items-center justify-between gap-3 border border-stone-300 bg-white px-4 py-3 text-left text-sm text-stone-900 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2 data-focus:border-stone-900 data-open:border-stone-900'>
           <Select.ValueText placeholder={placeholder} className='truncate' />
           <Select.Indicator>
-            <ChevronDown className='h-4 w-4 text-stone-400' />
+            <ChevronDown className='h-4 w-4 text-stone-600' aria-hidden='true' />
           </Select.Indicator>
         </Select.Trigger>
       </Select.Control>
       <Portal>
         <Select.Positioner>
-          <Select.Content className='z-50 max-h-72 overflow-y-auto border border-stone-200 bg-white shadow-lg'>
+          <Select.Content className='z-50 max-h-72 overflow-y-auto border border-stone-200 bg-white shadow-lg outline-none'>
             {collection.items.map((item) => (
               <Select.Item key={item.value} item={item} className={itemClass}>
                 <Select.ItemText>{item.label}</Select.ItemText>
                 <Select.ItemIndicator>
-                  <Check className='h-4 w-4 text-stone-900' />
+                  <Check className='h-4 w-4 text-stone-900' aria-hidden='true' />
                 </Select.ItemIndicator>
               </Select.Item>
             ))}

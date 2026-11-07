@@ -24,7 +24,7 @@ const {
   action={action}
   method='GET'
   role='search'
-  aria-label={`${id} search`}
+  aria-label='Search watches'
   class={className}
   data-search-form
 >
@@ -32,7 +32,7 @@ const {
   <label for={id} class='sr-only'>
     Search watches
   </label>
-  <div class='flex items-stretch border border-brand-dark bg-stone-50 transition-colors'>
+  <div class='flex items-stretch border border-brand-dark bg-stone-50 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-dark'>
     <input
       type='search'
       name='search'
@@ -40,14 +40,14 @@ const {
       value={value}
       placeholder={placeholder}
       autocomplete='off'
-      class='min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none'
+      class='min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus-visible:outline-none'
     />
     <button
       type='submit'
       aria-label='Search'
       class='flex w-11 shrink-0 cursor-pointer items-center justify-center bg-brand-dark text-white transition-colors hover:bg-stone-700'
     >
-      <Search class='h-4 w-4' />
+      <Search class='h-4 w-4' aria-hidden='true' />
     </button>
   </div>
 </form>

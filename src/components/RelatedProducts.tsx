@@ -20,15 +20,23 @@ export function RelatedProducts({
   if (!available.length) return null;
 
   return (
-    <section className={`${className} border-t border-stone-200 pt-8`}>
-      <h2 className='mb-6 text-xl leading-tight font-normal tracking-wider text-stone-950 uppercase'>
+    <section
+      aria-labelledby='related-products-heading'
+      className={`${className} border-t border-stone-200 pt-8`}
+    >
+      <h2
+        id='related-products-heading'
+        className='mb-6 text-xl leading-tight font-normal tracking-wider text-stone-950 uppercase'
+      >
         {title}
       </h2>
-      <div className='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4'>
+      <ul className='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4'>
         {available.map((product) => (
-          <WatchCard key={product.id} product={product} categories={categories} country={country} />
+          <li key={product.id}>
+            <WatchCard product={product} categories={categories} country={country} />
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
