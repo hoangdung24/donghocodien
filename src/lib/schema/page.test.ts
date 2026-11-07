@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Schema } from 'effect';
-import { PageSchema } from './page';
+import { PageSchema } from '@/lib/schema/page';
 
 describe('PageSchema', () => {
   const samplePage = {

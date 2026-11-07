@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
-import { toastStore } from '../lib/toastStore';
+import { toastStore } from '@/lib/toastStore';
 
 const VARIANT_STYLES = {
   error: { accent: 'bg-red-700', icon: 'text-red-700', Icon: AlertCircle, role: 'alert' },

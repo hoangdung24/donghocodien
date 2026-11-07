@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getExchangeRates, resolveApproxDisplayCurrency } from '../utils/currency';
-import { detectVisitorCountry, readVisitorCountry } from '../utils/geo';
+import { getExchangeRates, resolveApproxDisplayCurrency } from '@/lib/utils/currency';
+import { detectVisitorCountry, readVisitorCountry } from '@/lib/utils/geo';
 
 export interface ApproxDisplay {
   currency: string;

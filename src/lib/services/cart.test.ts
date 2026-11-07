@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Effect } from 'effect';
-import { getCart, addToCart, updateCartItem, removeCartItem, clearCart } from './cart';
-import sampleCart from '../../tests/fixtures/sample-cart.json';
+import { getCart, addToCart, updateCartItem, removeCartItem, clearCart } from '@/lib/services/cart';
+import sampleCart from '@/tests/fixtures/sample-cart.json';
 
 describe('Cart Service Seam (Effect v4)', () => {
   const originalFetch = global.fetch;

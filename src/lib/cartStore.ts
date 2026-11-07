@@ -1,6 +1,6 @@
-import type { Cart } from './schema/cart';
-import type { CheckoutRequest, CheckoutResponse } from './services/cart';
-import { toastStore } from './toastStore';
+import type { Cart } from '@/lib/schema/cart';
+import type { CheckoutRequest, CheckoutResponse } from '@/lib/services/cart';
+import { toastStore } from '@/lib/toastStore';
 
 const API_BASE = '/wc/store/v1';
 const CART_TOKEN_KEY = 'wc-cart-token';

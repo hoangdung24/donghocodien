@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buttonClass } from '../../components/Button';
+import { buttonClass } from '@/components/Button';
 
 describe('buttonClass', () => {
   it('defaults to primary variant and md size', () => {

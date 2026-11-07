@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseSearchQuery } from './search';
+import { parseSearchQuery } from '@/lib/utils/search';
 
 describe('parseSearchQuery', () => {
   it('returns undefined when no search param is present', () => {

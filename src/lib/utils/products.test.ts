@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { withPriceRange, countInStockByCategory, countByCategory } from './products';
-import type { Product } from '../schema/product';
+import { withPriceRange, countInStockByCategory, countByCategory } from '@/lib/utils/products';
+import type { Product } from '@/lib/schema/product';
 
 const makeProduct = (
   id: number,

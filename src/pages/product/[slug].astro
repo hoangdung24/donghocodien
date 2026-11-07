@@ -1,15 +1,15 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { WatchGallery } from '../../components/WatchGallery';
-import { AddToCartButton } from '../../components/AddToCartButton';
-import { ProductTabs } from '../../components/ProductTabs';
-import { RelatedProducts } from '../../components/RelatedProducts';
+import Layout from '@/layouts/Layout.astro';
+import { WatchGallery } from '@/components/WatchGallery';
+import { AddToCartButton } from '@/components/AddToCartButton';
+import { ProductTabs } from '@/components/ProductTabs';
+import { RelatedProducts } from '@/components/RelatedProducts';
 import { Effect } from 'effect';
-import type { Product, ProductCategory } from '../../lib/schema/product';
-import { getAllProducts, getBrandCategories, getCategories } from '../../lib/services/woocommerce';
-import { findBrandCategory } from '../../lib/utils/categories';
-import { sanitizeWordPressHtml } from '../../lib/utils/html';
-import { cleanTitle } from '../../lib/utils/text';
+import type { Product, ProductCategory } from '@/lib/schema/product';
+import { getAllProducts, getBrandCategories, getCategories } from '@/lib/services/woocommerce';
+import { findBrandCategory } from '@/lib/utils/categories';
+import { sanitizeWordPressHtml } from '@/lib/utils/html';
+import { cleanTitle } from '@/lib/utils/text';
 
 export const prerender = true;
 

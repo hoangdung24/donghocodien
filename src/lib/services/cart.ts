@@ -1,11 +1,11 @@
 import { Effect, Schema } from 'effect';
-import { CartSchema } from '../schema/cart';
+import { CartSchema } from '@/lib/schema/cart';
 import type {
   CartAddress,
   AddToCartRequest,
   UpdateCartItemRequest,
   RemoveCartItemRequest,
-} from '../schema/cart';
+} from '@/lib/schema/cart';
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 

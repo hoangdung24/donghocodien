@@ -2,14 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Effect, Schema } from 'effect';
-import { InstagramPostsSchema } from '../schema/instagram';
+import { InstagramPostsSchema } from '@/lib/schema/instagram';
 import {
   parseInstagramResponse,
   shortcodeFromMediaId,
   fetchInstagramPosts,
   refreshInstagramFeed,
   type InstagramCache,
-} from './instagram';
+} from '@/lib/services/instagram';
 
 const profileFixture = readFileSync(
   join(__dirname, '../../tests/fixtures/instagram-profile.html'),

@@ -1,6 +1,6 @@
 import { Accordion } from '@ark-ui/react/accordion';
 import { ChevronDown } from 'lucide-react';
-import { categoryHref, type CategoryGroup } from '../lib/utils/categories';
+import { categoryHref, type CategoryGroup } from '@/lib/utils/categories';
 
 interface CategoryAccordionProps {
   groups: CategoryGroup[];

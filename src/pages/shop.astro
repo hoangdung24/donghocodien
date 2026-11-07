@@ -1,10 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import CatalogView from '../components/CatalogView.astro';
+import Layout from '@/layouts/Layout.astro';
+import CatalogView from '@/components/CatalogView.astro';
 import { Effect } from 'effect';
-import { getAllProducts, getCategories } from '../lib/services/woocommerce';
-import { filterCatalog } from '../lib/utils/catalog';
-import { parseSearchQuery } from '../lib/utils/search';
+import { getAllProducts, getCategories } from '@/lib/services/woocommerce';
+import { filterCatalog } from '@/lib/utils/catalog';
+import { parseSearchQuery } from '@/lib/utils/search';
 
 export const prerender = true;
 

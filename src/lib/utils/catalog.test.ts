@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Product, ProductCategory } from '../schema/product';
-import { filterCatalog, descendantCategoryIds } from './catalog';
+import type { Product, ProductCategory } from '@/lib/schema/product';
+import { filterCatalog, descendantCategoryIds } from '@/lib/utils/catalog';
 
 const makeProduct = (
   id: number,

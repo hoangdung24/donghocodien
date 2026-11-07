@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { formatUSD, calculateDiscountPercentage, formatHeaderClock, formatPrice } from './format';
+import {
+  formatUSD,
+  calculateDiscountPercentage,
+  formatHeaderClock,
+  formatPrice,
+} from '@/lib/utils/format';
 
 describe('formatUSD', () => {
   it('formats whole dollar amounts correctly with comma separation', () => {

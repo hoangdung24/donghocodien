@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Slider } from '@ark-ui/react/slider';
 import { Loader2 } from 'lucide-react';
-import { withPriceRange } from '../lib/utils/products';
-import { formatPrice } from '../lib/utils/format';
+import { withPriceRange } from '@/lib/utils/products';
+import { formatPrice } from '@/lib/utils/format';
 
 interface PriceRangeSliderProps {
   minPrice: number;

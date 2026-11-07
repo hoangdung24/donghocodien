@@ -8,8 +8,9 @@ import {
   getStorePageBySlug,
   getAllProducts,
   getBrandCategories,
+  getCatalogSummary,
   clearServiceCache,
-} from './woocommerce';
+} from '@/lib/services/woocommerce';
 
 const makeProduct = (id: number, slug: string) => ({
   id,
@@ -326,5 +327,76 @@ describe('WooCommerce Products Service Seam (Effect v4)', () => {
     const brands = await Effect.runPromise(getBrandCategories);
 
     expect(brands).toEqual([]);
+  });
+
+  it('summarises only in-stock products with a positive price', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'x-wp-totalpages': '1' }),
+      json: async () => [
+        {
+          id: 1,
+          is_in_stock: true,
+          prices: { price: '250' },
+          categories: [{ id: 10 }, { id: 70 }],
+        },
+        {
+          id: 2,
+          is_in_stock: true,
+          prices: { price: '900' },
+          categories: [{ id: 10 }],
+        },
+        {
+          id: 3,
+          is_in_stock: false,
+          prices: { price: '50' },
+          categories: [{ id: 11 }],
+        },
+        {
+          id: 4,
+          is_in_stock: true,
+          prices: { price: '0' },
+          categories: [{ id: 10 }],
+        },
+      ],
+    } as unknown as Response);
+
+    const summary = await Effect.runPromise(getCatalogSummary);
+
+    expect(summary.total).toBe(2);
+    expect(summary.minPrice).toBe(250);
+    expect(summary.maxPrice).toBe(900);
+    expect(summary.countsByCategory.get(10)).toBe(2);
+    expect(summary.countsByCategory.has(11)).toBe(false);
+  });
+
+  it('requests only the summary fields and never the full descriptions', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'x-wp-totalpages': '1' }),
+      json: async () => [],
+    } as unknown as Response);
+
+    await Effect.runPromise(getCatalogSummary);
+
+    const requestedUrl = new URL(String(vi.mocked(fetch).mock.calls[0]?.[0]));
+    expect(requestedUrl.searchParams.get('_fields')).toContain('is_in_stock');
+    expect(requestedUrl.searchParams.get('_fields')).not.toContain('description');
+    expect(requestedUrl.searchParams.get('stock_status')).toBe('instock');
+  });
+
+  it('reports zero bounds when nothing is available', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'x-wp-totalpages': '1' }),
+      json: async () => [],
+    } as unknown as Response);
+
+    const summary = await Effect.runPromise(getCatalogSummary);
+
+    expect(summary.total).toBe(0);
+    expect(summary.minPrice).toBe(0);
+    expect(summary.maxPrice).toBe(0);
+    expect(summary.countsByCategory.size).toBe(0);
   });
 });

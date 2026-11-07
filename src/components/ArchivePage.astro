@@ -1,12 +1,12 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { WatchCard } from './WatchCard';
-import SearchBox from './SearchBox.astro';
-import { CategoryAccordion } from './CategoryAccordion';
-import { MobileFilterDrawer } from './MobileFilterDrawer';
-import { Button } from './Button';
-import type { Product, ProductCategory } from '../lib/schema/product';
-import { ARCHIVE_PATH, archiveHref, buildCategoryTree } from '../lib/utils/categories';
+import Layout from '@/layouts/Layout.astro';
+import { WatchCard } from '@/components/WatchCard';
+import SearchBox from '@/components/SearchBox.astro';
+import { CategoryAccordion } from '@/components/CategoryAccordion';
+import { MobileFilterDrawer } from '@/components/MobileFilterDrawer';
+import { Button } from '@/components/Button';
+import type { Product, ProductCategory } from '@/lib/schema/product';
+import { ARCHIVE_PATH, archiveHref, buildCategoryTree } from '@/lib/utils/categories';
 
 interface Props {
   products: Product[];

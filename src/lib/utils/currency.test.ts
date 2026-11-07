@@ -7,7 +7,7 @@ import {
   resolveApproxDisplayCurrency,
   EXCHANGE_RATE_CACHE_TTL_MS,
   EXCHANGE_RATES_CACHE_KEY,
-} from './currency';
+} from '@/lib/utils/currency';
 
 describe('isExchangeRateExpired', () => {
   it('returns false when cached timestamp is within 6 hours', () => {

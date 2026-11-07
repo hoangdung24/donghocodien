@@ -1,17 +1,19 @@
 ---
-import { WatchCard } from './WatchCard';
-import { PriceRangeSlider } from './PriceRangeSlider';
-import SearchBox from './SearchBox.astro';
-import { CategoryAccordion } from './CategoryAccordion';
-import { MobileFilterDrawer } from './MobileFilterDrawer';
-import type { Product, ProductCategory } from '../lib/schema/product';
-import { buildCategoryTree, decodeCategoryName } from '../lib/utils/categories';
-import { countInStockByCategory } from '../lib/utils/products';
+import { WatchCard } from '@/components/WatchCard';
+import { PriceRangeSlider } from '@/components/PriceRangeSlider';
+import SearchBox from '@/components/SearchBox.astro';
+import { CategoryAccordion } from '@/components/CategoryAccordion';
+import { MobileFilterDrawer } from '@/components/MobileFilterDrawer';
+import type { Product, ProductCategory } from '@/lib/schema/product';
+import { buildCategoryTree, decodeCategoryName } from '@/lib/utils/categories';
+import { countInStockByCategory } from '@/lib/utils/products';
 
 interface Props {
   products: Product[];
   categories: ProductCategory[];
   availableProducts: Product[];
+  availableCategoryCounts?: Map<number, number>;
+  priceBounds?: { minPrice: number; maxPrice: number };
   activeCategory: ProductCategory | null;
   search?: string;
   page: number;
@@ -26,6 +28,8 @@ const {
   products,
   categories,
   availableProducts,
+  availableCategoryCounts,
+  priceBounds,
   activeCategory,
   search,
   page,
@@ -39,7 +43,7 @@ const {
 const searchQuery = search ?? '';
 const categoryId = activeCategory?.id;
 const canonicalCategory = activeCategory?.slug;
-const inStockCounts = countInStockByCategory(availableProducts);
+const inStockCounts = availableCategoryCounts ?? countInStockByCategory(availableProducts);
 
 const categoryGroups = buildCategoryTree(categories)
   .map((group) => ({
@@ -48,9 +52,12 @@ const categoryGroups = buildCategoryTree(categories)
   }))
   .filter((group) => group.children.length > 0);
 
-const boundPrices = availableProducts
-  .filter((product) => product.is_in_stock && Number(product.prices.price) > 0)
-  .map((product) => Number(product.prices.price));
+const boundPrices =
+  priceBounds === undefined
+    ? availableProducts
+        .filter((product) => product.is_in_stock && Number(product.prices.price) > 0)
+        .map((product) => Number(product.prices.price))
+    : [priceBounds.minPrice, priceBounds.maxPrice];
 const minPrice = boundPrices.length > 0 ? Math.floor(Math.min(...boundPrices) / 100) * 100 : 0;
 const maxPrice = boundPrices.length > 0 ? Math.ceil(Math.max(...boundPrices) / 100) * 100 : 100000;
 
@@ -71,7 +78,9 @@ const hasNextPage = products.length === pageSize;
 const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.name) : null;
 ---
 
-{availableProducts.length > 0 && (
+{availableCategoryCounts ? (
+  categoryGroups.length > 0
+) : availableProducts.length > 0 ? (
   <div class='grid grid-cols-1 gap-8 lg:grid-cols-12'>
     <aside class='hidden lg:col-span-3 lg:flex lg:flex-col lg:gap-8'>
       <SearchBox
@@ -187,4 +196,4 @@ const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.na
       )}
     </div>
   </div>
-)}
+) : null}

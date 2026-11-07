@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handleStoreApiProxy } from './storeApiProxy';
-import sampleCart from '../tests/fixtures/sample-cart.json';
+import { handleStoreApiProxy } from '@/lib/storeApiProxy';
+import sampleCart from '@/tests/fixtures/sample-cart.json';
 
 const WORKER_ORIGIN = 'https://donghocodien.spacetime-watch.workers.dev';
 

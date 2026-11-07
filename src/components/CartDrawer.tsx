@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Dialog } from '@ark-ui/react/dialog';
 import { ShoppingBag, X, Trash2, ArrowRight, Sparkles } from 'lucide-react';
-import type { Cart } from '../lib/schema/cart';
-import { useCart } from '../lib/context/CartContext';
-import { cartStore } from '../lib/cartStore';
-import { Button } from './Button';
+import type { Cart } from '@/lib/schema/cart';
+import { useCart } from '@/lib/context/CartContext';
+import { cartStore } from '@/lib/cartStore';
+import { Button } from '@/components/Button';
 
 function CartDrawerContent() {
   const {

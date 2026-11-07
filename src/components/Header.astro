@@ -1,11 +1,11 @@
 ---
 import { Search, Menu, X, ChevronDown } from '@lucide/astro';
-import { formatHeaderClock } from '../lib/utils/format';
-import SocialIcon from './SocialIcon.astro';
-import SearchBox from './SearchBox.astro';
-import { CartDrawer } from './CartDrawer';
-import { CONTACT, SOCIAL } from '../lib/constants';
-import { megaMenuData } from '../lib/data/megaMenu';
+import { formatHeaderClock } from '@/lib/utils/format';
+import SocialIcon from '@/components/SocialIcon.astro';
+import SearchBox from '@/components/SearchBox.astro';
+import { CartDrawer } from '@/components/CartDrawer';
+import { CONTACT, SOCIAL } from '@/lib/constants';
+import { megaMenuData } from '@/lib/data/megaMenu';
 
 const currentPath = Astro.url.pathname + Astro.url.search;
 const activeCategory = Astro.url.searchParams.get('category');
@@ -253,7 +253,7 @@ const activeCategory = Astro.url.searchParams.get('category');
 </header>
 
 <script>
-  import { formatHeaderClock } from '../lib/utils/format';
+  import { formatHeaderClock } from '@/lib/utils/format';
 
   const clockEl = document.getElementById('header-live-clock');
   if (clockEl) {

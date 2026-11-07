@@ -7,9 +7,9 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import { cartStore, type CartState } from '../../lib/cartStore';
-import type { Cart } from '../schema/cart';
-import type { CheckoutRequest, CheckoutResponse } from '../services/cart';
+import { cartStore, type CartState } from '@/lib/cartStore';
+import type { Cart } from '@/lib/schema/cart';
+import type { CheckoutRequest, CheckoutResponse } from '@/lib/services/cart';
 
 interface CartContextType extends Omit<CartState, 'cart'> {
   cart: Cart | null;

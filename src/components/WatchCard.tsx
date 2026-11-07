@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
-import type { Product } from '../lib/schema/product';
-import { formatApproxPrice } from '../lib/utils/currency';
-import { formatPrice } from '../lib/utils/format';
-import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
-import { cartStore } from '../lib/cartStore';
-import { Button } from './Button';
-import { cleanTitle } from '../lib/utils/text';
+import type { Product } from '@/lib/schema/product';
+import { formatApproxPrice } from '@/lib/utils/currency';
+import { formatPrice } from '@/lib/utils/format';
+import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
+import { cartStore } from '@/lib/cartStore';
+import { Button } from '@/components/Button';
+import { cleanTitle } from '@/lib/utils/text';
 
 const DEFAULT_PLACEHOLDER = '/images/placeholder.jpeg';
 

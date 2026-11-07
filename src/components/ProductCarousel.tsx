@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Product } from '../lib/schema/product';
-import { WatchCard } from './WatchCard';
+import type { Product } from '@/lib/schema/product';
+import { WatchCard } from '@/components/WatchCard';
 
 interface ProductCarouselProps {
   products: readonly Product[];

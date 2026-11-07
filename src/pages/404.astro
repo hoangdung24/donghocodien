@@ -1,9 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { WatchCard } from '../components/WatchCard';
+import Layout from '@/layouts/Layout.astro';
+import { WatchCard } from '@/components/WatchCard';
 import { Effect } from 'effect';
-import { getProducts } from '../lib/services/woocommerce';
-import { CONTACT, SITE } from '../lib/constants';
+import { getProducts } from '@/lib/services/woocommerce';
+import { CONTACT, SITE } from '@/lib/constants';
 
 const productsResult = await Effect.runPromiseExit(getProducts({ per_page: 8 }));
 const availableWatches =

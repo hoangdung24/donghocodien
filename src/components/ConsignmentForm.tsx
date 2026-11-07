@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Effect } from 'effect';
-import { submitConsignment, type ConsignmentPayload } from '../lib/services/consignment';
+import { submitConsignment, type ConsignmentPayload } from '@/lib/services/consignment';
 import { Upload, CheckCircle2, AlertCircle, Loader2, MessageCircle, Send, X } from 'lucide-react';
 
 export function ConsignmentForm() {

@@ -4,11 +4,11 @@ import {
   ProductCategorySchema,
   type Product,
   type ProductCategory,
-} from '../schema/product';
-import { PagesListSchema, type WpPage } from '../schema/page';
-import { PostSchema, type Post } from '../schema/post';
-import { fetchJsonWithTimeout } from './httpClient';
-import { brandCategories, type BrandCategory } from '../utils/categories';
+} from '@/lib/schema/product';
+import { PagesListSchema, type WpPage } from '@/lib/schema/page';
+import { PostSchema, type Post } from '@/lib/schema/post';
+import { fetchJsonWithTimeout } from '@/lib/services/httpClient';
+import { brandCategories, type BrandCategory } from '@/lib/utils/categories';
 
 const PostsListSchema = Schema.Array(PostSchema);
 const SlugsListSchema = Schema.Array(Schema.Struct({ slug: Schema.String }));
@@ -335,6 +335,97 @@ export const getAllProducts = Effect.gen(function* () {
 }).pipe(Effect.timeout('300 seconds'));
 
 const MAX_CATEGORY_PAGES = 5;
+
+export interface CatalogSummary {
+  total: number;
+  minPrice: number;
+  maxPrice: number;
+  countsByCategory: Map<number, number>;
+}
+
+const CatalogSummaryEntrySchema = Schema.Array(
+  Schema.Struct({
+    id: Schema.Finite,
+    is_in_stock: Schema.Boolean,
+    prices: Schema.Struct({ price: Schema.String }),
+    categories: Schema.Array(Schema.Struct({ id: Schema.Finite })),
+  })
+);
+
+const SUMMARY_FIELDS = 'id,is_in_stock,prices,categories';
+
+export const getCatalogSummary = Effect.gen(function* () {
+  const cacheKey = 'catalog-summary';
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data as CatalogSummary;
+  }
+
+  const fetchSummaryPage = (page: number) =>
+    Effect.gen(function* () {
+      const url = new URL(`${API_BASE}/products`);
+      url.searchParams.set('per_page', String(SLUGS_PER_PAGE));
+      url.searchParams.set('page', String(page));
+      url.searchParams.set('stock_status', 'instock');
+      url.searchParams.set('_fields', SUMMARY_FIELDS);
+
+      const response = yield* Effect.tryPromise({
+        try: () => fetchJsonWithTimeout(url.toString()),
+        catch: (cause) => new NetworkError({ message: String(cause) }),
+      });
+
+      if (!response.ok) {
+        return yield* new HttpError({
+          status: response.status,
+          statusText: response.statusText,
+          url: url.toString(),
+        });
+      }
+
+      const raw = yield* Effect.tryPromise({
+        try: () => response.json(),
+        catch: (cause) => new NetworkError({ message: String(cause) }),
+      });
+
+      const entries = yield* Schema.decodeUnknownEffect(CatalogSummaryEntrySchema)(raw);
+      return {
+        entries,
+        totalPages: Number(response.headers.get('x-wp-totalpages') || '1'),
+      };
+    }).pipe(
+      Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
+      Effect.timeout('120 seconds')
+    );
+
+  const firstPage = yield* fetchSummaryPage(1);
+  const totalPages = Math.min(firstPage.totalPages, MAX_SLUG_PAGES);
+  const remainingPages = Array.from({ length: totalPages - 1 }, (_, offset) => offset + 2);
+
+  const remaining = yield* Effect.forEach(remainingPages, fetchSummaryPage, {
+    concurrency: PRODUCT_FETCH_CONCURRENCY,
+  });
+
+  const entries = [firstPage.entries, ...remaining.map((page) => page.entries)].flat();
+  const available = entries.filter((entry) => entry.is_in_stock && Number(entry.prices.price) > 0);
+
+  const countsByCategory = new Map<number, number>();
+  for (const entry of available) {
+    for (const category of entry.categories) {
+      countsByCategory.set(category.id, (countsByCategory.get(category.id) ?? 0) + 1);
+    }
+  }
+
+  const prices = available.map((entry) => Number(entry.prices.price));
+  const summary: CatalogSummary = {
+    total: available.length,
+    minPrice: prices.length > 0 ? Math.min(...prices) : 0,
+    maxPrice: prices.length > 0 ? Math.max(...prices) : 0,
+    countsByCategory,
+  };
+
+  cache.set(cacheKey, { data: summary, timestamp: Date.now() });
+  return summary;
+}).pipe(Effect.timeout('300 seconds'));
 
 export const getCategories = Effect.gen(function* () {
   const cacheKey = 'categories:all';

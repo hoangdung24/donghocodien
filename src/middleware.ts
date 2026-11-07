@@ -1,6 +1,6 @@
 import type { APIContext, MiddlewareNext } from 'astro';
-import { handleStoreApiProxy } from './lib/storeApiProxy';
-import { COUNTRY_COOKIE, COUNTRY_CODE_PATTERN } from './lib/utils/geo';
+import { handleStoreApiProxy } from '@/lib/storeApiProxy';
+import { COUNTRY_COOKIE, COUNTRY_CODE_PATTERN } from '@/lib/utils/geo';
 
 const COUNTRY_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 

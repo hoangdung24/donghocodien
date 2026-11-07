@@ -1,5 +1,5 @@
-import type { Product } from '../lib/schema/product';
-import { WatchCard } from './WatchCard';
+import type { Product } from '@/lib/schema/product';
+import { WatchCard } from '@/components/WatchCard';
 
 interface RelatedProductsProps {
   products: Product[];

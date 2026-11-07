@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useCart } from '../lib/context/CartContext';
+import { useCart } from '@/lib/context/CartContext';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
-import type { Product } from '../lib/schema/product';
-import { Button } from './Button';
+import type { Product } from '@/lib/schema/product';
+import { Button } from '@/components/Button';
 
 interface AddToCartButtonProps {
   product: Product;

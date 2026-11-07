@@ -1,5 +1,5 @@
-import type { ProductCategory } from '../schema/product';
-import { descendantCategoryIds } from './catalog';
+import type { ProductCategory } from '@/lib/schema/product';
+import { descendantCategoryIds } from '@/lib/utils/catalog';
 
 export const ARCHIVE_PATH = '/archives';
 

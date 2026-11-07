@@ -1,6 +1,10 @@
 import { Effect, Schema } from 'effect';
-import { InstagramFeedSchema, InstagramPostsSchema, type InstagramPost } from '../schema/instagram';
-import seedPosts from '../../data/instagram.json';
+import {
+  InstagramFeedSchema,
+  InstagramPostsSchema,
+  type InstagramPost,
+} from '@/lib/schema/instagram';
+import seedPosts from '@/data/instagram.json';
 
 const SHORTCODE_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 const VANITY_MEDIA_ID = '59700049662';

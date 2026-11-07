@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useCart } from '../lib/context/CartContext';
+import { useCart } from '@/lib/context/CartContext';
 import {
   ShoppingBag,
   Plus,
@@ -10,10 +10,10 @@ import {
   CreditCard,
   RotateCcw,
 } from 'lucide-react';
-import { formatApproxPrice } from '../lib/utils/currency';
-import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
-import type { Cart } from '../lib/schema/cart';
-import { Button } from './Button';
+import { formatApproxPrice } from '@/lib/utils/currency';
+import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
+import type { Cart } from '@/lib/schema/cart';
+import { Button } from '@/components/Button';
 
 export function CartPage() {
   const {

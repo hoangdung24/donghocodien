@@ -1,4 +1,4 @@
-import { COUNTRY_TO_CURRENCY } from '../data/countryCurrency';
+import { COUNTRY_TO_CURRENCY } from '@/lib/data/countryCurrency';
 
 export const EXCHANGE_RATES_CACHE_KEY = 'spacetime_usd_rates_v2';
 export const EXCHANGE_RATE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { CreditCard, ArrowRight, Copy, Check } from 'lucide-react';
-import { Button } from './Button';
+import { Button } from '@/components/Button';
 import {
   copyText,
   formatOrderTotal,
   readLastOrder,
   type LastOrder,
-} from '../lib/utils/orderConfirmation';
-import { BANK, CONTACT } from '../lib/constants';
+} from '@/lib/utils/orderConfirmation';
+import { BANK, CONTACT } from '@/lib/constants';
 
 const summaryOrder: Array<[string, (order: LastOrder) => string]> = [
   ['Order number', (order) => `#${order.orderId}`],

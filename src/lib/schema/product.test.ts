@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Schema } from 'effect';
-import { ProductSchema } from './product';
-import sampleProduct from '../../tests/fixtures/sample-product.json';
+import { ProductSchema } from '@/lib/schema/product';
+import sampleProduct from '@/tests/fixtures/sample-product.json';
 
 describe('Product Schema Seam (Effect v4)', () => {
   it('successfully decodes a real WooCommerce Store API product fixture', () => {

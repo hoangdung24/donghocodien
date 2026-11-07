@@ -7,7 +7,7 @@ import {
   archiveHref,
   findBrandCategory,
   brandCategories,
-} from './categories';
+} from '@/lib/utils/categories';
 
 interface ApiCategory {
   id: number;

@@ -1,6 +1,6 @@
 import { Carousel } from '@ark-ui/react/carousel';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { ProductImage } from '../lib/schema/product';
+import type { ProductImage } from '@/lib/schema/product';
 
 const DEFAULT_PLACEHOLDER = '/images/placeholder.jpeg';
 

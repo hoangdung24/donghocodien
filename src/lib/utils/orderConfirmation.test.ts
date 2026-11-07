@@ -4,7 +4,7 @@ import {
   formatOrderTotal,
   readLastOrder,
   type LastOrder,
-} from './orderConfirmation';
+} from '@/lib/utils/orderConfirmation';
 
 const sampleOrder: LastOrder = {
   orderId: 26419,

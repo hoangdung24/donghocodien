@@ -1,4 +1,4 @@
-import type { Product, ProductCategory } from '../schema/product';
+import type { Product, ProductCategory } from '@/lib/schema/product';
 
 export interface CatalogSource {
   page: number;

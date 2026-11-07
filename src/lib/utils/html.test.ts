@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeWordPressHtml } from './html';
+import { sanitizeWordPressHtml } from '@/lib/utils/html';
 
 describe('sanitizeWordPressHtml', () => {
   it('strips legacy inline style attributes from spans, paragraphs, and images', async () => {

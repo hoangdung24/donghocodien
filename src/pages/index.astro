@@ -1,10 +1,10 @@
 ---
 import { Effect } from 'effect';
-import HeroCarousel from '../components/HeroCarousel';
-import ProductCarousel from '../components/ProductCarousel';
-import Layout from '../layouts/Layout.astro';
-import { SEO, SITE } from '../lib/constants';
-import { getProducts } from '../lib/services/woocommerce';
+import HeroCarousel from '@/components/HeroCarousel';
+import ProductCarousel from '@/components/ProductCarousel';
+import Layout from '@/layouts/Layout.astro';
+import { SEO, SITE } from '@/lib/constants';
+import { getProducts } from '@/lib/services/woocommerce';
 
 export const prerender = true;
 

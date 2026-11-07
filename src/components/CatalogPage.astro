@@ -1,29 +1,39 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import CatalogView from './CatalogView.astro';
-import type { Product, ProductCategory } from '../lib/schema/product';
-import { cleanTitle } from '../lib/utils/text';
+import Layout from '@/layouts/Layout.astro';
+import CatalogView from '@/components/CatalogView.astro';
+import type { Product, ProductCategory } from '@/lib/schema/product';
+import { cleanTitle } from '@/lib/utils/text';
 
 interface Props {
   products: Product[];
   categories: ProductCategory[];
-  availableProducts: Product[];
+  availableProducts?: Product[];
+  availableCategoryCounts?: Map<number, number>;
+  priceBounds?: { minPrice: number; maxPrice: number };
   activeCategory: ProductCategory | null;
   search?: string;
   page: number;
   pageSize: number;
   basePath: string;
+  hasPriceFilter?: boolean;
+  minPriceFilter?: number;
+  maxPriceFilter?: number;
 }
 
 const {
   products,
   categories,
-  availableProducts,
+  availableProducts = [],
+  availableCategoryCounts,
+  priceBounds,
   activeCategory,
   search,
   page,
   pageSize,
   basePath,
+  hasPriceFilter,
+  minPriceFilter,
+  maxPriceFilter,
 } = Astro.props;
 
 const pageTitle = activeCategory
@@ -43,11 +53,16 @@ const pageTitle = activeCategory
         products={products}
         categories={categories}
         availableProducts={availableProducts}
+        availableCategoryCounts={availableCategoryCounts}
+        priceBounds={priceBounds}
         activeCategory={activeCategory}
         search={search}
         page={page}
         pageSize={pageSize}
         basePath={basePath}
+        hasPriceFilter={hasPriceFilter}
+        minPriceFilter={minPriceFilter}
+        maxPriceFilter={maxPriceFilter}
       />
     </div>
   </main>

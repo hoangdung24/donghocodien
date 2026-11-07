@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CartStore } from './cartStore';
+import { CartStore } from '@/lib/cartStore';
 
 const CART_BODY = {
   items: [],

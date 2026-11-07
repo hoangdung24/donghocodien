@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { Schema } from 'effect';
-import { CartSchema, CartItemSchema, CartTotalsSchema, AddToCartRequestSchema } from './cart';
-import sampleCart from '../../tests/fixtures/sample-cart.json';
+import {
+  CartSchema,
+  CartItemSchema,
+  CartTotalsSchema,
+  AddToCartRequestSchema,
+} from '@/lib/schema/cart';
+import sampleCart from '@/tests/fixtures/sample-cart.json';
 
 describe('Cart Schema Seam (Effect v4)', () => {
   it('decodes empty cart from API', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Schema } from 'effect';
-import { PostSchema } from './post';
+import { PostSchema } from '@/lib/schema/post';
 
 describe('PostSchema', () => {
   const samplePost = {

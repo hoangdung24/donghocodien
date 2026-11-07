@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useCart } from '../lib/context/CartContext';
+import { useCart } from '@/lib/context/CartContext';
 import { ShoppingBag, Shield, Truck, CreditCard, Check } from 'lucide-react';
-import { formatApproxPrice } from '../lib/utils/currency';
-import { useApproxDisplay } from '../lib/hooks/useApproxDisplay';
-import {
-  CHECKOUT_COUNTRIES,
-  COUNTRY_STATES,
-  COUNTRY_LOCALE,
-} from '../lib/data/woocommerce-regions';
-import { Button } from './Button';
-import { SelectField, type SelectOption } from './SelectField';
+import { formatApproxPrice } from '@/lib/utils/currency';
+import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
+import { CHECKOUT_COUNTRIES, COUNTRY_STATES, COUNTRY_LOCALE } from '@/lib/data/woocommerce-regions';
+import { Button } from '@/components/Button';
+import { SelectField, type SelectOption } from '@/components/SelectField';
 
 const COUNTRY_OPTIONS: SelectOption[] = CHECKOUT_COUNTRIES.filter((country) => country.code).map(
   (country) => ({

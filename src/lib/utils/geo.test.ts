@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { parseCountryCookie, parseCfTraceLoc, detectVisitorCountry } from './geo';
+import { parseCountryCookie, parseCfTraceLoc, detectVisitorCountry } from '@/lib/utils/geo';
 
 describe('parseCountryCookie', () => {
   it('reads the st_country cookie from a cookie header', () => {

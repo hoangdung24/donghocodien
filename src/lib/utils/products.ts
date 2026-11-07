@@ -1,4 +1,4 @@
-import type { Product } from '../schema/product';
+import type { Product } from '@/lib/schema/product';
 
 export interface PriceRange {
   min: number;
