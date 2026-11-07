@@ -16,6 +16,8 @@ interface Props {
   priceBounds?: { minPrice: number; maxPrice: number };
   activeCategory: ProductCategory | null;
   search?: string;
+  page?: number;
+  hasNextPage?: boolean;
   basePath: string;
   hasPriceFilter?: boolean;
   minPriceFilter?: number;
@@ -30,6 +32,8 @@ const {
   priceBounds,
   activeCategory,
   search,
+  page = 1,
+  hasNextPage = false,
   basePath,
   hasPriceFilter = false,
   minPriceFilter,
@@ -56,6 +60,20 @@ const boundPrices =
     : [priceBounds.minPrice, priceBounds.maxPrice];
 const minPrice = boundPrices.length > 0 ? Math.floor(Math.min(...boundPrices) / 100) * 100 : 0;
 const maxPrice = boundPrices.length > 0 ? Math.ceil(Math.max(...boundPrices) / 100) * 100 : 100000;
+
+const pageHref = (pageNumber: number): string | null => {
+  if (pageNumber < 1) return null;
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
+  if (canonicalCategory) params.set('category', canonicalCategory);
+  if (hasPriceFilter) {
+    params.set('min_price', String(minPriceFilter));
+    params.set('max_price', String(maxPriceFilter));
+  }
+  if (pageNumber > 1) params.set('page', String(pageNumber));
+  const queryString = params.toString();
+  return `${basePath}${queryString ? `?${queryString}` : ''}`;
+};
 
 const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.name) : null;
 ---
@@ -133,11 +151,48 @@ const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.na
           No timepieces found matching this criteria.
         </div>
       ) : (
-        <div class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
-          {products.map((watch) => (
-            <WatchCard client:visible product={watch} categories={categories} country={null} />
-          ))}
-        </div>
+        <>
+          <div class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
+            {products.map((watch) => (
+              <WatchCard client:visible product={watch} categories={categories} country={null} />
+            ))}
+          </div>
+
+          {(page > 1 || hasNextPage) && (
+            <nav
+              class='mt-16 flex items-center justify-between border-t border-stone-200 pt-8'
+              aria-label='Pagination'
+            >
+              {pageHref(page - 1) ? (
+                <a
+                  href={pageHref(page - 1)}
+                  rel='prev'
+                  class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+                >
+                  &larr; Previous
+                </a>
+              ) : (
+                <div />
+              )}
+
+              <span class='font-sans text-xs tracking-widest text-stone-500 uppercase'>
+                Page {page}
+              </span>
+
+              {hasNextPage ? (
+                <a
+                  href={pageHref(page + 1)}
+                  rel='next'
+                  class='border border-stone-300 px-5 py-2.5 text-xs tracking-widest uppercase transition-colors hover:bg-stone-100'
+                >
+                  Next &rarr;
+                </a>
+              ) : (
+                <div />
+              )}
+            </nav>
+          )}
+        </>
       )}
     </div>
   </div>

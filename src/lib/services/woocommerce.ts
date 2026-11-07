@@ -113,7 +113,10 @@ export const getProductsPage = (params: GetProductsParams = {}) =>
 
     cache.set(cacheKey, { data: page, timestamp: Date.now() });
     return page;
-  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+  }).pipe(
+    Effect.retry({ times: 2, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('90 seconds')
+  );
 
 export const getProducts = (params: GetProductsParams = {}) =>
   Effect.gen(function* () {
@@ -145,10 +148,13 @@ export const getProducts = (params: GetProductsParams = {}) =>
     const products = yield* Schema.decodeUnknownEffect(ProductsListSchema)(raw);
     cache.set(cacheKey, { data: products, timestamp: Date.now() });
     return products;
-  }).pipe(Effect.retry({ times: 2 }), Effect.timeout('30 seconds'));
+  }).pipe(
+    Effect.retry({ times: 2, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('90 seconds')
+  );
 
 const cache = new Map<string, { data: unknown; timestamp: number }>();
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_TTL_MS = 15 * 60 * 1000;
 let allProductsCache: Product[] | null = null;
 
 export const clearServiceCache = () => {
@@ -310,8 +316,8 @@ export const getCatalogSummary = Effect.gen(function* () {
         totalPages: Number(response.headers.get('x-wp-totalpages') || '1'),
       };
     }).pipe(
-      Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
-      Effect.timeout('120 seconds')
+      Effect.retry({ times: 2, while: (error) => error._tag === 'NetworkError' }),
+      Effect.timeout('90 seconds')
     );
 
   const firstPage = yield* fetchSummaryPage(1);
@@ -353,12 +359,7 @@ export const getCategories = Effect.gen(function* () {
 
   const fetchCategoryPage = (page: number) =>
     Effect.tryPromise({
-      try: () =>
-        fetch(`${API_BASE}/products/categories?per_page=100&page=${page}`, {
-          headers: {
-            Accept: 'application/json',
-          },
-        }),
+      try: () => fetchJsonWithTimeout(`${API_BASE}/products/categories?per_page=100&page=${page}`),
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
@@ -400,8 +401,8 @@ export const getCategories = Effect.gen(function* () {
   cache.set(cacheKey, { data: categories, timestamp: Date.now() });
   return categories;
 }).pipe(
-  Effect.retry({ times: 3, while: (error) => error._tag === 'NetworkError' }),
-  Effect.timeout('180 seconds')
+  Effect.retry({ times: 2, while: (error) => error._tag === 'NetworkError' }),
+  Effect.timeout('120 seconds')
 );
 
 export const getBrandCategories = getCategories.pipe(

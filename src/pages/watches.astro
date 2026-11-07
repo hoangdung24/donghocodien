@@ -1,24 +1,81 @@
 ---
-import CatalogPage from '../components/CatalogPage.astro';
+import CatalogPage from '@/components/CatalogPage.astro';
 import { Effect } from 'effect';
-import { getAllProducts, getCategories } from '../lib/services/woocommerce';
-import { filterCatalog } from '../lib/utils/catalog';
+import type { ProductCategory } from '@/lib/schema/product';
+import { getCatalogSummary, getCategories, getProductsPage } from '@/lib/services/woocommerce';
+import { categoryIdFromParam } from '@/lib/utils/categories';
+import { descendantCategoryIds } from '@/lib/utils/catalog';
+import { parseSearchQuery } from '@/lib/utils/search';
 
-export const prerender = true;
+export const prerender = false;
 
 const PAGE_SIZE = 20;
 
-const [catalog, categories] = await Effect.runPromise(
-  Effect.all([getAllProducts, getCategories], { concurrency: 'unbounded' })
+const url = Astro.url;
+const requestedPage = Math.max(1, Number(url.searchParams.get('page') || '1') || 1);
+const search = parseSearchQuery(url.searchParams);
+const rawCategory = url.searchParams.get('category') ?? undefined;
+const minPriceParam = url.searchParams.get('min_price');
+const maxPriceParam = url.searchParams.get('max_price');
+const parsedMinPrice = minPriceParam !== null ? Number(minPriceParam) : NaN;
+const parsedMaxPrice = maxPriceParam !== null ? Number(maxPriceParam) : NaN;
+const hasPriceFilter = !Number.isNaN(parsedMinPrice) && !Number.isNaN(parsedMaxPrice);
+
+const [categoriesResult, summaryResult] = await Effect.runPromise(
+  Effect.all([Effect.exit(getCategories), Effect.exit(getCatalogSummary)], {
+    concurrency: 'unbounded',
+  })
 );
 
-const { products } = filterCatalog(catalog, categories, { page: 1, categories }, PAGE_SIZE);
+const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
+const summary = summaryResult._tag === 'Success' ? summaryResult.value : null;
+
+const categoryId = categoryIdFromParam(rawCategory, categories);
+const activeCategory: ProductCategory | null = categoryId
+  ? (categories.find((category) => category.id === categoryId) ?? null)
+  : null;
+
+const selectedCategoryIds = categoryId
+  ? (() => {
+      const descendants = descendantCategoryIds(categories, categoryId);
+      return descendants.length > 0 ? descendants : [categoryId];
+    })()
+  : undefined;
+
+const productsResult = await Effect.runPromise(
+  Effect.exit(
+    getProductsPage({
+      page: requestedPage,
+      per_page: PAGE_SIZE,
+      search,
+      category: selectedCategoryIds,
+      min_price: hasPriceFilter ? parsedMinPrice : undefined,
+      max_price: hasPriceFilter ? parsedMaxPrice : undefined,
+      stock_status: 'instock',
+    })
+  )
+);
+
+const products =
+  productsResult._tag === 'Success'
+    ? productsResult.value.products.filter(
+        (product) => product.is_in_stock && Number(product.prices.price) > 0
+      )
+    : [];
+const totalPages = productsResult._tag === 'Success' ? productsResult.value.totalPages : 1;
 ---
 
 <CatalogPage
   products={products}
   categories={categories}
-  availableProducts={catalog}
-  activeCategory={null}
+  availableCategoryCounts={summary?.countsByCategory}
+  priceBounds={summary ? { minPrice: summary.minPrice, maxPrice: summary.maxPrice } : undefined}
+  activeCategory={activeCategory}
+  search={search}
+  page={requestedPage}
+  hasNextPage={totalPages > requestedPage}
   basePath='/watches'
+  hasPriceFilter={hasPriceFilter}
+  minPriceFilter={hasPriceFilter ? parsedMinPrice : undefined}
+  maxPriceFilter={hasPriceFilter ? parsedMaxPrice : undefined}
 />
