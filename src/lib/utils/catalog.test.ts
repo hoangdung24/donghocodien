@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Product, ProductCategory } from '@/lib/schema/product';
-import { filterArchive, filterCatalog, descendantCategoryIds } from '@/lib/utils/catalog';
+import { filterCatalog, descendantCategoryIds } from '@/lib/utils/catalog';
 
 const makeProduct = (
   id: number,
@@ -135,63 +135,5 @@ describe('catalog filtering seam', () => {
     ];
 
     expect(descendantCategoryIds(nested, 70).sort()).toEqual([1, 2, 9]);
-  });
-});
-
-describe('archive filtering seam', () => {
-  it('keeps only out-of-stock products', () => {
-    const products = [
-      makeProduct(1, 'sold-alange', { categoryIds: [1], is_in_stock: false }),
-      makeProduct(2, 'available-rolex', { categoryIds: [1], is_in_stock: true }),
-    ];
-
-    const archived = filterArchive(products, categories, { page: 1, categories }, 20);
-
-    expect(archived.products.map((product) => product.slug)).toEqual(['sold-alange']);
-  });
-
-  it('scopes the archive to the selected category', () => {
-    const products = [
-      makeProduct(1, 'sold-alange', { categoryIds: [1], is_in_stock: false }),
-      makeProduct(2, 'sold-omega', { categoryIds: [2], is_in_stock: false }),
-    ];
-
-    const archived = filterArchive(
-      products,
-      categories,
-      { page: 1, categories, activeCategoryId: 1 },
-      20
-    );
-
-    expect(archived.products.map((product) => product.slug)).toEqual(['sold-alange']);
-    expect(archived.total).toBe(1);
-  });
-
-  it('pages through the filtered archive', () => {
-    const products = Array.from({ length: 25 }, (_, index) =>
-      makeProduct(index + 1, `sold-${index + 1}`, { categoryIds: [1], is_in_stock: false })
-    );
-
-    const secondPage = filterArchive(
-      products,
-      categories,
-      { page: 2, categories, activeCategoryId: 1 },
-      20
-    );
-
-    expect(secondPage.total).toBe(25);
-    expect(secondPage.products).toHaveLength(5);
-    expect(secondPage.products[0]?.slug).toBe('sold-21');
-  });
-
-  it('matches search against the product name ignoring case', () => {
-    const products = [
-      makeProduct(1, 'sold-datejust', { name: 'Rolex Datejust 1601', is_in_stock: false }),
-      makeProduct(2, 'sold-seamaster', { name: 'Omega Seamaster', is_in_stock: false }),
-    ];
-
-    const archived = filterArchive(products, categories, { page: 1, search: 'DATeJUST' }, 20);
-
-    expect(archived.products.map((product) => product.slug)).toEqual(['sold-datejust']);
   });
 });

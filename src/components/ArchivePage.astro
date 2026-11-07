@@ -9,7 +9,7 @@ import type { Product, ProductCategory } from '@/lib/schema/product';
 import { ARCHIVE_PATH, archiveHref, buildCategoryTree } from '@/lib/utils/categories';
 
 interface Props {
-  products: Product[];
+  products: readonly Product[];
   categories: ProductCategory[];
   activeCategoryId?: number;
   search?: string;

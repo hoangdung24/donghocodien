@@ -1,35 +1,19 @@
 ---
 import ArchivePage from '@/components/ArchivePage.astro';
-import { Effect } from 'effect';
-import { getAllProducts, getCategories } from '@/lib/services/woocommerce';
-import { categoryIdFromParam } from '@/lib/utils/categories';
-import { filterArchive } from '@/lib/utils/catalog';
+import { loadArchivePage } from '@/lib/services/archive';
 import { parseSearchQuery } from '@/lib/utils/search';
 
 export const prerender = false;
-
-const PAGE_SIZE = 20;
 
 const url = Astro.url;
 const search = parseSearchQuery(url.searchParams);
 const rawCategory = url.searchParams.get('category') ?? undefined;
 
-const [catalogResult, categoriesResult] = await Effect.runPromise(
-  Effect.all([Effect.exit(getAllProducts), Effect.exit(getCategories)], {
-    concurrency: 'unbounded',
-  })
-);
-
-const catalog = catalogResult._tag === 'Success' ? catalogResult.value : [];
-const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
-const activeCategoryId = categoryIdFromParam(rawCategory, categories);
-
-const { products, total } = filterArchive(
-  catalog,
-  categories,
-  { page: 1, search, activeCategoryId },
-  PAGE_SIZE
-);
+const { products, categories, activeCategoryId, hasNextPage } = await loadArchivePage({
+  page: 1,
+  search,
+  rawCategory,
+});
 ---
 
 <ArchivePage
@@ -38,5 +22,5 @@ const { products, total } = filterArchive(
   activeCategoryId={activeCategoryId}
   search={search}
   requestedPage={1}
-  hasNextPage={total > PAGE_SIZE}
+  hasNextPage={hasNextPage}
 />

@@ -22,21 +22,6 @@ export function filterCatalog(
   );
 }
 
-export function filterArchive(
-  products: readonly Product[],
-  categories: readonly ProductCategory[],
-  { page, search, activeCategoryId }: CatalogSource,
-  pageSize: number
-): { products: Product[]; total: number } {
-  return filterByStock(
-    products,
-    categories,
-    { page, search, activeCategoryId },
-    pageSize,
-    (product) => !product.is_in_stock
-  );
-}
-
 function filterByStock(
   products: readonly Product[],
   categories: readonly ProductCategory[],
