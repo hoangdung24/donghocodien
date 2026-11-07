@@ -1,11 +1,13 @@
 ---
-import CatalogPage from '@/components/CatalogPage.astro';
+import CatalogView from '@/components/CatalogView.astro';
+import Layout from '@/layouts/Layout.astro';
 import { Effect } from 'effect';
 import type { ProductCategory } from '@/lib/schema/product';
 import { getCatalogSummary, getCategories, getProductsPage } from '@/lib/services/woocommerce';
 import { categoryIdFromParam } from '@/lib/utils/categories';
 import { descendantCategoryIds } from '@/lib/utils/catalog';
 import { parseSearchQuery } from '@/lib/utils/search';
+import { cleanTitle } from '@/lib/utils/text';
 
 export const prerender = false;
 
@@ -63,19 +65,39 @@ const products =
       )
     : [];
 const totalPages = productsResult._tag === 'Success' ? productsResult.value.totalPages : 1;
+
+const pageTitle = activeCategory
+  ? `${cleanTitle(activeCategory.name)} Watches`
+  : search
+    ? `Search Results for "${search}"`
+    : 'All Watches';
+
+const priceBounds = summary
+  ? { minPrice: summary.minPrice, maxPrice: summary.maxPrice }
+  : undefined;
 ---
 
-<CatalogPage
-  products={products}
-  categories={categories}
-  availableCategoryCounts={summary?.countsByCategory}
-  priceBounds={summary ? { minPrice: summary.minPrice, maxPrice: summary.maxPrice } : undefined}
-  activeCategory={activeCategory}
-  search={search}
-  page={requestedPage}
-  hasNextPage={totalPages > requestedPage}
-  basePath='/watches'
-  hasPriceFilter={hasPriceFilter}
-  minPriceFilter={hasPriceFilter ? parsedMinPrice : undefined}
-  maxPriceFilter={hasPriceFilter ? parsedMaxPrice : undefined}
-/>
+<Layout
+  title={`${pageTitle} | Spacetime`}
+  description='Explore over 2,300+ vintage timepieces from Switzerland and Japan.'
+>
+  <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8'>
+    <div class='mb-8 pb-8'>
+      <CatalogView
+        products={products}
+        categories={categories}
+        availableProducts={[]}
+        availableCategoryCounts={summary?.countsByCategory}
+        priceBounds={priceBounds}
+        activeCategory={activeCategory}
+        search={search}
+        page={requestedPage}
+        hasNextPage={totalPages > requestedPage}
+        basePath='/watches'
+        hasPriceFilter={hasPriceFilter}
+        minPriceFilter={hasPriceFilter ? parsedMinPrice : undefined}
+        maxPriceFilter={hasPriceFilter ? parsedMaxPrice : undefined}
+      />
+    </div>
+  </main>
+</Layout>

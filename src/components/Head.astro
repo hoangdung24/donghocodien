@@ -12,7 +12,7 @@ interface Props {
     name: string;
     brand: string;
     sku: string;
-    price: number;
+    price?: number;
     currency: string;
     availability: 'in_stock' | 'out_of_stock';
     url: string;
@@ -88,8 +88,9 @@ const twitterHandle = '@spacetime_vintage';
       offers: {
         '@type': 'Offer',
         url: new URL(product.url, Astro.site).href,
-        priceCurrency: product.currency,
-        price: product.price,
+        ...(product.price !== undefined
+          ? { priceCurrency: product.currency, price: product.price }
+          : {}),
         availability:
           product.availability === 'in_stock'
             ? 'https://schema.org/InStock'

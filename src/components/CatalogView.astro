@@ -5,7 +5,7 @@ import SearchBox from '@/components/SearchBox.astro';
 import { CategoryAccordion } from '@/components/CategoryAccordion';
 import { MobileFilterDrawer } from '@/components/MobileFilterDrawer';
 import type { Product, ProductCategory } from '@/lib/schema/product';
-import { buildCategoryTree, decodeCategoryName } from '@/lib/utils/categories';
+import { buildCategoryTree } from '@/lib/utils/categories';
 import { countInStockByCategory } from '@/lib/utils/products';
 
 interface Props {
@@ -74,8 +74,6 @@ const pageHref = (pageNumber: number): string | null => {
   const queryString = params.toString();
   return `${basePath}${queryString ? `?${queryString}` : ''}`;
 };
-
-const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.name) : null;
 ---
 
 {availableCategoryCounts || availableProducts.length > 0 ? (
@@ -140,12 +138,6 @@ const activeCategoryName = activeCategory ? decodeCategoryName(activeCategory.na
     </MobileFilterDrawer>
 
     <div class='lg:col-span-9'>
-      {activeCategoryName && (
-        <h1 class='mb-8 text-2xl leading-tight font-normal tracking-wide sm:text-3xl'>
-          {activeCategoryName} Watches
-        </h1>
-      )}
-
       {products.length === 0 ? (
         <div class='py-24 text-center text-xs tracking-widest text-stone-400 uppercase'>
           No timepieces found matching this criteria.
