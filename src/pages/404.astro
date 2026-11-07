@@ -2,10 +2,14 @@
 import Layout from '@/layouts/Layout.astro';
 import { WatchCard } from '@/components/WatchCard';
 import { Effect } from 'effect';
-import { getProducts } from '@/lib/services/woocommerce';
+import { getCategories, getProducts } from '@/lib/services/woocommerce';
 import { CONTACT, SITE } from '@/lib/constants';
 
-const productsResult = await Effect.runPromiseExit(getProducts({ per_page: 8 }));
+const [productsResult, categoriesResult] = await Promise.all([
+  Effect.runPromiseExit(getProducts({ per_page: 8 })),
+  Effect.runPromiseExit(getCategories),
+]);
+const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 const availableWatches =
   productsResult._tag === 'Success'
     ? productsResult.value
@@ -66,7 +70,12 @@ Astro.response.status = 404;
 
         <div class='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
           {availableWatches.map((watch) => (
-            <WatchCard client:visible product={watch} country={Astro.locals.country} />
+            <WatchCard
+              client:visible
+              product={watch}
+              categories={categories}
+              country={Astro.locals.country}
+            />
           ))}
         </div>
       </section>

@@ -4,13 +4,18 @@ import HeroCarousel from '@/components/HeroCarousel';
 import ProductCarousel from '@/components/ProductCarousel';
 import Layout from '@/layouts/Layout.astro';
 import { SEO, SITE } from '@/lib/constants';
-import { getProducts } from '@/lib/services/woocommerce';
+import { getCategories, getProducts } from '@/lib/services/woocommerce';
 
 export const prerender = true;
 
-const productsResult = await Effect.runPromiseExit(getProducts({ per_page: 12 }));
+const [productsResult, categoriesResult] = await Effect.runPromise(
+  Effect.all([Effect.exit(getProducts({ per_page: 12 })), Effect.exit(getCategories)], {
+    concurrency: 'unbounded',
+  })
+);
 
 const products = productsResult._tag === 'Success' ? productsResult.value : [];
+const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 const hasProductError = productsResult._tag === 'Failure';
 ---
 
@@ -82,7 +87,9 @@ const hasProductError = productsResult._tag === 'Failure';
         </div>
       )}
 
-      {products.length > 0 && <ProductCarousel client:visible products={products} />}
+      {products.length > 0 && (
+        <ProductCarousel client:visible products={products} categories={categories} />
+      )}
 
       <div class='mt-14 text-center'>
         <a

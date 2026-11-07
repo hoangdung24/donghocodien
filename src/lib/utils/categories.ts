@@ -96,6 +96,14 @@ export function findBrandCategory(
   return categories.find((category) => category.id === brandCategoryId);
 }
 
+export function productBrandCategory(
+  product: { readonly categories: ReadonlyArray<ProductCategory> },
+  categories: readonly ProductCategory[]
+): ProductCategory | undefined {
+  const brandIds = brandCategoryIds(categories);
+  return product.categories.find((category) => brandIds.has(category.id));
+}
+
 export const buildCategoryTree = (categories: readonly ProductCategory[]): CategoryGroup[] => {
   const roots = categories
     .filter((category) => !category.parent || category.parent === 0)

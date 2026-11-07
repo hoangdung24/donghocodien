@@ -9,7 +9,18 @@ const PAGE_SIZE = 20;
 
 const [categoriesResult, productsResult] = await Effect.runPromise(
   Effect.all(
-    [Effect.exit(getCategories), Effect.exit(getProductsPage({ page: 1, per_page: PAGE_SIZE }))],
+    [
+      Effect.exit(getCategories),
+      Effect.exit(
+        getProductsPage({
+          page: 1,
+          per_page: PAGE_SIZE,
+          stock_status: 'outofstock',
+          orderby: 'price',
+          order: 'asc',
+        })
+      ),
+    ],
     { concurrency: 'unbounded' }
   )
 );
@@ -17,11 +28,12 @@ const [categoriesResult, productsResult] = await Effect.runPromise(
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 const fetchedProducts = productsResult._tag === 'Success' ? productsResult.value.products : [];
 const products = fetchedProducts.filter((product) => !product.is_in_stock);
+const totalPages = productsResult._tag === 'Success' ? productsResult.value.totalPages : 1;
 ---
 
 <ArchivePage
   products={products}
   categories={categories}
   requestedPage={1}
-  hasNextPage={fetchedProducts.length === PAGE_SIZE}
+  hasNextPage={totalPages > 1}
 />

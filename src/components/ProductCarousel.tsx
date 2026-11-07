@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Product } from '@/lib/schema/product';
+import type { Product, ProductCategory } from '@/lib/schema/product';
 import { WatchCard } from '@/components/WatchCard';
 
 interface ProductCarouselProps {
   products: readonly Product[];
+  categories?: ProductCategory[];
 }
 
-export function ProductCarousel({ products }: ProductCarouselProps) {
+export function ProductCarousel({ products, categories }: ProductCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'start',
@@ -48,7 +49,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
               key={product.id}
               className='min-w-0 flex-[0_0_80%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_25%]'
             >
-              <WatchCard product={product} />
+              <WatchCard product={product} categories={categories} />
             </div>
           ))}
         </div>

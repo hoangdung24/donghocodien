@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Loader2, Check } from 'lucide-react';
-import type { Product } from '@/lib/schema/product';
+import type { Product, ProductCategory } from '@/lib/schema/product';
+import { categoryHref, decodeCategoryName, productBrandCategory } from '@/lib/utils/categories';
 import { formatApproxPrice } from '@/lib/utils/currency';
 import { formatPrice } from '@/lib/utils/format';
 import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
@@ -12,14 +13,21 @@ const DEFAULT_PLACEHOLDER = '/images/placeholder.jpeg';
 
 interface WatchCardProps {
   product: Product;
+  categories?: ProductCategory[];
   country?: string | null;
   showStatus?: boolean;
 }
 
-export function WatchCard({ product, country, showStatus = true }: WatchCardProps) {
+export function WatchCard({
+  product,
+  categories = [],
+  country,
+  showStatus = true,
+}: WatchCardProps) {
   const mainImage = product.images[0]?.src || DEFAULT_PLACEHOLDER;
   const hoverImage = product.images[1]?.src || mainImage;
   const cleanName = cleanTitle(product.name);
+  const brandCategory = productBrandCategory(product, categories);
   const approx = useApproxDisplay(country);
 
   const [isAdding, setIsAdding] = useState(false);
@@ -75,6 +83,16 @@ export function WatchCard({ product, country, showStatus = true }: WatchCardProp
       </a>
 
       <div className='flex flex-1 flex-col px-1 pt-3 pb-4 text-center sm:text-left'>
+        {brandCategory && (
+          <p className='mb-1.5 truncate text-[10px] font-medium tracking-[0.2em] text-stone-500 uppercase sm:text-[11px]'>
+            <a
+              href={categoryHref(brandCategory.slug)}
+              className='transition-colors hover:text-brand-dark hover:underline'
+            >
+              {decodeCategoryName(brandCategory.name)}
+            </a>
+          </p>
+        )}
         <h3 className='mb-1.5 line-clamp-2 min-h-[2.75em] text-xs leading-snug tracking-normal sm:text-sm'>
           <a href={`/watches/${product.slug}`} className='transition-colors hover:text-stone-500'>
             {cleanName}

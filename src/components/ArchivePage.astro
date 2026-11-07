@@ -66,24 +66,13 @@ const visibleCategoryGroups = buildCategoryTree(categories);
           category={canonicalCategory}
         />
 
-        <section class='flex flex-col gap-4'>
-          <a
-            href={archiveHref({ search })}
-            class={`text-[11px] font-bold tracking-wider uppercase transition-colors hover:text-brand-dark ${
-              activeCategoryId ? 'text-stone-500' : ''
-            }`}
-          >
-            All Categories
-          </a>
-
-          <CategoryAccordion
-            client:only='react'
-            groups={visibleCategoryGroups}
-            activeCategoryId={activeCategoryId}
-            search={search}
-            basePath={ARCHIVE_PATH}
-          />
-        </section>
+        <CategoryAccordion
+          client:only='react'
+          groups={visibleCategoryGroups}
+          activeCategoryId={activeCategoryId}
+          search={search}
+          basePath={ARCHIVE_PATH}
+        />
       </aside>
 
       <div class='lg:col-span-9'>
@@ -128,7 +117,13 @@ const visibleCategoryGroups = buildCategoryTree(categories);
         ) : (
           <div class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
             {products.map((watch) => (
-              <WatchCard client:visible product={watch} country={null} showStatus={false} />
+              <WatchCard
+                client:visible
+                product={watch}
+                categories={categories}
+                country={null}
+                showStatus={false}
+              />
             ))}
           </div>
         )}

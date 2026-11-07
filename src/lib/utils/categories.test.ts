@@ -6,6 +6,7 @@ import {
   categoryHref,
   archiveHref,
   findBrandCategory,
+  productBrandCategory,
   brandCategories,
 } from '@/lib/utils/categories';
 
@@ -153,6 +154,59 @@ describe('findBrandCategory', () => {
 
   it('returns undefined when the brand page has no products', () => {
     expect(findBrandCategory({ categories: [] }, categoriesWithPatek)).toBeUndefined();
+  });
+});
+
+describe('productBrandCategory', () => {
+  const categoriesWithBrands = [
+    ...apiCategories,
+    { id: 342, name: 'Dress Watches', slug: 'dress-watches-water-resistant', parent: 339 },
+    { id: 339, name: 'Water Resistant', slug: 'water-resistant', parent: 0 },
+    { id: 215, name: 'Patek Philippe', slug: 'patek-philippe', parent: 70 },
+    { id: 402, name: 'Jaeger-LeCoultre &#8211; Vintage', slug: 'jaeger', parent: 70 },
+  ];
+
+  it('reads the brand category from the product categories alone', () => {
+    const patekWatch = {
+      categories: [
+        { id: 342, name: 'Dress Watches', slug: 'dress-watches-water-resistant', parent: 339 },
+        { id: 215, name: 'Patek Philippe', slug: 'patek-philippe', parent: 70 },
+      ],
+    };
+
+    expect(productBrandCategory(patekWatch, categoriesWithBrands)?.slug).toBe('patek-philippe');
+    expect(categoryHref(productBrandCategory(patekWatch, categoriesWithBrands)!.slug)).toBe(
+      '/watches?category=patek-philippe'
+    );
+  });
+
+  it('keeps the raw brand name so the card can decode it', () => {
+    const jaegerWatch = {
+      categories: [
+        { id: 402, name: 'Jaeger-LeCoultre &#8211; Vintage', slug: 'jaeger', parent: 70 },
+      ],
+    };
+
+    const brandCategory = productBrandCategory(jaegerWatch, categoriesWithBrands);
+
+    expect(decodeCategoryName(brandCategory!.name)).toBe('Jaeger-LeCoultre – Vintage');
+  });
+
+  it('ignores non-brand categories', () => {
+    expect(
+      productBrandCategory(
+        { categories: [{ id: 162, name: 'Unisex', slug: 'unisex' }] },
+        categoriesWithBrands
+      )
+    ).toBeUndefined();
+  });
+
+  it('returns undefined when no category list is available', () => {
+    const patekWatch = {
+      categories: [{ id: 215, name: 'Patek Philippe', slug: 'patek-philippe' }],
+    };
+
+    expect(productBrandCategory(patekWatch, [])).toBeUndefined();
   });
 });
 

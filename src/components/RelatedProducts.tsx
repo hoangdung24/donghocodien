@@ -1,9 +1,10 @@
-import type { Product } from '@/lib/schema/product';
+import type { Product, ProductCategory } from '@/lib/schema/product';
 import { WatchCard } from '@/components/WatchCard';
 
 interface RelatedProductsProps {
   products: Product[];
   title?: string;
+  categories?: ProductCategory[];
   country?: string | null;
   className?: string;
 }
@@ -11,6 +12,7 @@ interface RelatedProductsProps {
 export function RelatedProducts({
   products,
   title = 'Similar Watches',
+  categories,
   country,
   className = 'mt-8',
 }: RelatedProductsProps) {
@@ -24,7 +26,7 @@ export function RelatedProducts({
       </h2>
       <div className='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4'>
         {available.map((product) => (
-          <WatchCard key={product.id} product={product} country={country} />
+          <WatchCard key={product.id} product={product} categories={categories} country={country} />
         ))}
       </div>
     </section>
