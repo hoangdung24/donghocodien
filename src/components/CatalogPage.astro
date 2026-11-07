@@ -12,8 +12,6 @@ interface Props {
   priceBounds?: { minPrice: number; maxPrice: number };
   activeCategory: ProductCategory | null;
   search?: string;
-  page: number;
-  pageSize: number;
   basePath: string;
   hasPriceFilter?: boolean;
   minPriceFilter?: number;
@@ -28,8 +26,6 @@ const {
   priceBounds,
   activeCategory,
   search,
-  page,
-  pageSize,
   basePath,
   hasPriceFilter,
   minPriceFilter,
@@ -57,8 +53,6 @@ const pageTitle = activeCategory
         priceBounds={priceBounds}
         activeCategory={activeCategory}
         search={search}
-        page={page}
-        pageSize={pageSize}
         basePath={basePath}
         hasPriceFilter={hasPriceFilter}
         minPriceFilter={minPriceFilter}

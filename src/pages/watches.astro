@@ -1,8 +1,8 @@
 ---
-import CatalogPage from '@/components/CatalogPage.astro';
+import CatalogPage from '../components/CatalogPage.astro';
 import { Effect } from 'effect';
-import { getAllProducts, getCategories } from '@/lib/services/woocommerce';
-import { filterCatalog } from '@/lib/utils/catalog';
+import { getAllProducts, getCategories } from '../lib/services/woocommerce';
+import { filterCatalog } from '../lib/utils/catalog';
 
 export const prerender = true;
 
@@ -12,7 +12,7 @@ const [catalog, categories] = await Effect.runPromise(
   Effect.all([getAllProducts, getCategories], { concurrency: 'unbounded' })
 );
 
-const products = filterCatalog(catalog, categories, { page: 1, categories }, PAGE_SIZE);
+const { products } = filterCatalog(catalog, categories, { page: 1, categories }, PAGE_SIZE);
 ---
 
 <CatalogPage
@@ -20,7 +20,5 @@ const products = filterCatalog(catalog, categories, { page: 1, categories }, PAG
   categories={categories}
   availableProducts={catalog}
   activeCategory={null}
-  page={1}
-  pageSize={PAGE_SIZE}
   basePath='/watches'
 />

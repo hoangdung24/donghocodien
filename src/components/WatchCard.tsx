@@ -44,7 +44,7 @@ export function WatchCard({ product, country, showStatus = true }: WatchCardProp
   return (
     <article className='group relative flex flex-col overflow-hidden bg-white transition-all duration-300'>
       <a
-        href={`/product/${product.slug}`}
+        href={`/watches/${product.slug}`}
         className='relative block aspect-300/375 overflow-hidden bg-stone-50'
       >
         <img
@@ -76,7 +76,7 @@ export function WatchCard({ product, country, showStatus = true }: WatchCardProp
 
       <div className='flex flex-1 flex-col px-1 pt-3 pb-4 text-center sm:text-left'>
         <h3 className='mb-1.5 line-clamp-2 min-h-[2.75em] text-xs leading-snug tracking-normal sm:text-sm'>
-          <a href={`/product/${product.slug}`} className='transition-colors hover:text-stone-500'>
+          <a href={`/watches/${product.slug}`} className='transition-colors hover:text-stone-500'>
             {cleanName}
           </a>
         </h3>

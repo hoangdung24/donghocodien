@@ -60,7 +60,7 @@ export function archiveHref({ category, search, page }: ArchiveFilterParams = {}
   if (category) params.set('category', category);
   if (search) params.set('search', search);
   const queryString = params.toString();
-  const path = page && page > 1 ? `${ARCHIVE_PATH}/p/${page}` : ARCHIVE_PATH;
+  const path = page && page > 1 ? `${ARCHIVE_PATH}/${page}` : ARCHIVE_PATH;
   return `${path}${queryString ? `?${queryString}` : ''}`;
 }
 

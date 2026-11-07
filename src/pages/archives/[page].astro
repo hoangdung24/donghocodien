@@ -11,7 +11,13 @@ export const prerender = false;
 const PAGE_SIZE = 20;
 
 const url = Astro.url;
-const requestedPage = Math.max(1, Number(Astro.params.page || '2') || 2);
+const pageParam = Astro.params.page;
+const requestedPage = /^\d+$/.test(pageParam ?? '') ? Number(pageParam) : 0;
+
+if (requestedPage < 2) {
+  return Astro.redirect(url.search.length > 1 ? `/archives${url.search}` : '/archives', 301);
+}
+
 const search = parseSearchQuery(url.searchParams);
 const rawCategory = url.searchParams.get('category') ?? undefined;
 

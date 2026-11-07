@@ -62,7 +62,7 @@ const productSchema = {
   price: Number(product.prices.price),
   currency: 'USD',
   availability: product.is_in_stock ? ('in_stock' as const) : ('out_of_stock' as const),
-  url: `/products/${product.slug}`,
+  url: `/watches/${product.slug}`,
   image:
     product.images[0]?.src ||
     'https://donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',

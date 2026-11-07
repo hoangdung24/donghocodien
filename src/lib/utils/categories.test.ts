@@ -237,7 +237,7 @@ describe('archiveHref', () => {
 
   it('uses a path segment for pages beyond the first', () => {
     expect(archiveHref({ category: 'rolex', page: 1 })).toBe('/archives?category=rolex');
-    expect(archiveHref({ category: 'rolex', page: 3 })).toBe('/archives/p/3?category=rolex');
-    expect(archiveHref({ page: 2 })).toBe('/archives/p/2');
+    expect(archiveHref({ category: 'rolex', page: 3 })).toBe('/archives/3?category=rolex');
+    expect(archiveHref({ page: 2 })).toBe('/archives/2');
   });
 });

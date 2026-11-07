@@ -45,7 +45,7 @@ describe('catalog filtering seam', () => {
 
     const filtered = filterCatalog(products, categories, { page: 1, categories }, 20);
 
-    expect(filtered.map((product) => product.slug)).toEqual(['in-stock']);
+    expect(filtered.products.map((product) => product.slug)).toEqual(['in-stock']);
   });
 
   it('matches a brand group through its child categories', () => {
@@ -61,7 +61,7 @@ describe('catalog filtering seam', () => {
       20
     );
 
-    expect(filtered).toHaveLength(2);
+    expect(filtered.products).toHaveLength(2);
   });
 
   it('excludes siblings when a single child category is selected', () => {
@@ -77,7 +77,7 @@ describe('catalog filtering seam', () => {
       20
     );
 
-    expect(filtered.map((product) => product.slug)).toEqual(['rolex-datejust']);
+    expect(filtered.products.map((product) => product.slug)).toEqual(['rolex-datejust']);
   });
 
   it('returns only the requested page slice', () => {
@@ -92,8 +92,8 @@ describe('catalog filtering seam', () => {
       20
     );
 
-    expect(secondPage).toHaveLength(5);
-    expect(secondPage[0]?.slug).toBe('watch-21');
+    expect(secondPage.products).toHaveLength(5);
+    expect(secondPage.products[0]?.slug).toBe('watch-21');
   });
 
   it('matches search against the product name ignoring case', () => {
@@ -109,7 +109,23 @@ describe('catalog filtering seam', () => {
       20
     );
 
-    expect(filtered.map((product) => product.slug)).toEqual(['rolex-datejust']);
+    expect(filtered.products.map((product) => product.slug)).toEqual(['rolex-datejust']);
+  });
+
+  it('reports the total matching count regardless of the page slice', () => {
+    const products = Array.from({ length: 25 }, (_, index) =>
+      makeProduct(index + 1, `watch-${index + 1}`, { categoryIds: [1] })
+    );
+
+    const lastPage = filterCatalog(
+      products,
+      categories,
+      { page: 2, categories, activeCategoryId: 1 },
+      20
+    );
+
+    expect(lastPage.total).toBe(25);
+    expect(lastPage.products).toHaveLength(5);
   });
 
   it('walks nested descendants without looping', () => {

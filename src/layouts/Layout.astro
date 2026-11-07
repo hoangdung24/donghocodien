@@ -9,7 +9,7 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
-  type?: 'website' | 'product' | 'article';
+  type?: 'website' | 'product';
   itunesAppId?: string;
   product?: {
     name: string;
@@ -21,17 +21,9 @@ interface Props {
     url: string;
     image: string;
   };
-  article?: {
-    title: string;
-    author: string;
-    publishedTime: string;
-    modifiedTime: string;
-    section: string;
-    tags: string[];
-  };
 }
 
-const { title, description, image, type = 'website', itunesAppId, product, article } = Astro.props;
+const { title, description, image, type = 'website', itunesAppId, product } = Astro.props;
 ---
 
 <!doctype html>
@@ -47,7 +39,6 @@ const { title, description, image, type = 'website', itunesAppId, product, artic
       type={type}
       itunesAppId={itunesAppId}
       product={product}
-      article={article}
     />
   </head>
   <body class='flex min-h-screen flex-col bg-stone-50 text-stone-900'>

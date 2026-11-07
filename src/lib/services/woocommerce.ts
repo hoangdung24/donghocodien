@@ -6,12 +6,8 @@ import {
   type ProductCategory,
 } from '@/lib/schema/product';
 import { PagesListSchema, type WpPage } from '@/lib/schema/page';
-import { PostSchema, type Post } from '@/lib/schema/post';
 import { fetchJsonWithTimeout } from '@/lib/services/httpClient';
 import { brandCategories, type BrandCategory } from '@/lib/utils/categories';
-
-const PostsListSchema = Schema.Array(PostSchema);
-const SlugsListSchema = Schema.Array(Schema.Struct({ slug: Schema.String }));
 
 const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
 const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
@@ -163,85 +159,6 @@ export const clearServiceCache = () => {
 const SLUGS_PER_PAGE = 100;
 const MAX_SLUG_PAGES = 60;
 const PRODUCT_FETCH_CONCURRENCY = 3;
-
-const fetchSlugPage = (listUrl: string, page: number) =>
-  Effect.gen(function* () {
-    const url = new URL(listUrl);
-    url.searchParams.set('per_page', String(SLUGS_PER_PAGE));
-    url.searchParams.set('page', String(page));
-
-    const response = yield* Effect.tryPromise({
-      try: () => fetchJsonWithTimeout(url.toString()),
-      catch: (cause) => new NetworkError({ message: String(cause) }),
-    });
-
-    if (!response.ok) {
-      return yield* new HttpError({
-        status: response.status,
-        statusText: response.statusText,
-        url: url.toString(),
-      });
-    }
-
-    const raw = yield* Effect.tryPromise({
-      try: () => response.json(),
-      catch: (cause) => new NetworkError({ message: String(cause) }),
-    });
-
-    const slugs = yield* Schema.decodeUnknownEffect(SlugsListSchema)(raw);
-    return {
-      slugs: slugs.map((entry) => entry.slug),
-      totalPages: Number(response.headers.get('x-wp-totalpages') || '1'),
-    };
-  }).pipe(
-    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
-    Effect.timeout('120 seconds')
-  );
-
-const getAllSlugs = (endpoint: string, cacheKey: string) =>
-  Effect.gen(function* () {
-    const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data as string[];
-    }
-
-    const firstPage = yield* fetchSlugPage(endpoint, 1);
-    const slugs = [...firstPage.slugs];
-    const pagesToFetch = Math.min(firstPage.totalPages, MAX_SLUG_PAGES);
-
-    for (let page = 2; page <= pagesToFetch; page++) {
-      const nextPage = yield* fetchSlugPage(endpoint, page);
-      slugs.push(...nextPage.slugs);
-    }
-
-    cache.set(cacheKey, { data: slugs, timestamp: Date.now() });
-    return slugs;
-  }).pipe(Effect.timeout('300 seconds'));
-
-export const getProductSlugs = getAllSlugs(`${API_BASE}/products`, 'slugs:products').pipe(
-  Effect.orElseSucceed(() => [])
-);
-
-export const getPublishedSlugs = Effect.all(
-  [
-    getAllSlugs(`${WP_API_BASE}/pages`, 'slugs:pages'),
-    getAllSlugs(`${WP_API_BASE}/posts`, 'slugs:posts'),
-  ],
-  { concurrency: 'unbounded' }
-).pipe(
-  Effect.map(([pageSlugs, postSlugs]) => [...pageSlugs, ...postSlugs]),
-  Effect.orElseSucceed(() => [])
-);
-
-export const getStorePageBySlug = (slug: string) =>
-  Effect.gen(function* () {
-    const postResult = yield* Effect.exit(getPostBySlug(slug));
-    if (postResult._tag === 'Success') {
-      return postResult.value satisfies Post;
-    }
-
-    return (yield* getPageBySlug(slug)) satisfies WpPage;
-  });
 
 export const getProductBySlug = (slug: string) =>
   Effect.gen(function* () {
@@ -536,103 +453,6 @@ export const getPageBySlug = (slug: string) =>
 
     cache.set(cacheKey, { data: page, timestamp: Date.now() });
     return page;
-  }).pipe(
-    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
-    Effect.timeout('120 seconds')
-  );
-
-export class PostNotFoundError extends Schema.TaggedError<
-  PostNotFoundError,
-  { readonly brand: unique symbol }
->()('PostNotFoundError', {
-  slug: Schema.String,
-}) {}
-
-export interface GetPostsParams {
-  per_page?: number;
-  page?: number;
-}
-
-export const getPosts = (params: GetPostsParams = {}) =>
-  Effect.gen(function* () {
-    const { per_page = 10, page = 1 } = params;
-    const cacheKey = `posts:${page}:${per_page}`;
-    const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data as Post[];
-    }
-
-    const query = new URLSearchParams({
-      per_page: String(per_page),
-      page: String(page),
-      _embed: '1',
-    });
-
-    const url = `${WP_API_BASE}/posts?${query.toString()}`;
-
-    const response = yield* Effect.tryPromise({
-      try: () => fetchJsonWithTimeout(url),
-      catch: (cause) => new NetworkError({ message: String(cause) }),
-    });
-
-    if (!response.ok) {
-      return yield* new HttpError({
-        status: response.status,
-        statusText: response.statusText,
-        url,
-      });
-    }
-
-    const raw = yield* Effect.tryPromise({
-      try: () => response.json(),
-      catch: (cause) => new NetworkError({ message: String(cause) }),
-    });
-
-    const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
-    cache.set(cacheKey, { data: posts, timestamp: Date.now() });
-    return posts;
-  }).pipe(
-    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
-    Effect.timeout('120 seconds')
-  );
-
-export const getPostBySlug = (slug: string) =>
-  Effect.gen(function* () {
-    const cacheKey = `post:${slug}`;
-    const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data as Post;
-    }
-
-    const url = `${WP_API_BASE}/posts?slug=${encodeURIComponent(slug)}&_embed=1`;
-
-    const response = yield* Effect.tryPromise({
-      try: () => fetchJsonWithTimeout(url),
-      catch: (cause) => new NetworkError({ message: String(cause) }),
-    });
-
-    if (!response.ok) {
-      return yield* new HttpError({
-        status: response.status,
-        statusText: response.statusText,
-        url,
-      });
-    }
-
-    const raw = yield* Effect.tryPromise({
-      try: () => response.json(),
-      catch: (cause) => new NetworkError({ message: String(cause) }),
-    });
-
-    const posts = yield* Schema.decodeUnknownEffect(PostsListSchema)(raw);
-    const post = posts[0];
-
-    if (!post) {
-      return yield* new PostNotFoundError({ slug });
-    }
-
-    cache.set(cacheKey, { data: post, timestamp: Date.now() });
-    return post;
   }).pipe(
     Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
     Effect.timeout('120 seconds')

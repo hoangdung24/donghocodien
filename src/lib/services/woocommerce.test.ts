@@ -3,9 +3,6 @@ import { Effect } from 'effect';
 import {
   getProducts,
   getProductsPage,
-  getProductSlugs,
-  getPublishedSlugs,
-  getStorePageBySlug,
   getAllProducts,
   getBrandCategories,
   getCatalogSummary,
@@ -162,82 +159,6 @@ describe('WooCommerce Products Service Seam (Effect v4)', () => {
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
   });
 
-  it('lists every product slug across all reported pages', async () => {
-    vi.mocked(fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        headers: new Headers({ 'x-wp-totalpages': '2' }),
-        json: async () => [{ slug: 'first-watch' }],
-      } as unknown as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        headers: new Headers({ 'x-wp-totalpages': '2' }),
-        json: async () => [{ slug: 'second-watch' }],
-      } as unknown as Response);
-
-    const slugs = await Effect.runPromise(getProductSlugs);
-
-    expect(slugs).toEqual(['first-watch', 'second-watch']);
-    const firstUrl = new URL(String(vi.mocked(fetch).mock.calls[0]?.[0]));
-    expect(firstUrl.searchParams.get('per_page')).toBe('100');
-    expect(firstUrl.searchParams.get('page')).toBe('1');
-    const secondUrl = new URL(String(vi.mocked(fetch).mock.calls[1]?.[0]));
-    expect(secondUrl.searchParams.get('page')).toBe('2');
-  });
-
-  it('returns no product slugs when the listing request fails', async () => {
-    vi.mocked(fetch).mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
-    } as Response);
-
-    const slugs = await Effect.runPromise(getProductSlugs);
-
-    expect(slugs).toEqual([]);
-  });
-
-  it('lists published page and post slugs as one combined list', async () => {
-    vi.mocked(fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        headers: new Headers(),
-        json: async () => [{ slug: 'about-us' }, { slug: 'contact-us' }],
-      } as unknown as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        headers: new Headers(),
-        json: async () => [{ slug: 'an-article' }],
-      } as unknown as Response);
-
-    const slugs = await Effect.runPromise(getPublishedSlugs);
-
-    expect(slugs).toEqual(['about-us', 'contact-us', 'an-article']);
-    expect(String(vi.mocked(fetch).mock.calls[0]?.[0])).toContain('/wp/v2/pages');
-    expect(String(vi.mocked(fetch).mock.calls[1]?.[0])).toContain('/wp/v2/posts');
-  });
-
-  it('prefers the post when it shares its slug with a page', async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: async () => [
-        {
-          id: 7,
-          slug: 'spacetime-dong-ho-co-dien',
-          date: '2026-01-01T00:00:00',
-          title: { rendered: 'Article' },
-          content: { rendered: '<p>Post body</p>' },
-          excerpt: { rendered: '<p>Excerpt</p>' },
-        },
-      ],
-    } as unknown as Response);
-
-    const result = await Effect.runPromise(getStorePageBySlug('spacetime-dong-ho-co-dien'));
-
-    expect(result.content.rendered).toBe('<p>Post body</p>');
-    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
-  });
-
   it('downloads the full catalog page by page for prerendering', async () => {
     vi.mocked(fetch).mockImplementation(async (input) => {
       const page = new URL(String(input)).searchParams.get('page');
@@ -254,31 +175,6 @@ describe('WooCommerce Products Service Seam (Effect v4)', () => {
     const products = await Effect.runPromise(getAllProducts);
 
     expect(products.map((product) => product.slug)).toEqual(['first-watch', 'second-watch']);
-  });
-
-  it('falls back to the page when no post matches the slug', async () => {
-    vi.mocked(fetch).mockImplementation(async (input) => {
-      const url = String(input);
-      const body = url.includes('/wp/v2/posts')
-        ? []
-        : [
-            {
-              id: 42,
-              slug: 'spacetime-dong-ho-co-dien',
-              title: { rendered: 'About Spacetime' },
-              content: { rendered: '<p>Story</p>' },
-              date: '2026-01-01T00:00:00',
-            },
-          ];
-
-      return { ok: true, json: async () => body } as Response;
-    });
-
-    const result = await Effect.runPromise(getStorePageBySlug('spacetime-dong-ho-co-dien'));
-
-    expect(result.content.rendered).toBe('<p>Story</p>');
-    const requestedUrls = vi.mocked(fetch).mock.calls.map((call) => String(call[0]));
-    expect(requestedUrls.some((url) => url.includes('/wp/v2/pages'))).toBe(true);
   });
 
   const mockCategoriesResponse = (categories: unknown[]) => {

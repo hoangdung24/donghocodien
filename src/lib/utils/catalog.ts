@@ -12,7 +12,7 @@ export function filterCatalog(
   categories: readonly ProductCategory[],
   { page, search, activeCategoryId }: CatalogSource,
   pageSize: number
-): Product[] {
+): { products: Product[]; total: number } {
   const categoryIds = activeCategoryId
     ? [activeCategoryId, ...descendantCategoryIds(categories, activeCategoryId)]
     : null;
@@ -30,7 +30,7 @@ export function filterCatalog(
   });
 
   const start = Math.max(0, (page - 1) * pageSize);
-  return matching.slice(start, start + pageSize);
+  return { products: matching.slice(start, start + pageSize), total: matching.length };
 }
 
 export function descendantCategoryIds(

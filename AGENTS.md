@@ -179,7 +179,6 @@ Agents should consult these specialized skill guidelines before modifying releva
 - `checkout/order-received/[orderId].astro` — Order confirmation
 - `about-us.astro` — About page
 - `contact-us.astro` — Contact page
-- `articles.astro` — Blog index
 - `[slug].astro` — Dynamic article/page routes
 - `warranty-policy.astro`, `exchange-policy.astro`, `payment-shipping-methods.astro` — Policy pages
 
@@ -217,7 +216,7 @@ Agents should consult these specialized skill guidelines before modifying releva
 
 - `src/lib/services/woocommerce.ts` — WooCommerce Store API client
   - `getProducts()`, `getProductBySlug()`, `getCategories()`
-  - `getPageBySlug()`, `getPosts()`, `getPostBySlug()`
+  - `getPageBySlug()`, `getPostBySlug()`
   - Tagged errors: `NetworkError`, `HttpError`, `ProductNotFoundError`, `PageNotFoundError`, `PostNotFoundError`
   - In-memory caching with 5-minute TTL
 - `src/lib/services/cart.ts` — Cart API client
