@@ -1,7 +1,6 @@
 // @ts-check
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +11,7 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
   session: false,
-  integrations: [react(), sitemap()],
+  integrations: [react()],
   image: {
     domains: ['donghocodien.com'],
     remotePatterns: [{ protocol: 'https', hostname: 'donghocodien.com' }],
