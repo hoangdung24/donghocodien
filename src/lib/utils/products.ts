@@ -23,6 +23,12 @@ export const withPriceRange = (
   return `${basePath}${qs ? `?${qs}` : ''}`;
 };
 
+export const productHref = (permalink: string): string => {
+  if (!permalink.includes('/product/')) return '/watches';
+  const slug = permalink.split('/').filter(Boolean).pop();
+  return slug ? `/watches/${slug}` : '/watches';
+};
+
 export const countByCategory = (products: readonly Product[]): Map<number, number> => {
   const counts = new Map<number, number>();
   for (const product of products) {

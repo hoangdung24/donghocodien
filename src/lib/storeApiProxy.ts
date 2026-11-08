@@ -1,5 +1,5 @@
 const STORE_API_PREFIX = '/wc/store/v1/';
-const WP_BACKEND_ORIGIN = 'https://donghocodien.com/wp-json';
+const WP_BACKEND_ORIGIN = 'https://cms.donghocodien.com/wp-json';
 
 const HOP_BY_HOP_HEADERS = [
   'host',

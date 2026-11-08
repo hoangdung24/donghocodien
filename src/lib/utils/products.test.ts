@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { withPriceRange, countInStockByCategory, countByCategory } from '@/lib/utils/products';
+import {
+  withPriceRange,
+  countInStockByCategory,
+  countByCategory,
+  productHref,
+} from '@/lib/utils/products';
 import type { Product } from '@/lib/schema/product';
 
 const makeProduct = (
@@ -115,5 +120,23 @@ describe('countByCategory', () => {
 
   it('returns an empty map when there are no products', () => {
     expect(countByCategory([]).size).toBe(0);
+  });
+});
+
+describe('productHref', () => {
+  it('builds a storefront path from a backend permalink', () => {
+    expect(productHref('https://cms.donghocodien.com/product/edox-baignoire-ref-200246/')).toBe(
+      '/watches/edox-baignoire-ref-200246'
+    );
+  });
+
+  it('ignores the backend host so old and new origins agree', () => {
+    expect(productHref('https://donghocodien.com/product/rolex-datejust-1601')).toBe(
+      '/watches/rolex-datejust-1601'
+    );
+  });
+
+  it('falls back to the watches index for an unusable permalink', () => {
+    expect(productHref('')).toBe('/watches');
   });
 });

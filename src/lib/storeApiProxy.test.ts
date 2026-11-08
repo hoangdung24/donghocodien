@@ -38,7 +38,7 @@ describe('Store API Proxy Seam', () => {
     const response = await handleStoreApiProxy(request);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/cart',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/cart',
       expect.objectContaining({ method: 'GET' })
     );
     expect(response).not.toBeNull();
@@ -64,7 +64,7 @@ describe('Store API Proxy Seam', () => {
     const response = await handleStoreApiProxy(request);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/cart/add-item',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/cart/add-item',
       expect.objectContaining({
         method: 'POST',
       })
@@ -84,7 +84,7 @@ describe('Store API Proxy Seam', () => {
     await handleStoreApiProxy(request);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/products?per_page=20&page=2',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/products?per_page=20&page=2',
       expect.anything()
     );
   });

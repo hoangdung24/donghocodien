@@ -11,6 +11,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { formatApproxPrice } from '@/lib/utils/currency';
+import { productHref } from '@/lib/utils/products';
 import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
 import type { Cart } from '@/lib/schema/cart';
 import { Button } from '@/components/Button';
@@ -143,7 +144,7 @@ export function CartPage() {
                   className='flex gap-6 border border-stone-200 bg-white p-6 transition-colors hover:border-stone-300'
                 >
                   {item.images[0] && (
-                    <a href={item.permalink} className='shrink-0'>
+                    <a href={productHref(item.permalink)} className='shrink-0'>
                       <img
                         src={item.images[0].src}
                         alt={item.name}
@@ -155,7 +156,7 @@ export function CartPage() {
                     <div className='flex items-start justify-between gap-4'>
                       <div>
                         <a
-                          href={item.permalink}
+                          href={productHref(item.permalink)}
                           className='block truncate text-lg font-medium text-stone-900 transition-colors hover:text-yellow-900'
                         >
                           {item.name}
@@ -221,7 +222,7 @@ export function CartPage() {
                   {cart.cross_sells.slice(0, 4).map((crossSell) => (
                     <li key={crossSell.id}>
                       <a
-                        href={crossSell.permalink}
+                        href={productHref(crossSell.permalink)}
                         className='group block border border-stone-200 bg-stone-50 p-4 transition-colors hover:border-stone-300'
                       >
                         {crossSell.images[0] && (

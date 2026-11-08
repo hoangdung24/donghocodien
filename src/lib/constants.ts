@@ -71,7 +71,7 @@ export const SEO = {
   defaultTitle: 'Spacetime - Vintage Watch | Authentic Swiss & Japanese Timepieces',
   defaultDescription:
     'Dong Ho Co Dien — Curating rare, authentic vintage timepieces from Switzerland and Japan for global collectors.',
-  ogImage: 'https://donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',
+  ogImage: 'https://cms.donghocodien.com/wp-content/uploads/2025/09/ref-200246-1-1.jpg',
 } as const;
 
 export const COMPANY = {

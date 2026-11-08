@@ -4,6 +4,7 @@ import { ShoppingBag, X, Trash2, ArrowRight, Sparkles } from 'lucide-react';
 import type { Cart } from '@/lib/schema/cart';
 import { useCart } from '@/lib/context/CartContext';
 import { cartStore } from '@/lib/cartStore';
+import { productHref } from '@/lib/utils/products';
 import { Button } from '@/components/Button';
 
 function CartDrawerContent() {
@@ -171,7 +172,7 @@ function CartDrawerContent() {
                       )}
                       {item.images[0] && (
                         <a
-                          href={item.permalink}
+                          href={productHref(item.permalink)}
                           className='relative h-28 w-24 shrink-0 overflow-hidden bg-stone-50'
                         >
                           <img
@@ -231,7 +232,7 @@ function CartDrawerContent() {
                       {cart.cross_sells.slice(0, 4).map((crossSell) => (
                         <li key={crossSell.id}>
                           <a
-                            href={crossSell.permalink}
+                            href={productHref(crossSell.permalink)}
                             className='group block border border-stone-200 bg-stone-50 p-3 transition-all duration-300 hover:border-black hover:bg-white hover:shadow-md'
                             onClick={closeDrawer}
                           >
