@@ -475,7 +475,7 @@ export function CheckoutPage() {
                       </span>
                     )}
                   </div>
-                  <span className='text-sm font-semibold whitespace-nowrap text-yellow-900'>
+                  <span className='text-sm font-semibold whitespace-nowrap'>
                     {formatPrice(item.totals.line_total)}
                   </span>
                 </li>
@@ -503,9 +503,7 @@ export function CheckoutPage() {
               </div>
               <div className='flex justify-between border-t border-stone-200 pt-3'>
                 <dt className='text-base font-medium text-stone-950'>Total</dt>
-                <dd className='text-base font-medium text-yellow-900'>
-                  {formatPrice(total.toFixed(2))}
-                </dd>
+                <dd className='text-base font-medium'>{formatPrice(total.toFixed(2))}</dd>
               </div>
               {approx && (
                 <div className='text-right'>
