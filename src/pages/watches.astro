@@ -54,6 +54,8 @@ const productsResult = await Effect.runPromise(
       min_price: hasPriceFilter ? parsedMinPrice : undefined,
       max_price: hasPriceFilter ? parsedMaxPrice : undefined,
       stock_status: 'instock',
+      orderby: 'price',
+      order: 'desc',
     })
   )
 );

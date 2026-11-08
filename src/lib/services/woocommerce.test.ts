@@ -92,6 +92,23 @@ describe('WooCommerce Products Service Seam (Effect v4)', () => {
     expect(requestedUrl.searchParams.get('page')).toBe('2');
   });
 
+  it('sends price-descending ordering when asked to sort by price', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'x-wp-total': '2', 'x-wp-totalpages': '1' }),
+      json: async () => [makeProduct(1, 'expensive'), makeProduct(2, 'cheap')],
+    } as unknown as Response);
+
+    const page = await Effect.runPromise(
+      getProductsPage({ per_page: 20, stock_status: 'instock', orderby: 'price', order: 'desc' })
+    );
+
+    const requestedUrl = new URL(String(vi.mocked(fetch).mock.calls[0]?.[0]));
+    expect(requestedUrl.searchParams.get('orderby')).toBe('price');
+    expect(requestedUrl.searchParams.get('order')).toBe('desc');
+    expect(page.products.map((product) => product.slug)).toEqual(['expensive', 'cheap']);
+  });
+
   it('reports the total product count from the x-wp-total header', async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,

@@ -113,7 +113,7 @@ function CartDrawerContent() {
       <Dialog.Backdrop className='fixed inset-0 z-50 bg-black/40 backdrop-blur-xs data-[state=open]:animate-fade-in' />
 
       <Dialog.Positioner className='fixed inset-y-0 right-0 z-50 flex w-full max-w-md'>
-        <Dialog.Content className='relative flex h-full w-full flex-col overflow-y-auto border-l border-stone-200 bg-white p-6 shadow-2xl data-[state=closed]:animate-slide-out-right data-[state=open]:animate-slide-in-right'>
+        <Dialog.Content className='relative flex h-full w-full flex-col overflow-y-auto bg-white p-6 shadow-2xl data-[state=closed]:animate-slide-out-right data-[state=open]:animate-slide-in-right'>
           <div aria-hidden='true' className='absolute top-0 right-0 left-0 h-px bg-black/50' />
 
           <div className='flex items-center justify-between border-b border-stone-200 pb-4'>
