@@ -40,7 +40,7 @@ describe('Cart Schema Seam (Effect v4)', () => {
       },
       items: [],
       items_count: 0,
-      items_weight: '0',
+      items_weight: 0,
       cross_sells: [],
       needs_payment: false,
       needs_shipping: false,
@@ -82,6 +82,7 @@ describe('Cart Schema Seam (Effect v4)', () => {
     const result = Schema.decodeSync(CartSchema)(sampleCart);
     expect(result.items.length).toBeGreaterThan(0);
     expect(result.items_count).toBe(result.items.length);
+    expect(result.items_weight).toBe(500);
     expect(Number(result.totals.total_price)).toBeGreaterThan(0);
   });
 

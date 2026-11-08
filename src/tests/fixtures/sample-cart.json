@@ -66,7 +66,7 @@
     }
   ],
   "items_count": 1,
-  "items_weight": "0.5",
+  "items_weight": 500,
   "cross_sells": [],
   "needs_payment": true,
   "needs_shipping": true,

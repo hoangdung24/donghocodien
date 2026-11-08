@@ -99,7 +99,7 @@ export const CartSchema = Schema.Struct({
   billing_address: CartAddressSchema,
   items: Schema.Array(CartItemSchema),
   items_count: Schema.Finite,
-  items_weight: Schema.String,
+  items_weight: Schema.Finite,
   cross_sells: Schema.Array(
     Schema.Struct({
       id: Schema.Finite,
