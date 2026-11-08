@@ -6,6 +6,6 @@
     "enabled": true,
   },
   "routes": [
-    { "pattern": "donghocodien.com/*" }
+    { "pattern": "donghocodien.com", "custom_domain": true },
   ],
 }
