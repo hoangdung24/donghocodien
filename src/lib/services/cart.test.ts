@@ -40,7 +40,7 @@ describe('Cart Service Seam (Effect v4)', () => {
     await Effect.runPromise(addToCart(request));
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/cart/add-item',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/cart/add-item',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify(request),
@@ -63,7 +63,7 @@ describe('Cart Service Seam (Effect v4)', () => {
     await Effect.runPromise(updateCartItem(request));
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/cart/update-item',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/cart/update-item',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify(request),
@@ -87,7 +87,7 @@ describe('Cart Service Seam (Effect v4)', () => {
     await Effect.runPromise(removeCartItem(request));
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/cart/remove-item',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/cart/remove-item',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify(request),
@@ -110,7 +110,7 @@ describe('Cart Service Seam (Effect v4)', () => {
     await Effect.runPromise(clearCart);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://donghocodien.com/wp-json/wc/store/v1/cart/items',
+      'https://cms.donghocodien.com/wp-json/wc/store/v1/cart/items',
       expect.objectContaining({
         method: 'DELETE',
       })

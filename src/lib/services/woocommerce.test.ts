@@ -13,7 +13,7 @@ const makeProduct = (id: number, slug: string) => ({
   id,
   name: slug,
   slug,
-  permalink: `https://donghocodien.com/product/${slug}/`,
+  permalink: `https://cms.donghocodien.com/product/${slug}/`,
   description: '',
   short_description: '',
   sku: '',
@@ -29,7 +29,7 @@ const makeProduct = (id: number, slug: string) => ({
   on_sale: false,
 });
 
-const PRODUCTS_URL = 'https://donghocodien.com/wp-json/wc/store/v1/products';
+const PRODUCTS_URL = 'https://cms.donghocodien.com/wp-json/wc/store/v1/products';
 
 describe('WooCommerce Products Service Seam (Effect v4)', () => {
   const originalFetch = global.fetch;
@@ -217,7 +217,7 @@ describe('WooCommerce Products Service Seam (Effect v4)', () => {
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',
-      url: 'https://donghocodien.com/wp-json/wc/store/v1/products/categories?per_page=100&page=1',
+      url: 'https://cms.donghocodien.com/wp-json/wc/store/v1/products/categories?per_page=100&page=1',
     } as Response);
 
     const brands = await Effect.runPromise(getBrandCategories);
