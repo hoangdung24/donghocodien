@@ -9,12 +9,28 @@ import { getCategories, getProducts } from '@/lib/services/woocommerce';
 export const prerender = false;
 
 const [productsResult, categoriesResult] = await Effect.runPromise(
-  Effect.all([Effect.exit(getProducts({ per_page: 12 })), Effect.exit(getCategories)], {
-    concurrency: 'unbounded',
-  })
+  Effect.all(
+    [
+      Effect.exit(
+        getProducts({
+          per_page: 12,
+          stock_status: 'instock',
+          orderby: 'price',
+          order: 'desc',
+        })
+      ),
+      Effect.exit(getCategories),
+    ],
+    { concurrency: 'unbounded' }
+  )
 );
 
-const products = productsResult._tag === 'Success' ? productsResult.value : [];
+const products =
+  productsResult._tag === 'Success'
+    ? productsResult.value.filter(
+        (product) => product.is_in_stock && Number(product.prices.price) > 0
+      )
+    : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 const hasProductError = productsResult._tag === 'Failure';
 
