@@ -13,8 +13,8 @@ export default defineConfig({
   session: false,
   integrations: [react()],
   image: {
-    domains: ['donghocodien.com'],
-    remotePatterns: [{ protocol: 'https', hostname: 'donghocodien.com' }],
+    domains: ['cms.donghocodien.com'],
+    remotePatterns: [{ protocol: 'https', hostname: 'cms.donghocodien.com' }],
   },
   vite: {
     plugins: [tailwindcss()],
@@ -26,7 +26,7 @@ export default defineConfig({
     server: {
       proxy: {
         '/wc/store/v1': {
-          target: 'https://donghocodien.com',
+          target: 'https://cms.donghocodien.com',
           changeOrigin: true,
           secure: true,
           rewrite: (path) => path.replace(/^\/wc/, '/wp-json/wc'),

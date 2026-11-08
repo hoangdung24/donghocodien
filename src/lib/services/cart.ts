@@ -7,7 +7,7 @@ import type {
   RemoveCartItemRequest,
 } from '@/lib/schema/cart';
 
-const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
+const API_BASE = 'https://cms.donghocodien.com/wp-json/wc/store/v1';
 
 export class CartNetworkError extends Schema.TaggedError<
   CartNetworkError,

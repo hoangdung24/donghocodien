@@ -9,8 +9,8 @@ import { PagesListSchema, type WpPage } from '@/lib/schema/page';
 import { fetchJsonWithTimeout } from '@/lib/services/httpClient';
 import { brandCategories, type BrandCategory } from '@/lib/utils/categories';
 
-const API_BASE = 'https://donghocodien.com/wp-json/wc/store/v1';
-const WP_API_BASE = 'https://donghocodien.com/wp-json/wp/v2';
+const API_BASE = 'https://cms.donghocodien.com/wp-json/wc/store/v1';
+const WP_API_BASE = 'https://cms.donghocodien.com/wp-json/wp/v2';
 
 export class NetworkError extends Schema.TaggedError<
   NetworkError,
