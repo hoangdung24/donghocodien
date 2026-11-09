@@ -176,7 +176,7 @@ function CartDrawerContent() {
                           className='relative h-28 w-24 shrink-0 overflow-hidden bg-stone-50'
                         >
                           <img
-                            src={item.images[0].thumbnail || item.images[0].src}
+                            src={item.images[0].src}
                             alt={item.name}
                             className='h-full w-full object-cover transition-opacity duration-300'
                           />
@@ -239,7 +239,7 @@ function CartDrawerContent() {
                             {crossSell.images[0] && (
                               <div className='relative mb-2 aspect-4/3 overflow-hidden bg-stone-100'>
                                 <img
-                                  src={crossSell.images[0].thumbnail || crossSell.images[0].src}
+                                  src={crossSell.images[0].src}
                                   alt={crossSell.name}
                                   className='h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-105'
                                 />

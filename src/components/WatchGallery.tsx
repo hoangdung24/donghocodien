@@ -49,13 +49,13 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
         <Carousel.Control className='pointer-events-none absolute inset-0 flex items-center justify-between px-3'>
           <Carousel.PrevTrigger
             aria-label='Previous photograph'
-            className='pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white focus-visible:opacity-100 data-[disabled]:hidden'
+            className='pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white focus-visible:opacity-100 data-disabled:hidden'
           >
             <ChevronLeft className='h-5 w-5' aria-hidden='true' />
           </Carousel.PrevTrigger>
           <Carousel.NextTrigger
             aria-label='Next photograph'
-            className='pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white focus-visible:opacity-100 data-[disabled]:hidden'
+            className='pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-stone-800 opacity-0 shadow-md transition-all group-hover:opacity-100 hover:bg-stone-900 hover:text-white focus-visible:opacity-100 data-disabled:hidden'
           >
             <ChevronRight className='h-5 w-5' aria-hidden='true' />
           </Carousel.NextTrigger>
@@ -69,13 +69,9 @@ export function WatchGallery({ images, title }: WatchGalleryProps) {
               key={image.id ?? index}
               index={index}
               aria-label={`Show photograph ${index + 1} of ${images.length}`}
-              className='h-20 w-16 shrink-0 cursor-pointer overflow-hidden border border-stone-200 opacity-70 transition-all data-current:border-stone-900 data-current:opacity-100'
+              className='h-20 w-16 shrink-0 cursor-pointer overflow-hidden opacity-70 transition-all data-current:opacity-100'
             >
-              <img
-                src={image.thumbnail || image.src}
-                alt=''
-                className='h-full w-full object-cover'
-              />
+              <img src={image.src} alt='' className='h-full w-full object-cover' />
             </Carousel.Indicator>
           ))}
         </Carousel.IndicatorGroup>

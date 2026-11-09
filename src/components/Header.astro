@@ -14,7 +14,7 @@ const activeCategory = Astro.url.searchParams.get('category');
 <header class='sticky top-0 z-40 w-full border-b border-stone-200 bg-white transition-all'>
   <div class='mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8'>
     <div class='flex items-center justify-between'>
-      <div class='flex flex-1 items-center justify-start gap-3 sm:gap-4'>
+      <div class='flex flex-1 items-center justify-start gap-2 sm:gap-4'>
         <button
           type='button'
           id='mobile-menu-toggle'
@@ -28,7 +28,7 @@ const activeCategory = Astro.url.searchParams.get('category');
 
         <span
           id='header-live-clock'
-          class='hidden font-mono text-xs font-light tracking-wider text-stone-500 select-none sm:landscape:inline-block'
+          class='hidden font-mono text-xs font-light select-none sm:landscape:inline-block'
           aria-hidden='true'
         >
           {formatHeaderClock(new Date())}
@@ -39,7 +39,7 @@ const activeCategory = Astro.url.searchParams.get('category');
           target='_blank'
           rel='noopener noreferrer'
           aria-label='Instagram @spacetime.vintagewatch (opens in a new tab)'
-          class='inline-flex min-h-11 min-w-11 items-center justify-center p-1.5 transition-colors hover:text-stone-500'
+          class='inline-flex items-center justify-center transition-colors hover:text-stone-500'
         >
           <SocialIcon name='instagram' class='h-5 w-5' strokeWidth={1.8} />
         </a>
@@ -193,7 +193,7 @@ const activeCategory = Astro.url.searchParams.get('category');
         </button>
       </div>
 
-      <nav aria-label='Mobile' class='flex flex-col gap-4 py-6 text-xs tracking-[0.18em] uppercase'>
+      <nav aria-label='Mobile' class='flex flex-col gap-4 py-6 text-xs uppercase'>
         <div>
           <button
             type='button'
@@ -202,7 +202,7 @@ const activeCategory = Astro.url.searchParams.get('category');
             aria-controls='mobile-watches-content'
             class='flex min-h-11 w-full cursor-pointer items-center justify-between py-2 font-bold'
           >
-            <span>Watches</span>
+            <span>WATCHES</span>
             <ChevronDown
               id='mobile-watches-icon'
               class='h-4 w-4 shrink-0 text-stone-600 transition-transform duration-200'
@@ -215,16 +215,16 @@ const activeCategory = Astro.url.searchParams.get('category');
               {megaMenuData.map((column) => (
                 <div class='flex flex-col gap-2'>
                   <a href={column.href} class='block'>
-                    <p class='text-[10px] font-bold tracking-wider'>{column.title}</p>
+                    <p class='text-xs font-bold tracking-wider'>{column.title}</p>
                   </a>
-                  <div class='flex flex-col gap-1 pl-2'>
+                  <div class='flex flex-col gap-1 pl-2 capitalize'>
                     {column.items.map((item) => {
                       const isActive = currentPath === item.href;
                       return (
                         <a
                           href={item.href}
                           aria-current={isActive ? 'page' : undefined}
-                          class={`block text-[11px] normal-case transition-colors ${
+                          class={`block text-[10px] ${
                             isActive
                               ? 'font-bold'
                               : 'text-stone-600 hover:font-bold hover:text-brand-dark'

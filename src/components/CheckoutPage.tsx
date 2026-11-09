@@ -454,7 +454,7 @@ export function CheckoutPage() {
                 <li key={item.key} className='flex items-center gap-4 py-4'>
                   {item.images[0] && (
                     <img
-                      src={item.images[0].thumbnail ?? item.images[0].src}
+                      src={item.images[0].src}
                       alt={decodeEntities(item.name)}
                       className='h-20 w-16 shrink-0 border border-stone-200 object-cover'
                     />
