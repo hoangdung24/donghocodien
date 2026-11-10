@@ -39,14 +39,15 @@ if (hasProductError || categoriesResult._tag === 'Failure') {
 }
 ---
 
-<Layout title={SEO.defaultTitle} description={SEO.defaultDescription}>
-  heroImage=
-  {{
+<Layout
+  title={SEO.defaultTitle}
+  description={SEO.defaultDescription}
+  heroImage={{
     src: `${HERO_SLIDES[0].image}-640.webp`,
     srcset: `${HERO_SLIDES[0].image}-640.webp 640w, ${HERO_SLIDES[0].image}-960.webp 960w, ${HERO_SLIDES[0].image}-1152.webp 1152w`,
     sizes: '100vw',
   }}
-  >
+>
   <h1 class='sr-only'>
     Spacetime Vintage Watch — authentic Swiss and Japanese timepieces for global collectors
   </h1>
