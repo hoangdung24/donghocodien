@@ -1,6 +1,6 @@
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
-import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import {
   HERO_AUTOPLAY_DELAY_MS,
@@ -9,7 +9,6 @@ import {
   HERO_SLIDES,
 } from '@/lib/data/heroSlides';
 
-const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
 const FIRST_SLIDE = HERO_SLIDES[0];
 const MOBILE_SOURCE_SET = [640, 960].map((width) => `${FIRST_SLIDE.image}-${width}.webp ${width}w`);
 
@@ -19,20 +18,6 @@ export default function HeroCarousel() {
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const desktopQuery = window.matchMedia(DESKTOP_MEDIA_QUERY);
-    const root = emblaApi.rootNode();
-    const syncAxis = () => {
-      root.style.flexDirection = desktopQuery.matches ? 'row' : 'column';
-      emblaApi.reInit({ axis: desktopQuery.matches ? 'x' : 'y' });
-    };
-    syncAxis();
-    desktopQuery.addEventListener('change', syncAxis);
-    return () => desktopQuery.removeEventListener('change', syncAxis);
-  }, [emblaApi]);
 
   const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
@@ -58,21 +43,8 @@ export default function HeroCarousel() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (reducedMotion.matches) {
       autoplay.stop();
-      setIsPlaying(false);
     }
   }, [emblaApi]);
-
-  const toggleAutoplay = () => {
-    const autoplay = emblaApi?.plugins().autoplay;
-    if (!autoplay) return;
-    if (autoplay.isPlaying()) {
-      autoplay.stop();
-      setIsPlaying(false);
-    } else {
-      autoplay.play();
-      setIsPlaying(true);
-    }
-  };
 
   const dotCount = scrollSnaps.length || HERO_SLIDES.length;
 
@@ -192,19 +164,6 @@ export default function HeroCarousel() {
           <control.icon className='h-5 w-5 sm:h-6 sm:w-6' aria-hidden='true' />
         </button>
       ))}
-
-      <button
-        type='button'
-        onClick={toggleAutoplay}
-        aria-label={isPlaying ? 'Pause slideshow' : 'Play slideshow'}
-        className='absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all hover:bg-white/40 focus-visible:opacity-100'
-      >
-        {isPlaying ? (
-          <Pause className='h-4 w-4' aria-hidden='true' />
-        ) : (
-          <Play className='h-4 w-4' aria-hidden='true' />
-        )}
-      </button>
 
       <div className='absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5'>
         {Array.from({ length: dotCount }, (_, index) => (
