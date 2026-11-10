@@ -7,10 +7,33 @@ import {
   HERO_MEDIA_QUERY,
   HERO_SIZES,
   HERO_SLIDES,
+  type HeroSlide,
 } from '@/lib/data/heroSlides';
 
 const FIRST_SLIDE = HERO_SLIDES[0];
 const MOBILE_SOURCE_SET = [640, 960].map((width) => `${FIRST_SLIDE.image}-${width}.webp ${width}w`);
+
+function HeroSlideCaption({ slide }: { slide: HeroSlide }) {
+  return (
+    <>
+      <div className='absolute inset-0 bg-black/40' />
+      <div className='absolute right-4 bottom-8 left-4'>
+        <div className='max-w-md bg-black/65 p-6 backdrop-blur-xs'>
+          <p className='mb-6 text-base leading-relaxed font-light text-stone-100 sm:text-lg lg:text-xl'>
+            {slide.title}
+          </p>
+          <a
+            href={slide.link}
+            aria-label={`${slide.title} — browse this collection`}
+            className='inline-block border-b border-white/60 pb-1 text-xs tracking-[0.25em] text-white uppercase transition-colors hover:border-white hover:text-stone-200'
+          >
+            Learn More &rarr;
+          </a>
+        </div>
+      </div>
+    </>
+  );
+}
 
 export default function HeroCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 30, axis: 'x' }, [
@@ -100,20 +123,7 @@ export default function HeroCarousel() {
               />
             </picture>
 
-            <div className='absolute inset-0 flex items-end justify-center bg-black/40'>
-              <div className='max-w-md bg-black/65 p-6 backdrop-blur-xs sm:mb-10 sm:max-w-lg sm:p-8'>
-                <p className='mb-6 text-base leading-relaxed font-light text-stone-100 sm:text-lg lg:text-xl'>
-                  {FIRST_SLIDE.title}
-                </p>
-                <a
-                  href={FIRST_SLIDE.link}
-                  aria-label={`${FIRST_SLIDE.title} — browse this collection`}
-                  className='inline-block border-b border-white/60 pb-1 text-xs tracking-[0.25em] text-white uppercase transition-colors hover:border-white hover:text-stone-200'
-                >
-                  Learn More &rarr;
-                </a>
-              </div>
-            </div>
+            <HeroSlideCaption slide={FIRST_SLIDE} />
           </div>
 
           {HERO_SLIDES.slice(1).map((slide, index) => (
@@ -134,20 +144,7 @@ export default function HeroCarousel() {
                 decoding='async'
               />
 
-              <div className='absolute inset-0 flex items-end justify-center bg-black/40'>
-                <div className='max-w-md bg-black/65 p-6 backdrop-blur-xs sm:mb-10 sm:max-w-lg sm:p-8'>
-                  <p className='mb-6 text-base leading-relaxed font-light text-stone-100 sm:text-lg lg:text-xl'>
-                    {slide.title}
-                  </p>
-                  <a
-                    href={slide.link}
-                    aria-label={`${slide.title} — browse this collection`}
-                    className='inline-block border-b border-white/60 pb-1 text-xs tracking-[0.25em] text-white uppercase transition-colors hover:border-white hover:text-stone-200'
-                  >
-                    Learn More &rarr;
-                  </a>
-                </div>
-              </div>
+              <HeroSlideCaption slide={slide} />
             </div>
           ))}
         </div>
