@@ -32,7 +32,7 @@ export function AddToCartButton({ product, stockText, stockClass }: AddToCartBut
   const availabilityText = stockText || (product.is_in_stock ? 'In stock' : 'Out of stock');
 
   return (
-    <div className='flex w-full flex-col gap-3'>
+    <div className='flex w-full flex-col gap-4'>
       <div className='flex items-center justify-between text-sm'>
         <span className='font-medium text-stone-900'>Availability:</span>
         <span

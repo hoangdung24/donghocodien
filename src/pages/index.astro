@@ -2,7 +2,6 @@
 import { Effect } from 'effect';
 import HeroCarousel from '@/components/HeroCarousel';
 import ProductCarousel from '@/components/ProductCarousel';
-import ProductCarouselSlide from '@/components/ProductCarouselSlide.astro';
 import Layout from '@/layouts/Layout.astro';
 import { SEO, SITE } from '@/lib/constants';
 import { HERO_SLIDES } from '@/lib/data/heroSlides';
@@ -40,6 +39,7 @@ const hasProductError = productsResult._tag === 'Failure';
 const approxPricing = resolveApproxPricingVisibility(
   readRequestCountry(Astro.request.headers.get('cookie'))
 );
+const visitorCountry = Astro.locals.country ?? null;
 
 Astro.response.headers.set(
   'Cache-Control',
@@ -150,14 +150,13 @@ Astro.response.headers.set(
       )}
 
       {products.length > 0 && (
-        <ProductCarousel client:visible products={products} categories={categories}>
-          <ProductCarouselSlide
-            slot='first-slide'
-            product={products[0]}
-            categories={categories}
-            slideCount={products.length}
-          />
-        </ProductCarousel>
+        <ProductCarousel
+          client:visible
+          products={products}
+          categories={categories}
+          country={visitorCountry}
+          heroFirst
+        />
       )}
 
       <div class='mt-14 text-center'>

@@ -25,14 +25,16 @@ export function useApproxDisplay(country?: string | null): ApproxDisplay | null 
   useEffect(() => {
     let cancelled = false;
 
+    const unsubscribe = subscribeExchangeRates((rates) => {
+      if (cancelled || !rates) return;
+      setDisplay((current) => (current ? { ...current, rates } : current));
+    });
+
     const apply = (resolvedCountry: string | null) => {
       if (cancelled) return;
       const next = resolveDisplay(resolvedCountry);
       setDisplay(next);
-      if (!next || hasSharedExchangeRates()) return;
-      void loadSharedExchangeRates().then((rates) => {
-        if (!cancelled && rates) setDisplay({ currency: next.currency, rates });
-      });
+      if (next && !hasSharedExchangeRates()) void loadSharedExchangeRates();
     };
 
     const knownCountry = country ?? readVisitorCountry();
@@ -41,11 +43,6 @@ export function useApproxDisplay(country?: string | null): ApproxDisplay | null 
     } else {
       detectVisitorCountry().then((detected) => apply(detected));
     }
-
-    const unsubscribe = subscribeExchangeRates((rates) => {
-      if (cancelled || !rates) return;
-      setDisplay((current) => (current ? { ...current, rates } : current));
-    });
 
     return () => {
       cancelled = true;

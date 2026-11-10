@@ -1,17 +1,16 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import SearchBox from '@/components/SearchBox.astro';
-import { ArchiveCardAction } from '@/components/ArchiveCardAction';
 import { ArchiveCategoryAccordion } from '@/components/ArchiveCategoryAccordion';
 import { ArchiveFilterDrawer } from '@/components/ArchiveFilterDrawer';
 import { Button } from '@/components/Button';
 import type { Product, ProductCategory } from '@/lib/schema/product';
-import { pageProductCardState } from '@/lib/utils/archiveCards';
 import {
   ARCHIVE_PATH,
   archiveHref,
   buildCategoryTree,
   categoryHref,
+  decodeCategoryName,
   productBrandCategory,
 } from '@/lib/utils/categories';
 import { cleanTitle } from '@/lib/utils/text';
@@ -74,14 +73,12 @@ const cards = products.map((product) => {
     id: product.id,
     slug: product.slug,
     cleanName: cleanTitle(product.name),
-    brandName: brandCategory ? brandCategory.displayName : null,
+    brandName: brandCategory ? decodeCategoryName(brandCategory.name) : null,
     brandHref: brandCategory ? categoryHref(brandCategory.slug, search, ARCHIVE_PATH) : null,
     imageSrc: image?.src ?? '/images/placeholder.jpeg',
     imageThumbnail: image?.thumbnail ?? null,
     hoverImageSrc: hoverImage?.src ?? null,
-    price: product.prices.price,
     onSale: product.on_sale,
-    state: pageProductCardState(product),
   };
 });
 ---
@@ -216,14 +213,6 @@ const cards = products.map((product) => {
                         {card.cleanName}
                       </a>
                     </h3>
-
-                    <ArchiveCardAction
-                      client:idle
-                      productId={card.id}
-                      price={card.price}
-                      cleanName={card.cleanName}
-                      state={card.state}
-                    />
                   </div>
                 </article>
               </li>

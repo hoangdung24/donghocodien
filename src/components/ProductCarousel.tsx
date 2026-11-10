@@ -1,19 +1,23 @@
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product, ProductCategory } from '@/lib/schema/product';
 import { WatchCard } from '@/components/WatchCard';
 
+const SLIDE_CLASSES = 'min-w-0 flex-[0_0_80%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_25%]';
+
 interface ProductCarouselProps {
   products: readonly Product[];
   categories?: ProductCategory[];
-  'first-slide'?: ReactNode;
+  country?: string | null;
+  heroFirst?: boolean;
 }
 
 export function ProductCarousel({
   products,
   categories,
-  'first-slide': firstSlide,
+  country,
+  heroFirst = false,
 }: ProductCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
@@ -54,16 +58,25 @@ export function ProductCarousel({
     >
       <div className='overflow-hidden px-1' ref={emblaRef}>
         <div className='-ml-4 flex touch-pan-y py-2 sm:-ml-6'>
-          {firstSlide}
-          {products.slice(firstSlide ? 1 : 0).map((product, index) => (
+          {heroFirst && products[0] && (
             <div
-              key={product.id}
-              className='min-w-0 flex-[0_0_80%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_25%]'
+              className={SLIDE_CLASSES}
               role='group'
               aria-roledescription='slide'
-              aria-label={`${index + (firstSlide ? 2 : 1)} of ${products.length}`}
+              aria-label={`1 of ${products.length}`}
             >
-              <WatchCard product={product} categories={categories} />
+              <WatchCard product={products[0]} categories={categories} country={country} />
+            </div>
+          )}
+          {products.slice(heroFirst ? 1 : 0).map((product, index) => (
+            <div
+              key={product.id}
+              className={SLIDE_CLASSES}
+              role='group'
+              aria-roledescription='slide'
+              aria-label={`${index + (heroFirst ? 2 : 1)} of ${products.length}`}
+            >
+              <WatchCard product={product} categories={categories} country={country} />
             </div>
           ))}
         </div>

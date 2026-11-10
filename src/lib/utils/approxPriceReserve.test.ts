@@ -42,4 +42,11 @@ describe('approxPriceReserve', () => {
     expect(approxPriceReserve('1999', null)).toBeNull();
     expect(approxPriceReserveText('1999', null)).toBeNull();
   });
+
+  it('reserves a figure for every non-usd market the country table can map', () => {
+    const markets = ['HK', 'JP', 'GB', 'AU', 'SG', 'CA', 'CH', 'TH', 'KR', 'TW', 'IN'];
+    for (const country of markets) {
+      expect(approxPriceReserveText('1999', country)).not.toBeNull();
+    }
+  });
 });

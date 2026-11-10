@@ -5,10 +5,11 @@ import { WatchCard } from '@/components/WatchCard';
 interface Props {
   product: Product;
   categories?: ProductCategory[];
+  country?: string | null;
   slideCount: number;
 }
 
-const { product, categories = [], slideCount } = Astro.props;
+const { product, categories = [], country, slideCount } = Astro.props;
 ---
 
 <div
@@ -17,5 +18,5 @@ const { product, categories = [], slideCount } = Astro.props;
   aria-roledescription='slide'
   aria-label={`1 of ${slideCount}`}
 >
-  <WatchCard product={product} categories={categories} />
+  <WatchCard product={product} categories={categories} country={country} />
 </div>

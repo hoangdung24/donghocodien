@@ -3,6 +3,7 @@ import { ShoppingBag, Loader2, Check } from 'lucide-react';
 import type { Product, ProductCategory } from '@/lib/schema/product';
 import { categoryHref, decodeCategoryName, productBrandCategory } from '@/lib/utils/categories';
 import { formatApproxPrice } from '@/lib/utils/currency';
+import { approxPriceReserveText } from '@/lib/utils/approxPriceReserve';
 import { formatPrice } from '@/lib/utils/format';
 import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
 import { activeCartStore as cartStore } from '@/lib/cartStore';
@@ -116,13 +117,19 @@ export function WatchCard({
                   {formatPrice(product.prices.price)}
                 </span>
               </div>
-              {approx && (
+              {approx?.rates ? (
                 <span
                   className='approximate-vnd'
                   data-usd-price={product.prices.price}
                   aria-hidden='true'
                 >
                   {formatApproxPrice(product.prices.price, approx.currency, approx.rates)}
+                </span>
+              ) : (
+                <span className='approximate-vnd' aria-hidden='true'>
+                  <span className='invisible'>
+                    {approxPriceReserveText(product.prices.price, country ?? 'VN')}
+                  </span>
                 </span>
               )}
 

@@ -125,45 +125,35 @@ const heroImage =
         <WatchGallery client:load images={galleryPictures} title={cleanName} />
       </div>
 
-      <div class='contents lg:col-span-5 lg:flex lg:flex-col'>
-        <div class='order-1 flex flex-col lg:order-0'>
-          <h1 class='mb-3 text-3xl leading-tight font-normal text-stone-950 sm:text-4xl'>
-            {cleanName}
-          </h1>
-          <p class='mb-7 text-xs tracking-[0.25em] text-stone-500 uppercase'>
+      <div class='contents lg:col-span-5 lg:flex lg:flex-col lg:gap-4'>
+        <div class='order-1 flex flex-col gap-4 lg:order-0'>
+          <h1 class='text-2xl leading-tight font-normal text-stone-950 sm:text-3xl'>{cleanName}</h1>
+          <p class='text-xs text-stone-500 uppercase'>
             {primaryBrand ? cleanTitle(primaryBrand.name) : 'Spacetime Vintage Watch'}
           </p>
           <div class='flex flex-col'>
-            <div class='flex min-h-9 items-baseline gap-4'>
-              {hasPrice ? (
-                <>
-                  <span class='text-3xl font-medium text-stone-900'>${product.prices.price}</span>
-                  {product.on_sale && product.prices.regular_price && (
-                    <span class='text-base text-stone-500 line-through'>
-                      <span class='sr-only'>Original price: </span>${product.prices.regular_price}
-                    </span>
-                  )}
-                </>
-              ) : (
-                <div class='flex items-baseline gap-3'>
-                  <span class='text-[11px] font-medium tracking-[0.25em] text-stone-500 uppercase'>
-                    Sold
+            {hasPrice ? (
+              <div class='flex min-h-9 items-baseline gap-4'>
+                <span class='text-3xl font-medium text-stone-900'>${product.prices.price}</span>
+                {product.on_sale && product.prices.regular_price && (
+                  <span class='text-base text-stone-500 line-through'>
+                    <span class='sr-only'>Original price: </span>${product.prices.regular_price}
                   </span>
-                  <span class='text-sm text-stone-500'>Price on request</span>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : null}
+
             {hasPrice && <ApproxPrice client:idle usdPrice={product.prices.price} />}
           </div>
         </div>
 
         {cleanShortDescription && (
-          <div class='mt-10 border-t border-stone-200 pt-7 text-sm leading-relaxed text-stone-700'>
+          <div class='border-t border-stone-200 pt-7 text-sm text-stone-700'>
             <div set:html={cleanShortDescription} />
           </div>
         )}
 
-        <div class='mt-10'>
+        <div class='mt-4'>
           {product.is_in_stock ? (
             <AddToCartButton
               client:idle
@@ -172,12 +162,12 @@ const heroImage =
               stockClass={stockClass}
             />
           ) : (
-            <div class='flex flex-col gap-4 border-t border-stone-200 pt-7'>
+            <div class='flex flex-col gap-4'>
               <div class='flex items-center justify-between text-sm'>
                 <span class='font-medium text-stone-900'>Availability:</span>
                 <span class={`font-medium ${stockClass}`}>{stockText}</span>
               </div>
-              <p class='text-sm leading-relaxed text-stone-600'>
+              <p class='text-sm text-stone-600'>
                 This piece has found its owner. Tell us what you are looking for and we will let you
                 know when a comparable timepiece arrives.
               </p>
@@ -186,14 +176,14 @@ const heroImage =
                   href={soldEnquiryLink}
                   target='_blank'
                   rel='noopener noreferrer'
-                  class={buttonClass('primary', 'md', 'w-full sm:w-auto')}
+                  class={`${buttonClass('primary', 'md', 'w-full')} whitespace-nowrap`}
                 >
                   <MessageCircle class='h-5 w-5' aria-hidden='true' />
                   Ask on WhatsApp
                 </a>
                 <a
                   href={`${CONTACT.emailLink}?subject=${soldEmailSubject}`}
-                  class={buttonClass('outline', 'md', 'w-full sm:w-auto')}
+                  class={`${buttonClass('primary', 'md', 'w-full')} whitespace-nowrap`}
                 >
                   <Mail class='h-5 w-5' aria-hidden='true' />
                   Email Us
