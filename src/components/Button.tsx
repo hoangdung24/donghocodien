@@ -1,4 +1,5 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
+import { startTransition } from 'react';
 
 export type ButtonVariant = 'primary' | 'outline' | 'ghost';
 export type ButtonSize = 'sm' | 'md';
@@ -45,6 +46,16 @@ export function Button(props: ButtonProps) {
     const { variant = 'primary', size = 'md', className = '', ...rest } = props;
     return <a {...rest} className={buttonClass(variant, size, className)} />;
   }
-  const { variant = 'primary', size = 'md', className = '', ...rest } = props;
-  return <button {...rest} className={buttonClass(variant, size, className)} />;
+  const { variant = 'primary', size = 'md', className = '', onClick, ...rest } = props;
+  const runInTransition = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!onClick) return;
+    startTransition(() => onClick(event));
+  };
+  return (
+    <button
+      {...rest}
+      onClick={onClick ? runInTransition : undefined}
+      className={buttonClass(variant, size, className)}
+    />
+  );
 }

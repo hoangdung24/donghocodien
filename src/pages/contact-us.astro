@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { Mail, MessageCircle, Phone, MapPin, Send } from '@lucide/astro';
+import { Mail, MessageCircle, Phone, MapPin } from '@lucide/astro';
+import { ContactForm } from '@/components/ContactForm';
 import { CONTACT, SITE } from '@/lib/constants';
 
 export const prerender = true;
@@ -129,107 +130,7 @@ export const prerender = true;
           required.
         </p>
 
-        <form
-          class='flex flex-col gap-4'
-          onSubmit="event.preventDefault(); alert('Thank you. We have received your inquiry.');"
-        >
-          <div>
-            <label
-              for='contact-name'
-              class='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
-            >
-              Full Name <span aria-hidden='true'>*</span>
-            </label>
-            <input
-              id='contact-name'
-              name='name'
-              type='text'
-              required
-              autocomplete='name'
-              placeholder='e.g. Jean-Luc Dubois'
-              class='w-full border border-stone-300 px-3.5 py-2.5 text-xs transition-colors focus:border-black focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2'
-            />
-          </div>
-
-          <div>
-            <label
-              for='contact-email'
-              class='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
-            >
-              Email Address <span aria-hidden='true'>*</span>
-            </label>
-            <input
-              id='contact-email'
-              name='email'
-              type='email'
-              required
-              autocomplete='email'
-              spellcheck='false'
-              placeholder='name@domain.com'
-              class='w-full border border-stone-300 px-3.5 py-2.5 text-xs transition-colors focus:border-black focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2'
-            />
-          </div>
-
-          <div>
-            <label
-              for='contact-phone'
-              class='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
-            >
-              WhatsApp or Phone Number <span class='text-stone-500 normal-case'>(optional)</span>
-            </label>
-            <input
-              id='contact-phone'
-              name='phone'
-              type='tel'
-              autocomplete='tel'
-              placeholder='+1 (555) 012-3456'
-              class='w-full border border-stone-300 px-3.5 py-2.5 text-xs transition-colors focus:border-black focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2'
-            />
-          </div>
-
-          <div>
-            <label
-              for='contact-subject'
-              class='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
-            >
-              Subject of Inquiry
-            </label>
-            <select
-              id='contact-subject'
-              name='subject'
-              class='w-full border border-stone-300 bg-white px-3.5 py-2.5 text-xs transition-colors focus:border-black focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2'
-            >
-              <option value='acquisition'>Timepiece Acquisition</option>
-              <option value='service'>Servicing &amp; Restoration</option>
-              <option value='general'>General Collector Inquiry</option>
-            </select>
-          </div>
-
-          <div>
-            <label
-              for='contact-message'
-              class='mb-1.5 block text-xs font-medium tracking-wider text-stone-700 uppercase'
-            >
-              Message <span aria-hidden='true'>*</span>
-            </label>
-            <textarea
-              id='contact-message'
-              name='message'
-              rows='4'
-              required
-              placeholder='Tell us about the watch or reference you are looking for…'
-              class='w-full border border-stone-300 px-3.5 py-2.5 text-xs transition-colors focus:border-black focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2'
-            ></textarea>
-          </div>
-
-          <button
-            type='submit'
-            class='flex w-full cursor-pointer items-center justify-center gap-2 bg-black py-3.5 text-xs font-medium tracking-[0.2em] text-white uppercase transition-colors hover:bg-stone-900'
-          >
-            <Send class='h-4 w-4' aria-hidden='true' />
-            <span>Send Message</span>
-          </button>
-        </form>
+        <ContactForm client:load />
       </section>
     </div>
   </main>

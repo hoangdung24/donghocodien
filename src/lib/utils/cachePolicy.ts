@@ -25,3 +25,10 @@ export function cacheControlFor(scope: CacheScope, status: number): string {
   const edgeTtl = status === 200 ? SHARED_CACHE_CONTROL_TTL_SECONDS : SHARED_NOT_FOUND_TTL_SECONDS;
   return `public, max-age=0, s-maxage=${edgeTtl}, stale-while-revalidate=${SHARED_STALE_WHILE_REVALIDATE_SECONDS}`;
 }
+
+export function pageCacheControl(scope: CacheScope, dataLoaded: boolean): string {
+  if (scope === 'private' || !dataLoaded) {
+    return 'private, no-store';
+  }
+  return cacheControlFor(scope, 200);
+}

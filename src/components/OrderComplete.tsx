@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CreditCard, ArrowRight, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/Button';
 import {
@@ -34,10 +34,20 @@ const bankDetails: Array<[string, string]> = [
 
 function CopyValue({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    []
+  );
+
   const handleCopy = async () => {
     const ok = await copyText(value);
     setCopied(ok);
-    setTimeout(() => setCopied(false), 1600);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 1600);
   };
   return (
     <div key={label} className='contents'>

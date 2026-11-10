@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   cacheControlFor,
+  pageCacheControl,
   resolveCacheScope,
   SHARED_CACHE_CONTROL_TTL_SECONDS,
   SHARED_NOT_FOUND_TTL_SECONDS,
@@ -65,5 +66,19 @@ describe('cacheControlFor', () => {
   it('never stores private responses anywhere', () => {
     expect(cacheControlFor('private', 200)).toBe('private, no-store');
     expect(cacheControlFor('private', 500)).toBe('private, no-store');
+  });
+});
+
+describe('pageCacheControl', () => {
+  it('does not override private routes', () => {
+    expect(pageCacheControl('private', true)).toBe('private, no-store');
+  });
+
+  it('delegates shared routes that loaded every data source to the shared policy', () => {
+    expect(pageCacheControl('shared', true)).toBe(cacheControlFor('shared', 200));
+  });
+
+  it('never lets the edge cache a shared route whose data source failed', () => {
+    expect(pageCacheControl('shared', false)).toBe('private, no-store');
   });
 });

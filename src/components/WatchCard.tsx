@@ -5,7 +5,7 @@ import { categoryHref, decodeCategoryName, productBrandCategory } from '@/lib/ut
 import { formatApproxPrice } from '@/lib/utils/currency';
 import { formatPrice } from '@/lib/utils/format';
 import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
-import { cartStore } from '@/lib/cartStore';
+import { activeCartStore as cartStore } from '@/lib/cartStore';
 import { Button } from '@/components/Button';
 import { cleanTitle } from '@/lib/utils/text';
 

@@ -52,5 +52,11 @@ export const onRequest = async (context: APIContext, next: MiddlewareNext): Prom
   if (!import.meta.env.DEV && !response.headers.has('Cache-Control')) {
     response.headers.set('Cache-Control', cacheControlFor(cacheScope, response.status));
   }
+  if (
+    cacheScope === 'shared' &&
+    /^(public|s-maxage|max-age)/.test(response.headers.get('Cache-Control') ?? '')
+  ) {
+    response.headers.append('Vary', 'Cookie');
+  }
   return response;
 };

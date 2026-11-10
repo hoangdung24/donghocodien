@@ -87,7 +87,7 @@ const pageHref = (pageNumber: number): string | null => {
       />
 
       <CategoryAccordion
-        client:visible
+        client:idle
         groups={categoryGroups}
         activeCategoryId={categoryId}
         search={search}
@@ -95,7 +95,7 @@ const pageHref = (pageNumber: number): string | null => {
       />
 
       <PriceRangeSlider
-        client:visible
+        client:idle
         minPrice={minPrice}
         maxPrice={maxPrice}
         defaultMin={hasPriceFilter ? minPriceFilter : undefined}
@@ -115,7 +115,7 @@ const pageHref = (pageNumber: number): string | null => {
 
       <div slot='categoryAccordion'>
         <CategoryAccordion
-          client:visible
+          client:idle
           groups={categoryGroups}
           activeCategoryId={categoryId}
           search={search}
@@ -125,7 +125,7 @@ const pageHref = (pageNumber: number): string | null => {
 
       <div slot='priceRangeSlider'>
         <PriceRangeSlider
-          client:visible
+          client:idle
           minPrice={minPrice}
           maxPrice={maxPrice}
           defaultMin={hasPriceFilter ? minPriceFilter : undefined}

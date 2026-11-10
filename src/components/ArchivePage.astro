@@ -1,12 +1,20 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { WatchCard } from '@/components/WatchCard';
 import SearchBox from '@/components/SearchBox.astro';
-import { CategoryAccordion } from '@/components/CategoryAccordion';
-import { MobileFilterDrawer } from '@/components/MobileFilterDrawer';
+import { ArchiveCardAction } from '@/components/ArchiveCardAction';
+import { ArchiveCategoryAccordion } from '@/components/ArchiveCategoryAccordion';
+import { ArchiveFilterDrawer } from '@/components/ArchiveFilterDrawer';
 import { Button } from '@/components/Button';
 import type { Product, ProductCategory } from '@/lib/schema/product';
-import { ARCHIVE_PATH, archiveHref, buildCategoryTree } from '@/lib/utils/categories';
+import {
+  ARCHIVE_PATH,
+  archiveHref,
+  buildCategoryTree,
+  categoryHref,
+  productBrandCategory,
+} from '@/lib/utils/categories';
+import { cleanTitle } from '@/lib/utils/text';
+import type { ApproxPricingVisibility } from '@/lib/utils/visual';
 
 interface Props {
   products: readonly Product[];
@@ -15,9 +23,18 @@ interface Props {
   search?: string;
   requestedPage: number;
   hasNextPage: boolean;
+  approximatePricing?: ApproxPricingVisibility;
 }
 
-const { products, categories, activeCategoryId, search, requestedPage, hasNextPage } = Astro.props;
+const {
+  products,
+  categories,
+  activeCategoryId,
+  search,
+  requestedPage,
+  hasNextPage,
+  approximatePricing,
+} = Astro.props;
 
 const searchQuery = search ?? '';
 const activeCategory = activeCategoryId
@@ -35,12 +52,42 @@ const pageTitle = activeCategoryName
 const pageHref = (pageNumber: number) =>
   archiveHref({ category: canonicalCategory, search, page: pageNumber });
 
-const visibleCategoryGroups = buildCategoryTree(categories);
+const filterGroups = buildCategoryTree(categories).map((group) => ({
+  parent: {
+    id: group.parent.id,
+    slug: group.parent.slug,
+    displayName: group.parent.displayName,
+  },
+  children: group.children.map((category) => ({
+    id: category.id,
+    slug: category.slug,
+    displayName: category.displayName,
+  })),
+}));
+
+const cards = products.map((product) => {
+  const image = product.images[0];
+  const hoverImage = product.images[1];
+  const brandCategory = productBrandCategory(product, categories);
+  return {
+    id: product.id,
+    slug: product.slug,
+    cleanName: cleanTitle(product.name),
+    brandName: brandCategory ? brandCategory.displayName : null,
+    brandHref: brandCategory ? categoryHref(brandCategory.slug, search, ARCHIVE_PATH) : null,
+    imageSrc: image?.src ?? '/images/placeholder.jpeg',
+    imageThumbnail: image?.thumbnail ?? null,
+    hoverImageSrc: hoverImage?.src ?? null,
+    price: product.prices.price,
+    onSale: product.on_sale,
+  };
+});
 ---
 
 <Layout
   title={`${pageTitle} | Spacetime`}
   description='Browse the Spacetime archive of vintage timepieces that have found their owners.'
+  approximatePricing={approximatePricing}
 >
   <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8'>
     <header class='mb-10'>
@@ -69,9 +116,9 @@ const visibleCategoryGroups = buildCategoryTree(categories);
           category={canonicalCategory}
         />
 
-        <CategoryAccordion
-          client:only='react'
-          groups={visibleCategoryGroups}
+        <ArchiveCategoryAccordion
+          client:visible
+          groups={filterGroups}
           activeCategoryId={activeCategoryId}
           search={search}
           basePath={ARCHIVE_PATH}
@@ -79,33 +126,19 @@ const visibleCategoryGroups = buildCategoryTree(categories);
       </aside>
 
       <div class='lg:col-span-9'>
-        <MobileFilterDrawer
-          client:only='react'
+        <ArchiveFilterDrawer
+          client:idle
           resultCount={products.length}
           resultLabel='archived'
           clearHref={ARCHIVE_PATH}
-        >
-          <SearchBox
-            slot='searchBox'
-            id='archive-search-mobile'
-            value={searchQuery}
-            placeholder='Search the archive…'
-            action={ARCHIVE_PATH}
-            category={canonicalCategory}
-          />
-
-          <div slot='categoryAccordion'>
-            <CategoryAccordion
-              client:only='react'
-              groups={visibleCategoryGroups}
-              activeCategoryId={activeCategoryId}
-              search={search}
-              basePath={ARCHIVE_PATH}
-            />
-          </div>
-        </MobileFilterDrawer>
-
-        {products.length === 0 ? (
+          searchId='archive-search-mobile'
+          searchValue={searchQuery}
+          searchHref={ARCHIVE_PATH}
+          activeCategorySlug={canonicalCategory}
+          activeCategoryId={activeCategoryId}
+          groups={filterGroups}
+        />
+        {cards.length === 0 ? (
           <div class='border border-stone-200 bg-white px-6 py-24 text-center'>
             <p class='text-xs tracking-widest text-stone-600 uppercase'>
               No archived timepieces found.
@@ -119,15 +152,77 @@ const visibleCategoryGroups = buildCategoryTree(categories);
           </div>
         ) : (
           <ul class='grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8'>
-            {products.map((watch) => (
+            {cards.map((card, index) => (
               <li>
-                <WatchCard
-                  client:visible
-                  product={watch}
-                  categories={categories}
-                  country={null}
-                  showStatus={false}
-                />
+                <article class='group relative flex flex-col overflow-hidden bg-white transition-all duration-300'>
+                  <a
+                    href={`/watches/${card.slug}`}
+                    class='relative block aspect-300/375 overflow-hidden bg-stone-50'
+                    aria-label={`View ${card.cleanName}`}
+                  >
+                    <img
+                      src={card.imageThumbnail ?? card.imageSrc}
+                      alt={card.cleanName}
+                      width='300'
+                      height='375'
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={index === 0 ? 'high' : 'auto'}
+                      decoding='async'
+                      class='h-full w-full object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0'
+                    />
+                    {card.hoverImageSrc && (
+                      <img
+                        src={card.hoverImageSrc}
+                        alt=''
+                        aria-hidden='true'
+                        width='300'
+                        height='375'
+                        loading='lazy'
+                        decoding='async'
+                        class='absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100'
+                      />
+                    )}
+
+                    <div class='absolute top-2 left-2 z-10 flex flex-col gap-1'>
+                      {card.onSale && (
+                        <span class='bg-red-700 px-2 py-0.5 font-sans text-[9px] tracking-widest text-white uppercase sm:text-[10px]'>
+                          Sale
+                        </span>
+                      )}
+                      <span class='bg-black/80 px-2 py-0.5 font-sans text-[9px] tracking-widest text-white uppercase sm:text-[10px]'>
+                        Sold
+                      </span>
+                    </div>
+                  </a>
+
+                  <div class='flex flex-1 flex-col px-1 pt-3 pb-4 text-center sm:text-left'>
+                    {card.brandName && card.brandHref && (
+                      <p class='mb-1.5 truncate text-[10px] font-medium tracking-[0.2em] text-stone-500 uppercase sm:text-[11px]'>
+                        <a
+                          href={card.brandHref}
+                          class='transition-colors hover:text-brand-dark hover:underline'
+                        >
+                          {card.brandName}
+                        </a>
+                      </p>
+                    )}
+                    <h3 class='mb-1.5 line-clamp-2 min-h-[2.75em] text-xs leading-snug tracking-normal sm:text-sm'>
+                      <a
+                        href={`/watches/${card.slug}`}
+                        class='transition-colors hover:text-stone-500'
+                      >
+                        {card.cleanName}
+                      </a>
+                    </h3>
+
+                    <ArchiveCardAction
+                      client:idle
+                      productId={card.id}
+                      price={card.price}
+                      cleanName={card.cleanName}
+                    />
+                  </div>
+                </article>
               </li>
             ))}
           </ul>

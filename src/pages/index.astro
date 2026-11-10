@@ -2,9 +2,13 @@
 import { Effect } from 'effect';
 import HeroCarousel from '@/components/HeroCarousel';
 import ProductCarousel from '@/components/ProductCarousel';
+import ProductCarouselSlide from '@/components/ProductCarouselSlide.astro';
 import Layout from '@/layouts/Layout.astro';
 import { SEO, SITE } from '@/lib/constants';
+import { HERO_SLIDES } from '@/lib/data/heroSlides';
 import { getCategories, getProducts } from '@/lib/services/woocommerce';
+import { pageCacheControl, resolveCacheScope } from '@/lib/utils/cachePolicy';
+import { readRequestCountry, resolveApproxPricingVisibility } from '@/lib/utils/visual';
 
 export const prerender = false;
 
@@ -33,13 +37,29 @@ const products =
     : [];
 const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
 const hasProductError = productsResult._tag === 'Failure';
+const approxPricing = resolveApproxPricingVisibility(
+  readRequestCountry(Astro.request.headers.get('cookie'))
+);
 
-if (productsResult._tag !== 'Success' || categoriesResult._tag !== 'Success') {
-  Astro.response.headers.set('Cache-Control', 'private, no-store');
-}
+Astro.response.headers.set(
+  'Cache-Control',
+  pageCacheControl(
+    resolveCacheScope(Astro.url.pathname),
+    productsResult._tag === 'Success' && categoriesResult._tag === 'Success'
+  )
+);
 ---
 
-<Layout title={SEO.defaultTitle} description={SEO.defaultDescription}>
+<Layout
+  title={SEO.defaultTitle}
+  description={SEO.defaultDescription}
+  approximatePricing={approxPricing}
+  heroImage={{
+    src: `${HERO_SLIDES[0].image}-640.webp`,
+    srcset: `${HERO_SLIDES[0].image}-640.webp 640w, ${HERO_SLIDES[0].image}-960.webp 960w, ${HERO_SLIDES[0].image}-1152.webp 1152w`,
+    sizes: '100vw',
+  }}
+>
   <h1 class='sr-only'>
     Spacetime Vintage Watch — authentic Swiss and Japanese timepieces for global collectors
   </h1>
@@ -84,12 +104,22 @@ if (productsResult._tag !== 'Success' || categoriesResult._tag !== 'Success') {
 
         <div class='flex justify-center lg:col-span-5'>
           <div class='group relative aspect-4/5 w-full max-w-md overflow-hidden shadow-xl'>
-            <img
-              src='/images/brand-story.jpg'
-              alt={`${SITE.name} Vintage Timepiece on Leather`}
-              class='h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
-              loading='lazy'
-            />
+            <picture>
+              <source
+                type='image/webp'
+                srcset='/images/brand-story-448.webp 448w, /images/brand-story-672.webp 672w'
+                sizes='(min-width: 1024px) 28rem, 90vw'
+              />
+              <img
+                src='/images/brand-story.jpg'
+                alt={`${SITE.name} Vintage Timepiece on Leather`}
+                width='1152'
+                height='1440'
+                class='h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
+                loading='lazy'
+                decoding='async'
+              />
+            </picture>
           </div>
         </div>
       </div>
@@ -120,7 +150,14 @@ if (productsResult._tag !== 'Success' || categoriesResult._tag !== 'Success') {
       )}
 
       {products.length > 0 && (
-        <ProductCarousel client:visible products={products} categories={categories} />
+        <ProductCarousel client:visible products={products} categories={categories}>
+          <ProductCarouselSlide
+            slot='first-slide'
+            product={products[0]}
+            categories={categories}
+            slideCount={products.length}
+          />
+        </ProductCarousel>
       )}
 
       <div class='mt-14 text-center'>

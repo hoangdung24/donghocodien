@@ -5,11 +5,7 @@ import { Effect } from 'effect';
 import { getCategories, getProducts } from '@/lib/services/woocommerce';
 import { CONTACT, SITE } from '@/lib/constants';
 
-const [productsResult, categoriesResult] = await Promise.all([
-  Effect.runPromiseExit(getProducts({ per_page: 8 })),
-  Effect.runPromiseExit(getCategories),
-]);
-const categories = categoriesResult._tag === 'Success' ? categoriesResult.value : [];
+const productsResult = await Effect.runPromiseExit(getProducts({ per_page: 4 }));
 const availableWatches =
   productsResult._tag === 'Success'
     ? productsResult.value
@@ -73,7 +69,7 @@ Astro.response.status = 404;
             <WatchCard
               client:visible
               product={watch}
-              categories={categories}
+              categories={[]}
               country={Astro.locals.country}
             />
           ))}

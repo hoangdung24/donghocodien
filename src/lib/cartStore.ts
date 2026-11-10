@@ -2,6 +2,7 @@ import type { Cart } from '@/lib/schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from '@/lib/services/cart';
 import { toastStore } from '@/lib/toastStore';
 import { resolveToastDuration } from '@/lib/toastDuration';
+import { describeCartError } from '@/lib/utils/cartText';
 
 const API_BASE = '/wc/store/v1';
 const CART_TOKEN_KEY = 'wc-cart-token';
@@ -147,10 +148,12 @@ export class CartStore {
     try {
       this.setState({ isLoading: true, error: null });
       const data = await this.fetchCart();
-      this.setState({ cart: data, isLoading: false });
-    } catch (err) {
+      writeCartCache(CART_CACHE_KEY, data);
+      this.state = { ...this.state, cart: data, isLoading: false };
+      this.notify();
+    } catch (error) {
       this.setState({
-        error: err instanceof Error ? err.message : 'Failed to load cart',
+        error: describeCartError(error, 'Failed to load cart'),
         isLoading: false,
       });
     }
@@ -160,6 +163,7 @@ export class CartStore {
     try {
       this.setState({ error: null });
       const newCart = await this.addToCartApi(productId, quantity);
+      writeCartCache(CART_CACHE_KEY, newCart);
       this.setState({ cart: newCart, isDrawerOpen: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to add item';
@@ -174,6 +178,7 @@ export class CartStore {
     try {
       this.setState({ error: null });
       const newCart = await this.updateCartItemApi(key, quantity);
+      writeCartCache(CART_CACHE_KEY, newCart);
       this.setState({ cart: newCart });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update quantity';
@@ -187,6 +192,7 @@ export class CartStore {
     try {
       this.setState({ error: null });
       const newCart = await this.removeCartItemApi(key);
+      writeCartCache(CART_CACHE_KEY, newCart);
       this.setState({ cart: newCart });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to remove item';
@@ -200,6 +206,7 @@ export class CartStore {
     try {
       this.setState({ error: null });
       const newCart = await this.clearCartApi();
+      writeCartCache(CART_CACHE_KEY, newCart);
       this.setState({ cart: newCart });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to clear cart';
@@ -254,8 +261,65 @@ export class CartStore {
   }
 }
 
+const CART_LOAD_KEY = '__SPACETIME_CART_LOAD__';
+
+export function startCartLoad(): void {
+  if (typeof window === 'undefined') return;
+  const registry = window as unknown as Record<string, number | undefined>;
+  const startedAt = registry[CART_LOAD_KEY];
+  if (startedAt && Date.now() - startedAt < 5000) return;
+  registry[CART_LOAD_KEY] = Date.now();
+  void cartStore.loadCart();
+}
+
 export const cartStore = new CartStore();
 
+declare global {
+  var __SPACETIME_CART_SINGLETON__: CartStore | undefined;
+}
+
+export const activeCartStore: CartStore =
+  globalThis.__SPACETIME_CART_SINGLETON__ ?? (globalThis.__SPACETIME_CART_SINGLETON__ = cartStore);
+
 if (typeof window !== 'undefined') {
-  (window as unknown as { __CART_STORE__?: CartStore }).__CART_STORE__ = cartStore;
+  (window as unknown as { __CART_STORE__?: CartStore }).__CART_STORE__ = activeCartStore;
+  startCartLoad();
+}
+
+interface CachedCart {
+  cachedAt: number;
+  cart: Cart;
+}
+
+export const CART_CACHE_KEY = 'spacetime_cart_snapshot';
+export const CART_CACHE_TTL_MS = 5 * 60 * 1000;
+
+const cartCache = new Map<string, CachedCart>();
+
+export function readCartCache(key: string, now: number = Date.now()): Cart | null {
+  const entry = cartCache.get(key);
+  if (!entry) return null;
+  if (now - entry.cachedAt >= CART_CACHE_TTL_MS) {
+    cartCache.delete(key);
+    return null;
+  }
+  return entry.cart;
+}
+
+export function writeCartCache(key: string, cart: Cart, now: number = Date.now()): void {
+  cartCache.set(key, { cachedAt: now, cart });
+}
+
+export function clearCartCache(key?: string): void {
+  if (key === undefined) {
+    cartCache.clear();
+    return;
+  }
+  cartCache.delete(key);
+}
+
+export function primeCartStore(cart: Cart): boolean {
+  if (cartStore.getState().cart) return false;
+  cartStore.setState({ cart, isLoading: false });
+  return true;
 }

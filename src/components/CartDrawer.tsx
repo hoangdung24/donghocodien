@@ -3,7 +3,7 @@ import { Dialog } from '@ark-ui/react/dialog';
 import { ShoppingBag, X, Trash2, ArrowRight, Sparkles } from 'lucide-react';
 import type { Cart } from '@/lib/schema/cart';
 import { useCart } from '@/lib/context/CartContext';
-import { cartStore } from '@/lib/cartStore';
+import { activeCartStore as cartStore } from '@/lib/cartStore';
 import { productHref } from '@/lib/utils/products';
 import { Button } from '@/components/Button';
 

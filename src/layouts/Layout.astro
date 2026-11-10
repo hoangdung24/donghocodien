@@ -4,6 +4,7 @@ import Footer from '@/components/Footer.astro';
 import { Providers } from '@/components/Providers';
 import Head from '@/components/Head.astro';
 import '@/styles/global.css';
+import type { ApproxPricingVisibility } from '@/lib/utils/visual';
 
 interface Props {
   title: string;
@@ -11,6 +12,8 @@ interface Props {
   image?: string;
   type?: 'website' | 'product';
   itunesAppId?: string;
+  approximatePricing?: ApproxPricingVisibility;
+  heroImage?: { src: string; srcset: string; sizes: string };
   product?: {
     name: string;
     brand: string;
@@ -23,7 +26,16 @@ interface Props {
   };
 }
 
-const { title, description, image, type = 'website', itunesAppId, product } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  type = 'website',
+  itunesAppId,
+  approximatePricing,
+  heroImage,
+  product,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -40,8 +52,24 @@ const { title, description, image, type = 'website', itunesAppId, product } = As
       itunesAppId={itunesAppId}
       product={product}
     />
+    <slot name='head' />
+    {heroImage && (
+      <link
+        rel='preload'
+        as='image'
+        href={heroImage.src}
+        imagesrcset={heroImage.srcset}
+        imagesizes={heroImage.sizes}
+        fetchpriority='high'
+      />
+    )}
   </head>
-  <body class='flex min-h-screen flex-col bg-stone-50 text-stone-900'>
+  <body
+    class:list={[
+      'flex min-h-screen flex-col bg-stone-50 text-stone-900',
+      approximatePricing?.className,
+    ]}
+  >
     <a class='skip-link' href='#main-content'>
       Skip to content
     </a>
@@ -50,6 +78,9 @@ const { title, description, image, type = 'website', itunesAppId, product } = As
       <Providers client:only='react'>
         <slot />
       </Providers>
+    </div>
+    <div id='page-pending-slot'>
+      <slot name='before-footer' />
     </div>
     <Footer />
   </body>

@@ -1,0 +1,63 @@
+import type { GalleryPicture } from '@/lib/schema/galleryPicture';
+import type { ProductImage } from '@/lib/schema/product';
+
+const LIGHTBOX_WIDTHS = [768, 600, 300];
+const THUMBNAIL_STEP = 300;
+const REMOTE_SOURCE_PATTERN = /^https?:\/\//;
+const SIZE_SUFFIX_PATTERN = /^(.*)-(\d+)x(\d+)(\.[a-z]+)$/i;
+
+function withWidth(source: string, width: number): string {
+  const match = SIZE_SUFFIX_PATTERN.exec(source);
+  const height = Math.round(width * 1.25);
+  if (match) return `${match[1]}-${width}x${height}${match[4]}`;
+  return source.replace(/(\.[a-z]+)$/i, `-${width}x${height}$1`);
+}
+
+function tailWidth(source: string): number | null {
+  const match = SIZE_SUFFIX_PATTERN.exec(source);
+  return match ? Number(match[2]) : null;
+}
+
+function toWidthDescriptors(sources: string[]): string {
+  return sources
+    .map((source) => {
+      const width = tailWidth(source) ?? 1152;
+      return `${source} ${width}w`;
+    })
+    .join(', ');
+}
+
+function toGalleryPicture(image: ProductImage): GalleryPicture {
+  if (!REMOTE_SOURCE_PATTERN.test(image.src)) {
+    return {
+      id: image.id,
+      src: image.src,
+      alt: image.alt,
+      slideSources: image.src,
+      thumbnailSources: image.src,
+      posterHref: image.src,
+    };
+  }
+
+  const lightboxSources = [
+    image.src,
+    ...LIGHTBOX_WIDTHS.map((width) => withWidth(image.src, width)),
+  ];
+  const thumbnailSource = image.thumbnail ?? withWidth(image.src, THUMBNAIL_STEP);
+  const thumbnailWidth = tailWidth(thumbnailSource);
+
+  return {
+    id: image.id,
+    src: image.src,
+    alt: image.alt,
+    slideSources: toWidthDescriptors(lightboxSources),
+    thumbnailSources: thumbnailWidth ? `${thumbnailSource} ${thumbnailWidth}w` : thumbnailSource,
+    posterHref: thumbnailSource,
+  };
+}
+
+export function buildGalleryPictures(product: {
+  images: readonly ProductImage[];
+}): GalleryPicture[] {
+  return product.images.map(toGalleryPicture);
+}

@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useCart } from '@/lib/context/CartContext';
+import { useDeferredValue, useEffect, useState } from 'react';
 import {
   ShoppingBag,
   Plus,
@@ -13,37 +12,61 @@ import {
 import { formatApproxPrice } from '@/lib/utils/currency';
 import { productHref } from '@/lib/utils/products';
 import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
+import { useCartContext, useCartCurrency } from '@/lib/context/CartContext';
+import { useSettledLayout } from '@/lib/useSettledLayout';
+import { usePendingSlotHandoff } from '@/lib/usePendingSlotHandoff';
 import type { Cart } from '@/lib/schema/cart';
 import { Button } from '@/components/Button';
 
+const formatPrice = (price: string, symbol: string) => {
+  const amount = parseFloat(price);
+  const formatted = Math.round(amount)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${symbol}${formatted}`;
+};
+
+const LoadingCase = () => (
+  <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+    <div
+      role='status'
+      className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
+    >
+      <span className='sr-only'>Loading your collector's case</span>
+    </div>
+  </main>
+);
+
 export function CartPage() {
   const {
-    cart,
+    cart: liveCart,
     isLoading,
-    error,
     itemCount,
-    totalPrice,
-    currency,
+    error,
+    refreshCart,
     updateQuantity,
     removeItem,
     clearCart,
-    refreshCart,
-  } = useCart();
+  } = useCartContext();
 
   const [mounted, setMounted] = useState(false);
-  const approx = useApproxDisplay();
+  const cart = useSettledLayout(useDeferredValue(liveCart));
+  const isStale = cart !== liveCart;
+  const currency = useCartCurrency();
+  const totalPrice = cart?.totals.total_price ?? '0';
+  const approximateDisplay = useApproxDisplay();
+  const [approxVisible, setApproxVisible] = useState(false);
+  const approx = approxVisible ? approximateDisplay : null;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const formatPrice = (price: string) => {
-    const num = parseFloat(price);
-    const formatted = Math.round(num)
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${currency.symbol}${formatted}`;
-  };
+  useEffect(() => {
+    if (!approximateDisplay || approxVisible) return;
+    const frame = requestAnimationFrame(() => setApproxVisible(true));
+    return () => cancelAnimationFrame(frame);
+  }, [approximateDisplay, approxVisible]);
 
   const getItemTotal = (item: Cart['items'][number]) => {
     return parseFloat(item.totals.line_total);
@@ -53,30 +76,10 @@ export function CartPage() {
   const shipping = cart?.shipping_rates[0] ? parseFloat(cart.shipping_rates[0].cost) : 0;
   const discount = parseFloat(cart?.totals.total_discount ?? '0');
 
-  if (!mounted) {
-    return (
-      <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-        <div
-          role='status'
-          className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
-        >
-          <span className='sr-only'>Loading your collector's case</span>
-        </div>
-      </main>
-    );
-  }
+  usePendingSlotHandoff(mounted);
 
-  if (isLoading && !cart) {
-    return (
-      <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-        <div
-          role='status'
-          className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
-        >
-          <span className='sr-only'>Loading your collector's case</span>
-        </div>
-      </main>
-    );
+  if (!mounted || (isLoading && !cart)) {
+    return <LoadingCase />;
   }
 
   return (
@@ -137,7 +140,11 @@ export function CartPage() {
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12'>
           <div className='lg:col-span-2'>
             <h2 className='sr-only'>Timepieces in your case</h2>
-            <ul className='flex flex-col gap-4'>
+            <ul
+              className='flex flex-col gap-4 transition-opacity duration-150 data-[stale=true]:opacity-70'
+              data-stale={isStale || undefined}
+              aria-busy={isStale || undefined}
+            >
               {cart.items.map((item) => (
                 <li
                   key={item.key}
@@ -148,7 +155,11 @@ export function CartPage() {
                       <img
                         src={item.images[0].src}
                         alt={item.name}
-                        className='h-32 w-24 border border-stone-200 object-cover'
+                        width={96}
+                        height={128}
+                        loading='lazy'
+                        decoding='async'
+                        className='h-32 w-24 border border-stone-200 bg-stone-100 object-cover'
                       />
                     </a>
                   )}
@@ -183,7 +194,7 @@ export function CartPage() {
                         >
                           <Minus className='mx-auto h-4 w-4' aria-hidden='true' />
                         </button>
-                        <span className='min-w-12 border-x border-stone-200 bg-white px-4 py-1.5 text-center font-mono text-sm font-medium text-stone-900'>
+                        <span className='min-w-12 border-x border-stone-200 bg-white px-4 py-1.5 text-center font-mono text-sm font-medium text-stone-900 tabular-nums'>
                           <span className='sr-only'>Quantity: </span>
                           {item.quantity}
                         </span>
@@ -196,9 +207,9 @@ export function CartPage() {
                           <Plus className='mx-auto h-4 w-4' aria-hidden='true' />
                         </button>
                       </div>
-                      <span className='ml-auto font-semibold whitespace-nowrap text-yellow-900'>
+                      <span className='ml-auto font-semibold whitespace-nowrap text-yellow-900 tabular-nums'>
                         <span className='sr-only'>Line total: </span>
-                        {formatPrice(item.totals.line_total)}
+                        {formatPrice(item.totals.line_total, currency.symbol)}
                       </span>
                     </div>
                     {approx && (
@@ -229,13 +240,17 @@ export function CartPage() {
                           <img
                             src={crossSell.images[0].src}
                             alt={crossSell.name}
-                            className='mb-3 h-32 w-full object-cover'
+                            width={300}
+                            height={128}
+                            loading='lazy'
+                            decoding='async'
+                            className='mb-3 h-32 w-full bg-stone-100 object-cover'
                           />
                         )}
                         <p className='truncate text-xs text-stone-900 transition-colors group-hover:text-yellow-900'>
                           {crossSell.name}
                         </p>
-                        <p className='mt-1 text-xs font-semibold text-yellow-900'>
+                        <p className='mt-1 text-xs font-semibold text-yellow-900 tabular-nums'>
                           {crossSell.prices.currency_symbol}
                           {crossSell.prices.price}
                         </p>
@@ -250,7 +265,7 @@ export function CartPage() {
           <div className='lg:col-span-1'>
             <section
               aria-labelledby='case-summary-heading'
-              className='sticky top-28 border border-stone-200 bg-white p-6'
+              className='border border-stone-200 bg-white p-6 lg:sticky lg:top-28'
             >
               <h2
                 id='case-summary-heading'
@@ -259,27 +274,36 @@ export function CartPage() {
                 Case Summary
               </h2>
 
-              <dl className='flex flex-col gap-3 text-sm'>
+              <dl
+                className='flex flex-col gap-3 text-sm tabular-nums transition-opacity duration-150 data-[stale=true]:opacity-70'
+                data-stale={isStale || undefined}
+              >
                 <div className='flex justify-between'>
                   <dt className='text-stone-600'>Subtotal ({itemCount} items)</dt>
-                  <dd className='font-medium text-stone-900'>{formatPrice(subtotal.toFixed(2))}</dd>
+                  <dd className='font-medium text-stone-900'>
+                    {formatPrice(subtotal.toFixed(2), currency.symbol)}
+                  </dd>
                 </div>
                 {discount > 0 && (
                   <div className='flex justify-between text-green-700'>
                     <dt>Discount</dt>
-                    <dd className='font-medium'>-{formatPrice(discount.toFixed(2))}</dd>
+                    <dd className='font-medium'>
+                      -{formatPrice(discount.toFixed(2), currency.symbol)}
+                    </dd>
                   </div>
                 )}
                 <div className='flex justify-between'>
                   <dt className='text-stone-600'>Shipping</dt>
                   <dd className='font-medium text-stone-900'>
-                    {shipping > 0 ? formatPrice(shipping.toFixed(2)) : 'Calculated at checkout'}
+                    {shipping > 0
+                      ? formatPrice(shipping.toFixed(2), currency.symbol)
+                      : 'Calculated at checkout'}
                   </dd>
                 </div>
                 <div className='flex justify-between border-t border-stone-200 pt-3'>
                   <dt className='text-base font-medium text-stone-950'>Total</dt>
                   <dd className='text-base font-medium text-yellow-900'>
-                    {formatPrice(totalPrice)}
+                    {formatPrice(totalPrice, currency.symbol)}
                   </dd>
                 </div>
                 {approx && (

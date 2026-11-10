@@ -9,7 +9,7 @@ export function ProductTabs({ descriptionHtml, hideHeading = false }: ProductTab
   return (
     <section
       aria-labelledby='product-description-heading'
-      className='woocommerce-tabs wc-tabs-wrapper tabbed-content container border-t border-stone-200 pt-6'
+      className='woocommerce-tabs wc-tabs-wrapper tabbed-content container min-h-96 border-t border-stone-200 pt-6'
     >
       {hideHeading ? (
         <h2 id='product-description-heading' className='sr-only'>

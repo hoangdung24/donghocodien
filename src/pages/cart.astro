@@ -7,5 +7,27 @@ import { CartPage } from '@/components/CartPage';
   title="Collector's Case"
   description='Review your selected vintage timepieces before proceeding to checkout.'
 >
+  <div
+    slot='before-footer'
+    class='mx-auto hidden w-full max-w-7xl flex-1 px-4 py-10 min-[380px]:block sm:px-6 sm:py-16 lg:px-8 print:hidden'
+  >
+    <div aria-busy='true' class='flex min-h-[900px] flex-col'>
+      <div role='status'>
+        <span class='sr-only'>Loading your collector's case</span>
+      </div>
+      <div class='mb-8 h-4 w-40 bg-stone-200/70'></div>
+      <div class='mb-8 h-10 w-64 bg-stone-200/70'></div>
+      <div class='grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12'>
+        <div class='flex flex-col gap-4 lg:col-span-2'>
+          <div class='h-[212px] border border-stone-200 bg-white'></div>
+          <div class='h-[212px] border border-stone-200 bg-white'></div>
+        </div>
+        <div class='h-[320px] border border-stone-200 bg-white lg:col-span-1'></div>
+      </div>
+    </div>
+  </div>
   <CartPage client:load />
+  <script>
+    import '@/lib/pendingSlot';
+  </script>
 </Layout>

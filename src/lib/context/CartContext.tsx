@@ -7,7 +7,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import { cartStore, type CartState } from '@/lib/cartStore';
+import { activeCartStore as cartStore, startCartLoad, type CartState } from '@/lib/cartStore';
 import type { Cart } from '@/lib/schema/cart';
 import type { CheckoutRequest, CheckoutResponse } from '@/lib/services/cart';
 
@@ -41,7 +41,7 @@ export function CartProvider({
     if (initialCart) {
       cartStore.setState({ cart: initialCart, isLoading: false });
     } else {
-      cartStore.loadCart();
+      startCartLoad();
     }
     const unsubscribe = cartStore.subscribe(() => forceUpdate((count) => count + 1));
     return unsubscribe;
@@ -115,13 +115,22 @@ export function useCart(): CartContextType {
   const context = useContext(CartContext);
   if (context) return context;
 
-  const snapshot = useCartStore();
+  useCartStore();
+  return buildStoreSnapshot();
+}
 
+export function useCartContext(): CartContextType {
+  const context = useContext(CartContext);
+  useCartStore();
+  return context ?? buildStoreSnapshot();
+}
+
+function buildStoreSnapshot(): CartContextType {
   return {
-    cart: snapshot.cart,
-    isLoading: snapshot.isLoading,
-    error: snapshot.error,
-    isDrawerOpen: snapshot.isDrawerOpen,
+    cart: cartStore.getState().cart,
+    isLoading: cartStore.getState().isLoading,
+    error: cartStore.getState().error,
+    isDrawerOpen: cartStore.getState().isDrawerOpen,
     itemCount: cartStore.itemCount,
     totalPrice: cartStore.totalPrice,
     currency: cartStore.currency,
@@ -134,6 +143,12 @@ export function useCart(): CartContextType {
     openDrawer: cartStore.openDrawer.bind(cartStore),
     closeDrawer: cartStore.closeDrawer.bind(cartStore),
   };
+}
+
+export function useCartCurrency(): { code: string; symbol: string } {
+  const cart = useCart().cart;
+  if (!cart) return { code: 'USD', symbol: '$' };
+  return { code: cart.totals.currency_code, symbol: cart.totals.currency_symbol };
 }
 
 export function useCartItemCount() {

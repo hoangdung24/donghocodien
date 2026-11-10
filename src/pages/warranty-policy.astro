@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import { Effect } from 'effect';
 import { getPageBySlug } from '@/lib/services/woocommerce';
 import { demoteEmbeddedHeadings, sanitizeWordPressHtml } from '@/lib/utils/html';
+import { reserveEmbeddedMediaSpace } from '@/lib/utils/embeddedMedia';
 import { cleanTitle } from '@/lib/utils/text';
 import { POLICY_CONTENT, POLICY_TITLES } from '@/lib/data/policyContent';
 
@@ -20,7 +21,8 @@ const page =
 
 const cleanPageTitle = cleanTitle(page.title.rendered);
 const sanitizedHtmlContent = await sanitizeWordPressHtml(page.content.rendered);
-const cleanHtmlContent = await demoteEmbeddedHeadings(sanitizedHtmlContent);
+const demotedHtmlContent = await demoteEmbeddedHeadings(sanitizedHtmlContent);
+const cleanHtmlContent = reserveEmbeddedMediaSpace(demotedHtmlContent);
 ---
 
 <Layout
@@ -32,7 +34,7 @@ const cleanHtmlContent = await demoteEmbeddedHeadings(sanitizedHtmlContent);
       {cleanPageTitle}
     </h1>
     <article
-      class='prose max-w-none prose-stone prose-headings:font-normal prose-headings:tracking-wide prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm prose-p:leading-relaxed prose-p:text-stone-700 sm:prose-p:text-base prose-table:w-full prose-table:border-collapse prose-td:border-b prose-td:border-stone-100 prose-td:py-2.5 prose-img:rounded-none prose-img:shadow-sm'
+      class='prose max-w-none prose-stone prose-headings:font-normal prose-headings:tracking-wide prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm prose-p:leading-relaxed prose-p:text-stone-700 sm:prose-p:text-base prose-table:w-full prose-table:border-collapse prose-td:border-b prose-td:border-stone-100 prose-td:py-2.5 prose-img:rounded-none prose-img:shadow-sm [&_iframe]:h-auto [&_iframe]:w-full [&_img[data-aspect-ratio]]:[aspect-ratio:attr(data-aspect-ratio)] [&_img[data-aspect-ratio]]:h-auto [&_img[data-aspect-ratio]]:w-full'
       set:html={cleanHtmlContent}
     />
   </main>

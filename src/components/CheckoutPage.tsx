@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useCart } from '@/lib/context/CartContext';
+import React, { useDeferredValue, useEffect, useState } from 'react';
+import { useCartContext, useCartCurrency } from '@/lib/context/CartContext';
+import { useSettledLayout } from '@/lib/useSettledLayout';
+import { usePendingSlotHandoff } from '@/lib/usePendingSlotHandoff';
 import { ShoppingBag, Shield, Truck, CreditCard, Check } from 'lucide-react';
 import { formatApproxPrice } from '@/lib/utils/currency';
 import { useApproxDisplay } from '@/lib/hooks/useApproxDisplay';
 import { CHECKOUT_COUNTRIES, COUNTRY_STATES, COUNTRY_LOCALE } from '@/lib/data/woocommerce-regions';
 import { Button } from '@/components/Button';
 import { SelectField, type SelectOption } from '@/components/SelectField';
+import { stripDescriptionTags } from '@/lib/utils/cartText';
 
 const COUNTRY_OPTIONS: SelectOption[] = CHECKOUT_COUNTRIES.filter((country) => country.code).map(
   (country) => ({
@@ -14,10 +17,17 @@ const COUNTRY_OPTIONS: SelectOption[] = CHECKOUT_COUNTRIES.filter((country) => c
   })
 );
 
-const decodeEntities = (value: string) => {
-  if (typeof window === 'undefined' || !value.includes('&')) return value;
-  const doc = new DOMParser().parseFromString(value, 'text/html');
-  return doc.documentElement.textContent ?? value;
+const STATE_OPTIONS_CACHE = new Map<string, SelectOption[]>();
+
+const stateOptionsFor = (countryCode: string): SelectOption[] => {
+  const cached = STATE_OPTIONS_CACHE.get(countryCode);
+  if (cached) return cached;
+  const entry = COUNTRY_STATES[countryCode];
+  const options = entry
+    ? Object.entries(entry).map(([code, name]) => ({ value: code, label: name }))
+    : [];
+  STATE_OPTIONS_CACHE.set(countryCode, options);
+  return options;
 };
 
 interface BillingForm {
@@ -51,8 +61,34 @@ const inputClass =
 
 const labelClass = 'block text-xs uppercase tracking-wider text-stone-500 mb-2 font-sans';
 
+const formatPrice = (price: string, symbol: string) => {
+  const amount = parseFloat(price);
+  const formatted = Math.round(amount)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${symbol}${formatted}`;
+};
+
+const LoadingCheckout = () => (
+  <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
+    <div
+      role='status'
+      className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
+    >
+      <span className='sr-only'>Loading checkout</span>
+    </div>
+  </main>
+);
+
 export function CheckoutPage() {
-  const { cart, isLoading, error, itemCount, refreshCart, processCheckout } = useCart();
+  const {
+    cart: liveCart,
+    isLoading,
+    error,
+    itemCount,
+    refreshCart,
+    processCheckout,
+  } = useCartContext();
 
   const [mounted, setMounted] = useState(false);
   const [form, setForm] = useState<BillingForm>(EMPTY_FORM);
@@ -60,22 +96,24 @@ export function CheckoutPage() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const approx = useApproxDisplay();
+  const cart = useSettledLayout(useDeferredValue(liveCart));
+  const isStale = cart !== liveCart;
+  const currency = useCartCurrency();
+  const approximateDisplay = useApproxDisplay();
+  const [approxVisible, setApproxVisible] = useState(false);
+  const approx = approxVisible ? approximateDisplay : null;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const formatPrice = (price: string) => {
-    const num = parseFloat(price);
-    const symbol = cart?.totals.currency_symbol ?? '$';
-    const formatted = Math.round(num)
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${symbol}${formatted}`;
-  };
+  useEffect(() => {
+    if (!approximateDisplay || approxVisible) return;
+    const frame = requestAnimationFrame(() => setApproxVisible(true));
+    return () => cancelAnimationFrame(frame);
+  }, [approximateDisplay, approxVisible]);
 
-  const stateOptions = COUNTRY_STATES[form.country];
+  const stateOptions = form.country ? stateOptionsFor(form.country) : undefined;
   const stateLocale = COUNTRY_LOCALE[form.country]?.state;
   const postcodeLocale = COUNTRY_LOCALE[form.country]?.postcode;
   const stateHidden = stateLocale?.hidden ?? false;
@@ -175,17 +213,10 @@ export function CheckoutPage() {
     }
   };
 
+  usePendingSlotHandoff(mounted);
+
   if (!mounted || (isLoading && !cart)) {
-    return (
-      <main className='mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
-        <div
-          role='status'
-          className='h-8 w-8 animate-spin rounded-full border-2 border-stone-900 border-t-transparent'
-        >
-          <span className='sr-only'>Loading checkout</span>
-        </div>
-      </main>
-    );
+    return <LoadingCheckout />;
   }
 
   if (!cart || cart.items.length === 0) {
@@ -206,6 +237,7 @@ export function CheckoutPage() {
   const subtotal = parseFloat(cart.totals.total_items);
   const discount = parseFloat(cart.totals.total_discount);
   const total = parseFloat(cart.totals.total_price);
+  const currencySymbol = cart.totals.currency_symbol ?? currency.symbol;
   const termsErrorId = 'checkout-terms-error';
 
   return (
@@ -320,10 +352,7 @@ export function CheckoutPage() {
                   label={stateLabel}
                   required={stateRequired}
                   placeholder='Select an option…'
-                  options={Object.entries(stateOptions).map(([code, name]) => ({
-                    value: code,
-                    label: name,
-                  }))}
+                  options={stateOptions}
                   value={form.state}
                   onValueChange={(value) => setForm((current) => ({ ...current, state: value }))}
                 />
@@ -449,18 +478,24 @@ export function CheckoutPage() {
               Your Order
             </h2>
 
-            <ul className='divide-y divide-stone-200'>
+            <ul className='divide-y divide-stone-200 tabular-nums' aria-busy={isStale || undefined}>
               {cart.items.map((item) => (
                 <li key={item.key} className='flex items-center gap-4 py-4'>
                   {item.images[0] && (
                     <img
                       src={item.images[0].src}
-                      alt={decodeEntities(item.name)}
-                      className='h-20 w-16 shrink-0 border border-stone-200 object-cover'
+                      alt={stripDescriptionTags(item.name)}
+                      width={64}
+                      height={80}
+                      loading='lazy'
+                      decoding='async'
+                      className='h-20 w-16 shrink-0 border border-stone-200 bg-stone-100 object-cover'
                     />
                   )}
                   <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm text-stone-900'>{decodeEntities(item.name)}</p>
+                    <p className='truncate text-sm text-stone-900'>
+                      {stripDescriptionTags(item.name)}
+                    </p>
                     <p className='mt-0.5 text-xs text-stone-600'>
                       <span className='sr-only'>Quantity: </span>
                       Qty: {item.quantity}
@@ -476,34 +511,40 @@ export function CheckoutPage() {
                     )}
                   </div>
                   <span className='text-sm font-semibold whitespace-nowrap'>
-                    {formatPrice(item.totals.line_total)}
+                    {formatPrice(item.totals.line_total, currencySymbol)}
                   </span>
                 </li>
               ))}
             </ul>
 
-            <dl className='flex flex-col gap-3 border-t border-stone-200 pt-4 text-sm'>
+            <dl className='flex flex-col gap-3 border-t border-stone-200 pt-4 text-sm tabular-nums'>
               <div className='flex justify-between'>
                 <dt className='text-stone-600'>Subtotal ({itemCount} items)</dt>
-                <dd className='font-medium text-stone-900'>{formatPrice(subtotal.toFixed(2))}</dd>
+                <dd className='font-medium text-stone-900'>
+                  {formatPrice(subtotal.toFixed(2), currencySymbol)}
+                </dd>
               </div>
               {discount > 0 && (
                 <div className='flex justify-between text-green-700'>
                   <dt>Discount</dt>
-                  <dd className='font-medium'>-{formatPrice(discount.toFixed(2))}</dd>
+                  <dd className='font-medium'>
+                    -{formatPrice(discount.toFixed(2), currencySymbol)}
+                  </dd>
                 </div>
               )}
               <div className='flex justify-between'>
                 <dt className='text-stone-600'>Shipping</dt>
                 <dd className='font-medium text-stone-900'>
                   {cart.shipping_rates[0] && parseFloat(cart.shipping_rates[0].cost) > 0
-                    ? formatPrice(cart.shipping_rates[0].cost)
+                    ? formatPrice(cart.shipping_rates[0].cost, currencySymbol)
                     : 'Free'}
                 </dd>
               </div>
               <div className='flex justify-between border-t border-stone-200 pt-3'>
                 <dt className='text-base font-medium text-stone-950'>Total</dt>
-                <dd className='text-base font-medium'>{formatPrice(total.toFixed(2))}</dd>
+                <dd className='text-base font-medium'>
+                  {formatPrice(total.toFixed(2), currencySymbol)}
+                </dd>
               </div>
               {approx && (
                 <div className='text-right'>

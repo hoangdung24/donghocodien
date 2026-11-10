@@ -1,11 +1,12 @@
-import { Effect, Schema } from 'effect';
+import { Effect, Schema, type Schema as SchemaNamespace } from 'effect';
 import {
   ProductsListSchema,
   ProductCategorySchema,
   type Product,
   type ProductCategory,
 } from '@/lib/schema/product';
-import { PagesListSchema, type WpPage } from '@/lib/schema/page';
+import { PagesListSchema } from '@/lib/schema/page';
+import { PostsListSchema } from '@/lib/schema/post';
 import { fetchJsonWithTimeout } from '@/lib/services/httpClient';
 import { brandCategories, type BrandCategory } from '@/lib/utils/categories';
 
@@ -27,6 +28,13 @@ export class HttpError extends Schema.TaggedError<HttpError, { readonly brand: u
     url: Schema.String,
   }
 ) {}
+
+export class PostNotFoundError extends Schema.TaggedError<
+  PostNotFoundError,
+  { readonly brand: unique symbol }
+>()('PostNotFoundError', {
+  slug: Schema.String,
+}) {}
 
 export class ProductNotFoundError extends Schema.TaggedError<
   ProductNotFoundError,
@@ -417,15 +425,15 @@ export class PageNotFoundError extends Schema.TaggedError<
   slug: Schema.String,
 }) {}
 
-export const getPageBySlug = (slug: string) =>
+const fetchEntryList = <EntryType>(
+  url: string,
+  listSchema: SchemaNamespace.Codec<readonly EntryType[], readonly EntryType[], never, never>
+): Effect.Effect<readonly EntryType[], NetworkError | HttpError | Schema.SchemaError> =>
   Effect.gen(function* () {
-    const cacheKey = `page:${slug}`;
-    const cached = cache.get(cacheKey);
+    const cached = cache.get(url);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return cached.data as WpPage;
+      return cached.data as readonly EntryType[];
     }
-
-    const url = `${WP_API_BASE}/pages?slug=${encodeURIComponent(slug)}`;
 
     const response = yield* Effect.tryPromise({
       try: () => fetchJsonWithTimeout(url),
@@ -445,15 +453,38 @@ export const getPageBySlug = (slug: string) =>
       catch: (cause) => new NetworkError({ message: String(cause) }),
     });
 
-    const pages = yield* Schema.decodeUnknownEffect(PagesListSchema)(raw);
+    const entries = yield* Schema.decodeUnknownEffect(listSchema)(raw);
+    cache.set(url, { data: entries, timestamp: Date.now() });
+    return entries;
+  });
+
+export const getPageBySlug = (slug: string) =>
+  Effect.gen(function* () {
+    const url = `${WP_API_BASE}/pages?slug=${encodeURIComponent(slug)}`;
+    const pages = yield* fetchEntryList(url, PagesListSchema);
     const page = pages[0];
 
     if (!page) {
       return yield* new PageNotFoundError({ slug });
     }
 
-    cache.set(cacheKey, { data: page, timestamp: Date.now() });
     return page;
+  }).pipe(
+    Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
+    Effect.timeout('120 seconds')
+  );
+
+export const getPostBySlug = (slug: string) =>
+  Effect.gen(function* () {
+    const url = `${WP_API_BASE}/posts?slug=${encodeURIComponent(slug)}`;
+    const posts = yield* fetchEntryList(url, PostsListSchema);
+    const post = posts[0];
+
+    if (!post) {
+      return yield* new PostNotFoundError({ slug });
+    }
+
+    return post;
   }).pipe(
     Effect.retry({ times: 4, while: (error) => error._tag === 'NetworkError' }),
     Effect.timeout('120 seconds')

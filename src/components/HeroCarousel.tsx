@@ -2,55 +2,37 @@ import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  HERO_AUTOPLAY_DELAY_MS,
+  HERO_MEDIA_QUERY,
+  HERO_SIZES,
+  HERO_SLIDES,
+} from '@/lib/data/heroSlides';
 
-export interface HeroSlide {
-  id: string;
-  image: string;
-  title: string;
-  link: string;
-  alt: string;
-}
-
-const HERO_SLIDES: HeroSlide[] = [
-  {
-    id: 'patek-philippe',
-    image: '/images/hero/hero-patek-3940j.jpg',
-    title: 'Patek Philippe has always been a legend in the world of watchmaking',
-    link: '/watches?category=patek-philippe',
-    alt: 'Patek Philippe Perpetual Calendar 3940J',
-  },
-  {
-    id: 'rolex',
-    image: '/images/hero/hero-rolex-1601.jpg',
-    title: 'Vintage Rolex timepieces always carry a unique allure',
-    link: '/watches?category=rolex',
-    alt: 'Vintage Rolex Datejust 1601',
-  },
-  {
-    id: 'omega',
-    image: '/images/hero/hero-omega-speedmaster.jpg',
-    title: 'A trusted place where you can find authentic vintage Omega watches',
-    link: '/watches?category=omega',
-    alt: 'Omega Speedmaster Professional',
-  },
-  {
-    id: 'cartier',
-    image: '/images/hero/hero-cartier-3170.jpg',
-    title: 'Cartier has always left a lasting impression in the hearts of collectors',
-    link: '/watches?category=cartier',
-    alt: 'Cartier Tank Vintage Collection',
-  },
-];
-
-const AUTOPLAY_DELAY_MS = 5500;
+const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
+const FIRST_SLIDE = HERO_SLIDES[0];
+const MOBILE_SOURCE_SET = [640, 960].map((width) => `${FIRST_SLIDE.image}-${width}.webp ${width}w`);
 
 export default function HeroCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 30 }, [
-    Autoplay({ delay: AUTOPLAY_DELAY_MS, stopOnInteraction: false }),
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 30, axis: 'x' }, [
+    Autoplay({ delay: HERO_AUTOPLAY_DELAY_MS, stopOnInteraction: false }),
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const desktopQuery = window.matchMedia(DESKTOP_MEDIA_QUERY);
+    const root = emblaApi.rootNode();
+    const syncAxis = () => {
+      root.style.flexDirection = desktopQuery.matches ? 'row' : 'column';
+      emblaApi.reInit({ axis: desktopQuery.matches ? 'x' : 'y' });
+    };
+    syncAxis();
+    desktopQuery.addEventListener('change', syncAxis);
+    return () => desktopQuery.removeEventListener('change', syncAxis);
+  }, [emblaApi]);
 
   const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
@@ -92,6 +74,8 @@ export default function HeroCarousel() {
     }
   };
 
+  const dotCount = scrollSnaps.length || HERO_SLIDES.length;
+
   const ARROW_CONTROLS = [
     {
       direction: 'previous',
@@ -118,19 +102,64 @@ export default function HeroCarousel() {
     >
       <div className='w-full cursor-grab overflow-hidden active:cursor-grabbing' ref={emblaRef}>
         <div className='flex touch-pan-y'>
-          {HERO_SLIDES.map((slide, index) => (
+          <div
+            className='relative h-120 min-w-0 flex-[0_0_100%] shrink-0 sm:h-[75vh]'
+            role='group'
+            aria-roledescription='slide'
+            aria-label={`1 of ${HERO_SLIDES.length}`}
+            data-hero-first-slide=''
+          >
+            <picture>
+              <source
+                type='image/webp'
+                media={HERO_MEDIA_QUERY}
+                srcSet={MOBILE_SOURCE_SET.join(', ')}
+                sizes={HERO_SIZES}
+              />
+              <img
+                src={`${FIRST_SLIDE.image}-960.webp`}
+                alt={FIRST_SLIDE.alt}
+                width='1152'
+                height='1440'
+                fetchPriority='high'
+                loading='eager'
+                decoding='async'
+                className='h-full w-full object-cover object-center'
+              />
+            </picture>
+
+            <div className='absolute inset-0 flex items-end justify-center bg-black/40'>
+              <div className='max-w-md bg-black/65 p-6 backdrop-blur-xs sm:mb-10 sm:max-w-lg sm:p-8'>
+                <p className='mb-6 text-base leading-relaxed font-light text-stone-100 sm:text-lg lg:text-xl'>
+                  {FIRST_SLIDE.title}
+                </p>
+                <a
+                  href={FIRST_SLIDE.link}
+                  aria-label={`${FIRST_SLIDE.title} — browse this collection`}
+                  className='inline-block border-b border-white/60 pb-1 text-xs tracking-[0.25em] text-white uppercase transition-colors hover:border-white hover:text-stone-200'
+                >
+                  Learn More &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {HERO_SLIDES.slice(1).map((slide, index) => (
             <div
               key={slide.id}
-              className='relative h-120 min-w-0 flex-[0_0_100%] sm:h-[75vh]'
+              className='relative h-120 min-w-0 flex-[0_0_100%] shrink-0 sm:h-[75vh]'
               role='group'
               aria-roledescription='slide'
-              aria-label={`${index + 1} of ${HERO_SLIDES.length}`}
+              aria-label={`${index + 2} of ${HERO_SLIDES.length}`}
             >
               <img
                 src={slide.image}
                 alt={slide.alt}
+                width='1152'
+                height='1440'
                 className='h-full w-full object-cover object-center'
-                loading={index === 0 ? 'eager' : 'lazy'}
+                loading='lazy'
+                decoding='async'
               />
 
               <div className='absolute inset-0 flex items-end justify-center bg-black/40'>
@@ -178,7 +207,7 @@ export default function HeroCarousel() {
       </button>
 
       <div className='absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5'>
-        {scrollSnaps.map((_, index) => (
+        {Array.from({ length: dotCount }, (_, index) => (
           <button
             key={index}
             type='button'

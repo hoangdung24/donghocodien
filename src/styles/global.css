@@ -17,6 +17,8 @@
     Arial, sans-serif;
   --font-serif: 'elle-futura-book', Georgia, serif;
 
+  --aspect-hero: 1152 / 1440;
+
   --color-brand-dark: #111111;
   --color-brand-gray: #333333;
   --color-brand-light-gray: #e5e5e5;
@@ -287,4 +289,10 @@ h6,
 
 @utility approximate-vnd {
   @apply mt-0.5 font-sans text-[10px] tracking-tight text-stone-400 sm:text-[11px];
+}
+
+@utility approx-pricing-hidden {
+  & .approximate-vnd {
+    display: none;
+  }
 }

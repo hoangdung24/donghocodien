@@ -1,45 +1,55 @@
 import { useEffect, useState } from 'react';
-import { getExchangeRates, resolveApproxDisplayCurrency } from '@/lib/utils/currency';
+import { resolveApproxDisplayCurrency } from '@/lib/utils/currency';
 import { detectVisitorCountry, readVisitorCountry } from '@/lib/utils/geo';
+import {
+  hasSharedExchangeRates,
+  loadSharedExchangeRates,
+  readSharedExchangeRates,
+  subscribeExchangeRates,
+} from '@/lib/hooks/exchangeRates';
 
 export interface ApproxDisplay {
   currency: string;
   rates: Record<string, number> | null;
 }
 
+function resolveDisplay(country: string | null | undefined): ApproxDisplay | null {
+  const currency = resolveApproxDisplayCurrency(country);
+  if (!currency) return null;
+  return { currency, rates: readSharedExchangeRates() };
+}
+
 export function useApproxDisplay(country?: string | null): ApproxDisplay | null {
-  const [display, setDisplay] = useState<ApproxDisplay | null>(() => {
-    const currency = resolveApproxDisplayCurrency(country);
-    return currency ? { currency, rates: null } : null;
-  });
+  const [display, setDisplay] = useState<ApproxDisplay | null>(() => resolveDisplay(country));
 
   useEffect(() => {
     let cancelled = false;
 
     const apply = (resolvedCountry: string | null) => {
-      const currency = resolveApproxDisplayCurrency(resolvedCountry);
-      if (!currency) {
-        setDisplay(null);
-        return;
-      }
-      getExchangeRates().then((rates) => {
-        if (!cancelled && rates) {
-          setDisplay({ currency, rates });
-        }
+      if (cancelled) return;
+      const next = resolveDisplay(resolvedCountry);
+      setDisplay(next);
+      if (!next || hasSharedExchangeRates()) return;
+      void loadSharedExchangeRates().then((rates) => {
+        if (!cancelled && rates) setDisplay({ currency: next.currency, rates });
       });
     };
 
-    const known = country ?? readVisitorCountry();
-    if (known) {
-      apply(known);
+    const knownCountry = country ?? readVisitorCountry();
+    if (knownCountry) {
+      apply(knownCountry);
     } else {
-      detectVisitorCountry().then((detected) => {
-        if (!cancelled) apply(detected);
-      });
+      detectVisitorCountry().then((detected) => apply(detected));
     }
+
+    const unsubscribe = subscribeExchangeRates((rates) => {
+      if (cancelled || !rates) return;
+      setDisplay((current) => (current ? { ...current, rates } : current));
+    });
 
     return () => {
       cancelled = true;
+      unsubscribe();
     };
   }, [country]);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product, ProductCategory } from '@/lib/schema/product';
@@ -7,9 +7,14 @@ import { WatchCard } from '@/components/WatchCard';
 interface ProductCarouselProps {
   products: readonly Product[];
   categories?: ProductCategory[];
+  'first-slide'?: ReactNode;
 }
 
-export function ProductCarousel({ products, categories }: ProductCarouselProps) {
+export function ProductCarousel({
+  products,
+  categories,
+  'first-slide': firstSlide,
+}: ProductCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'start',
@@ -49,20 +54,20 @@ export function ProductCarousel({ products, categories }: ProductCarouselProps) 
     >
       <div className='overflow-hidden px-1' ref={emblaRef}>
         <div className='-ml-4 flex touch-pan-y py-2 sm:-ml-6'>
-          {products.map((product, index) => (
+          {firstSlide}
+          {products.slice(firstSlide ? 1 : 0).map((product, index) => (
             <div
               key={product.id}
               className='min-w-0 flex-[0_0_80%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_25%]'
               role='group'
               aria-roledescription='slide'
-              aria-label={`${index + 1} of ${products.length}`}
+              aria-label={`${index + (firstSlide ? 2 : 1)} of ${products.length}`}
             >
               <WatchCard product={product} categories={categories} />
             </div>
           ))}
         </div>
       </div>
-
       <button
         type='button'
         onClick={scrollPrev}
