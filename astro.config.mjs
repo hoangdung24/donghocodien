@@ -1,15 +1,27 @@
 // @ts-check
+import { cacheCloudflare } from '@astrojs/cloudflare/cache';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
+import { sharedRouteRule } from './src/lib/utils/cachePolicy.ts';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://donghocodien.com',
   output: 'server',
   adapter: cloudflare(),
+  cache: {
+    provider: cacheCloudflare(),
+  },
+  routeRules: {
+    '/': sharedRouteRule(['home']),
+    '/watches': sharedRouteRule(['watches']),
+    '/watches/[...path]': sharedRouteRule(['watches']),
+    '/archives': sharedRouteRule(['archives']),
+    '/archives/[...path]': sharedRouteRule(['archives']),
+  },
   session: false,
   integrations: [react()],
   image: {

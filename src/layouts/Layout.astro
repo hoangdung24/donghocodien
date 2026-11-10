@@ -4,7 +4,8 @@ import Footer from '@/components/Footer.astro';
 import { Providers } from '@/components/Providers';
 import Head from '@/components/Head.astro';
 import '@/styles/global.css';
-import type { ApproxPricingVisibility } from '@/lib/utils/visual';
+import { COUNTRY_COOKIE } from '@/lib/utils/geo';
+import { APPROX_PRICING_VISIBILITY_CLASS } from '@/lib/utils/visual';
 
 interface Props {
   title: string;
@@ -12,7 +13,6 @@ interface Props {
   image?: string;
   type?: 'website' | 'product';
   itunesAppId?: string;
-  approximatePricing?: ApproxPricingVisibility;
   heroImage?: { src: string; srcset: string; sizes: string };
   product?: {
     name: string;
@@ -32,7 +32,6 @@ const {
   image,
   type = 'website',
   itunesAppId,
-  approximatePricing,
   heroImage,
   product,
 } = Astro.props;
@@ -53,6 +52,23 @@ const {
       product={product}
     />
     <slot name='head' />
+    <script
+      is:inline
+      define:vars={{
+        countryCookieName: COUNTRY_COOKIE,
+        hideClassName: APPROX_PRICING_VISIBILITY_CLASS,
+      }}
+    >
+      (() => {
+        const match = document.cookie.match(
+          new RegExp('(?:^|;\\s*)' + countryCookieName + '=([A-Za-z]{2})')
+        );
+        const country = match ? match[1].toUpperCase() : null;
+        if (!country || country === 'US') {
+          document.documentElement.classList.add(hideClassName);
+        }
+      })();
+    </script>
     {heroImage && (
       <link
         rel='preload'
@@ -64,12 +80,7 @@ const {
       />
     )}
   </head>
-  <body
-    class:list={[
-      'flex min-h-screen flex-col bg-stone-50 text-stone-900',
-      approximatePricing?.className,
-    ]}
-  >
+  <body class='flex min-h-screen flex-col bg-stone-50 text-stone-900'>
     <a class='skip-link' href='#main-content'>
       Skip to content
     </a>

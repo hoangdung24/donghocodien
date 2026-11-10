@@ -2,8 +2,6 @@
 import ArchivePage from '@/components/ArchivePage.astro';
 import { loadArchivePage } from '@/lib/services/archive';
 import { parseSearchQuery } from '@/lib/utils/search';
-import { pageCacheControl, resolveCacheScope } from '@/lib/utils/cachePolicy';
-import { readRequestCountry, resolveApproxPricingVisibility } from '@/lib/utils/visual';
 
 export const prerender = false;
 
@@ -17,14 +15,9 @@ const { products, categories, activeCategoryId, hasNextPage } = await loadArchiv
   rawCategory,
 });
 
-const approximatePricing = resolveApproxPricingVisibility(
-  readRequestCountry(Astro.request.headers.get('cookie'))
-);
-
-Astro.response.headers.set(
-  'Cache-Control',
-  pageCacheControl(resolveCacheScope(url.pathname), products.length > 0)
-);
+if (products.length === 0) {
+  Astro.cache.set(false);
+}
 ---
 
 <ArchivePage
@@ -34,5 +27,4 @@ Astro.response.headers.set(
   search={search}
   requestedPage={1}
   hasNextPage={hasNextPage}
-  approximatePricing={approximatePricing}
 />

@@ -11,7 +11,36 @@ import {
 } from '@/lib/data/heroSlides';
 
 const FIRST_SLIDE = HERO_SLIDES[0];
-const MOBILE_SOURCE_SET = [640, 960].map((width) => `${FIRST_SLIDE.image}-${width}.webp ${width}w`);
+const VARIANT_WIDTHS = [640, 960, 1152];
+
+function sourceSetForImage(image: string, widths: number[]): string {
+  return widths.map((width) => `${image}-${width}.webp ${width}w`).join(', ');
+}
+
+function HeroSlideImage({ slide, priority = false }: { slide: HeroSlide; priority?: boolean }) {
+  return (
+    <picture>
+      <source
+        type='image/webp'
+        media={HERO_MEDIA_QUERY}
+        srcSet={sourceSetForImage(slide.image, [640, 960])}
+        sizes={HERO_SIZES}
+      />
+      <img
+        src={`${slide.image}-960.webp`}
+        srcSet={sourceSetForImage(slide.image, VARIANT_WIDTHS)}
+        sizes={HERO_SIZES}
+        alt={slide.alt}
+        width='1152'
+        height='1440'
+        fetchPriority={priority ? 'high' : undefined}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding='async'
+        className='h-full w-full object-cover object-center'
+      />
+    </picture>
+  );
+}
 
 function HeroSlideCaption({ slide }: { slide: HeroSlide }) {
   return (
@@ -104,24 +133,7 @@ export default function HeroCarousel() {
             aria-label={`1 of ${HERO_SLIDES.length}`}
             data-hero-first-slide=''
           >
-            <picture>
-              <source
-                type='image/webp'
-                media={HERO_MEDIA_QUERY}
-                srcSet={MOBILE_SOURCE_SET.join(', ')}
-                sizes={HERO_SIZES}
-              />
-              <img
-                src={`${FIRST_SLIDE.image}-960.webp`}
-                alt={FIRST_SLIDE.alt}
-                width='1152'
-                height='1440'
-                fetchPriority='high'
-                loading='eager'
-                decoding='async'
-                className='h-full w-full object-cover object-center'
-              />
-            </picture>
+            <HeroSlideImage slide={FIRST_SLIDE} priority />
 
             <HeroSlideCaption slide={FIRST_SLIDE} />
           </div>
@@ -134,15 +146,7 @@ export default function HeroCarousel() {
               aria-roledescription='slide'
               aria-label={`${index + 2} of ${HERO_SLIDES.length}`}
             >
-              <img
-                src={slide.image}
-                alt={slide.alt}
-                width='1152'
-                height='1440'
-                className='h-full w-full object-cover object-center'
-                loading='lazy'
-                decoding='async'
-              />
+              <HeroSlideImage slide={slide} />
 
               <HeroSlideCaption slide={slide} />
             </div>

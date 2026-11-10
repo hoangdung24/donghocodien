@@ -288,7 +288,6 @@ Agents should consult these specialized skill guidelines before modifying releva
 
 - ✅ CORS configuration added in cPanel (`functions.php` or `mu-plugins`)
 - ⬜ Install **WP-REST-API-V2-Menus** (for header/footer menu sync)
-- ⬜ Install **WP Webhooks** (for instant on-demand cache revalidation)
 
 ---
 

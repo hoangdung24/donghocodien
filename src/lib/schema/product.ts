@@ -4,6 +4,7 @@ export const ProductImageSchema = Schema.Struct({
   id: Schema.Finite,
   src: Schema.String,
   thumbnail: Schema.optional(Schema.String),
+  srcset: Schema.optional(Schema.String),
   name: Schema.optional(Schema.String),
   alt: Schema.optional(Schema.String),
 });

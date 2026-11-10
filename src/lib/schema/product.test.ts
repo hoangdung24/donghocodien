@@ -14,6 +14,8 @@ describe('Product Schema Seam (Effect v4)', () => {
     expect(decoded.images.length).toBeGreaterThan(0);
     expect(decoded.categories.length).toBeGreaterThan(0);
     expect(decoded.low_stock_remaining).toBe(1);
+    expect(decoded.images[0].srcset).toContain('1152w');
+    expect(decoded.images[0].srcset).toContain('-300x375.jpg 300w');
   });
 
   it('decodes low_stock_remaining as null for non-low-stock products', () => {

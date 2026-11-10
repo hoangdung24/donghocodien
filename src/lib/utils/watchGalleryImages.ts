@@ -27,6 +27,25 @@ function toWidthDescriptors(sources: string[]): string {
     .join(', ');
 }
 
+function smallestDeclaredSource(srcset: string): string | null {
+  const entries = srcset
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [source, descriptor] = entry.split(/\s+/);
+      const width = descriptor?.endsWith('w') ? Number(descriptor.slice(0, -1)) : NaN;
+      return {
+        source: source ?? '',
+        width: Number.isFinite(width) ? width : Number.MAX_SAFE_INTEGER,
+      };
+    })
+    .filter((entry) => entry.source.length > 0);
+  if (entries.length === 0) return null;
+  return entries.reduce((smallest, entry) => (entry.width < smallest.width ? entry : smallest))
+    .source;
+}
+
 function toGalleryPicture(image: ProductImage): GalleryPicture {
   if (!REMOTE_SOURCE_PATTERN.test(image.src)) {
     return {
@@ -39,20 +58,38 @@ function toGalleryPicture(image: ProductImage): GalleryPicture {
     };
   }
 
+  const thumbnailSource = image.thumbnail ?? smallestDeclaredSource(image.srcset ?? '');
+
+  if (image.srcset) {
+    const thumbnailWidth = thumbnailSource ? tailWidth(thumbnailSource) : null;
+    return {
+      id: image.id,
+      src: image.src,
+      alt: image.alt,
+      slideSources: image.srcset,
+      thumbnailSources: thumbnailWidth
+        ? `${thumbnailSource} ${thumbnailWidth}w`
+        : (thumbnailSource ?? image.src),
+      posterHref: thumbnailSource ?? image.src,
+    };
+  }
+
   const lightboxSources = [
     image.src,
     ...LIGHTBOX_WIDTHS.map((width) => withWidth(image.src, width)),
   ];
-  const thumbnailSource = image.thumbnail ?? withWidth(image.src, THUMBNAIL_STEP);
-  const thumbnailWidth = tailWidth(thumbnailSource);
+  const synthesizedThumbnail = thumbnailSource ?? withWidth(image.src, THUMBNAIL_STEP);
+  const thumbnailWidth = tailWidth(synthesizedThumbnail);
 
   return {
     id: image.id,
     src: image.src,
     alt: image.alt,
     slideSources: toWidthDescriptors(lightboxSources),
-    thumbnailSources: thumbnailWidth ? `${thumbnailSource} ${thumbnailWidth}w` : thumbnailSource,
-    posterHref: thumbnailSource,
+    thumbnailSources: thumbnailWidth
+      ? `${synthesizedThumbnail} ${thumbnailWidth}w`
+      : synthesizedThumbnail,
+    posterHref: synthesizedThumbnail,
   };
 }
 

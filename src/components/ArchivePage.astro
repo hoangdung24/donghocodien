@@ -14,7 +14,6 @@ import {
   productBrandCategory,
 } from '@/lib/utils/categories';
 import { cleanTitle } from '@/lib/utils/text';
-import type { ApproxPricingVisibility } from '@/lib/utils/visual';
 
 interface Props {
   products: readonly Product[];
@@ -23,18 +22,9 @@ interface Props {
   search?: string;
   requestedPage: number;
   hasNextPage: boolean;
-  approximatePricing?: ApproxPricingVisibility;
 }
 
-const {
-  products,
-  categories,
-  activeCategoryId,
-  search,
-  requestedPage,
-  hasNextPage,
-  approximatePricing,
-} = Astro.props;
+const { products, categories, activeCategoryId, search, requestedPage, hasNextPage } = Astro.props;
 
 const searchQuery = search ?? '';
 const activeCategory = activeCategoryId
@@ -76,8 +66,10 @@ const cards = products.map((product) => {
     brandName: brandCategory ? decodeCategoryName(brandCategory.name) : null,
     brandHref: brandCategory ? categoryHref(brandCategory.slug, search, ARCHIVE_PATH) : null,
     imageSrc: image?.src ?? '/images/placeholder.jpeg',
+    imageSrcset: image?.srcset ?? null,
     imageThumbnail: image?.thumbnail ?? null,
     hoverImageSrc: hoverImage?.src ?? null,
+    hoverImageSrcset: hoverImage?.srcset ?? null,
     onSale: product.on_sale,
   };
 });
@@ -86,7 +78,6 @@ const cards = products.map((product) => {
 <Layout
   title={`${pageTitle} | Spacetime`}
   description='Browse the Spacetime archive of vintage timepieces that have found their owners.'
-  approximatePricing={approximatePricing}
 >
   <main class='mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8'>
     <header class='mb-10'>
@@ -161,6 +152,8 @@ const cards = products.map((product) => {
                   >
                     <img
                       src={card.imageThumbnail ?? card.imageSrc}
+                      srcset={card.imageSrcset ?? undefined}
+                      sizes={'(min-width: 1024px) 240px, (min-width: 640px) 30vw, 46vw'}
                       alt={card.cleanName}
                       width='300'
                       height='375'
@@ -172,6 +165,8 @@ const cards = products.map((product) => {
                     {card.hoverImageSrc && (
                       <img
                         src={card.hoverImageSrc}
+                        srcset={card.hoverImageSrcset ?? undefined}
+                        sizes={'(min-width: 1024px) 240px, (min-width: 640px) 30vw, 46vw'}
                         alt=''
                         aria-hidden='true'
                         width='300'

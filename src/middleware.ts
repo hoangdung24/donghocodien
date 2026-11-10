@@ -2,7 +2,6 @@ import type { APIContext, MiddlewareNext } from 'astro';
 import { handleStoreApiProxy } from '@/lib/storeApiProxy';
 import { cacheControlFor, resolveCacheScope } from '@/lib/utils/cachePolicy';
 import { COUNTRY_COOKIE, COUNTRY_CODE_PATTERN } from '@/lib/utils/geo';
-
 const COUNTRY_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 interface CloudflareRuntime {
@@ -49,14 +48,9 @@ export const onRequest = async (context: APIContext, next: MiddlewareNext): Prom
 
   const response = await next();
 
-  if (!import.meta.env.DEV && !response.headers.has('Cache-Control')) {
-    response.headers.set('Cache-Control', cacheControlFor(cacheScope, response.status));
-  }
-  if (
-    cacheScope === 'shared' &&
-    /^(public|s-maxage|max-age)/.test(response.headers.get('Cache-Control') ?? '')
-  ) {
-    response.headers.append('Vary', 'Cookie');
+  const cacheControl = cacheControlFor(cacheScope, response.status);
+  if (!import.meta.env.DEV && cacheControl && !response.headers.has('Cache-Control')) {
+    response.headers.set('Cache-Control', cacheControl);
   }
   return response;
 };

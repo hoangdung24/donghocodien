@@ -11,6 +11,7 @@ import { Button } from '@/components/Button';
 import { cleanTitle } from '@/lib/utils/text';
 
 const DEFAULT_PLACEHOLDER = '/images/placeholder.jpeg';
+const CARD_SIZES = '(min-width: 1024px) 288px, (min-width: 640px) 30vw, 80vw';
 
 interface WatchCardProps {
   product: Product;
@@ -26,7 +27,9 @@ export function WatchCard({
   showStatus = true,
 }: WatchCardProps) {
   const mainImage = product.images[0]?.src || DEFAULT_PLACEHOLDER;
+  const mainImageSrcSet = product.images[0]?.srcset || undefined;
   const hoverImage = product.images[1]?.src || mainImage;
+  const hoverImageSrcSet = product.images[1]?.srcset || undefined;
   const cleanName = cleanTitle(product.name);
   const brandCategory = productBrandCategory(product, categories);
   const approx = useApproxDisplay(country);
@@ -59,15 +62,25 @@ export function WatchCard({
       >
         <img
           src={mainImage}
+          srcSet={mainImageSrcSet}
+          sizes={CARD_SIZES}
           alt={cleanName}
           loading='lazy'
+          decoding='async'
+          width={1152}
+          height={1440}
           className={`h-full w-full object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0 ${!product.is_in_stock && showStatus ? 'opacity-60 grayscale-50' : ''}`}
         />
         <img
           src={hoverImage}
+          srcSet={hoverImageSrcSet}
+          sizes={CARD_SIZES}
           alt=''
           aria-hidden='true'
           loading='lazy'
+          decoding='async'
+          width={1152}
+          height={1440}
           className={`absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100 ${!product.is_in_stock && showStatus ? 'opacity-60 grayscale-50' : ''}`}
         />
 

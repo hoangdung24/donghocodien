@@ -36,6 +36,39 @@ describe('buildGalleryPictures', () => {
     expect(picture.slideSources.startsWith(`${UPLOADED_IMAGE} 1152w`)).toBe(true);
   });
 
+  it('prefers the API-declared srcset over synthesized candidates', () => {
+    const [picture] = buildGalleryPictures({
+      images: [
+        {
+          id: 1,
+          src: UPLOADED_IMAGE,
+          srcset: `${UPLOADED_IMAGE} 1152w, ${sized(320, 400)} 320w, ${sized(640, 800)} 640w`,
+          thumbnail: sized(300, 375),
+        },
+      ],
+    });
+
+    expect(picture.slideSources).toBe(
+      `${UPLOADED_IMAGE} 1152w, ${sized(320, 400)} 320w, ${sized(640, 800)} 640w`
+    );
+    expect(picture.posterHref).toBe(sized(300, 375));
+  });
+
+  it('falls back to the smallest API-declared srcset entry when no thumbnail is declared', () => {
+    const [picture] = buildGalleryPictures({
+      images: [
+        {
+          id: 1,
+          src: UPLOADED_IMAGE,
+          srcset: `${UPLOADED_IMAGE} 1152w, ${sized(320, 400)} 320w, ${sized(640, 800)} 640w`,
+        },
+      ],
+    });
+
+    expect(picture.posterHref).toBe(sized(320, 400));
+    expect(picture.thumbnailSources).toBe(`${sized(320, 400)} 320w`);
+  });
+
   it('keeps bundled local images untouched because they have no size variants', () => {
     const [picture] = buildGalleryPictures({
       images: [{ id: 3, src: '/images/placeholder.jpeg' }],

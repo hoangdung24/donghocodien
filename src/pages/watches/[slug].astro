@@ -1,7 +1,6 @@
 ---
 import WatchDetail from '@/components/WatchDetail.astro';
 import { loadWatchDetail } from '@/lib/services/watchDetail';
-import { pageCacheControl, resolveCacheScope } from '@/lib/utils/cachePolicy';
 
 export const prerender = false;
 
@@ -9,15 +8,11 @@ const slugParam = Astro.params.slug;
 const requestedWatch = slugParam ? await loadWatchDetail(slugParam) : null;
 
 if (!requestedWatch) {
+  Astro.cache.set(false);
   return Astro.rewrite('/404');
 }
 
 const { product, relatedProducts, categories } = requestedWatch;
-
-Astro.response.headers.set(
-  'Cache-Control',
-  pageCacheControl(resolveCacheScope(Astro.url.pathname), true)
-);
 ---
 
 <WatchDetail product={product} relatedProducts={relatedProducts} categories={categories} />
