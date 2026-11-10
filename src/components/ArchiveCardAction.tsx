@@ -3,20 +3,22 @@ import { useState } from 'react';
 import { activeCartStore as cartStore } from '@/lib/cartStore';
 import { Button } from '@/components/Button';
 import { formatPrice } from '@/lib/utils/format';
+import type { ProductCardState } from '@/lib/utils/archiveCards';
 
 interface ArchiveCardActionProps {
   productId: number;
   price: string;
   cleanName: string;
+  state: ProductCardState;
 }
 
-export function ArchiveCardAction({ productId, price, cleanName }: ArchiveCardActionProps) {
+export function ArchiveCardAction({ productId, price, cleanName, state }: ArchiveCardActionProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
 
   const handleAddToCart = async (event: React.MouseEvent) => {
     event.preventDefault();
-    if (isAdding) return;
+    if (isAdding || state !== 'purchasable') return;
 
     setIsAdding(true);
     try {
@@ -29,6 +31,17 @@ export function ArchiveCardAction({ productId, price, cleanName }: ArchiveCardAc
       setIsAdding(false);
     }
   };
+
+  if (state !== 'purchasable') {
+    return (
+      <div className='mt-auto flex flex-col items-center pt-1 sm:items-start'>
+        <span className='text-sm font-semibold sm:text-base'>{formatPrice(price)}</span>
+        <span className='mt-3 block w-full border-2 border-stone-300 bg-white px-5 py-2 text-center text-xs font-medium tracking-wider text-stone-500 uppercase sm:w-auto sm:text-sm'>
+          Sold
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className='mt-auto flex flex-col items-center pt-1 sm:items-start'>

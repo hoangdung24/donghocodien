@@ -6,6 +6,7 @@ import { ArchiveCategoryAccordion } from '@/components/ArchiveCategoryAccordion'
 import { ArchiveFilterDrawer } from '@/components/ArchiveFilterDrawer';
 import { Button } from '@/components/Button';
 import type { Product, ProductCategory } from '@/lib/schema/product';
+import { pageProductCardState } from '@/lib/utils/archiveCards';
 import {
   ARCHIVE_PATH,
   archiveHref,
@@ -80,6 +81,7 @@ const cards = products.map((product) => {
     hoverImageSrc: hoverImage?.src ?? null,
     price: product.prices.price,
     onSale: product.on_sale,
+    state: pageProductCardState(product),
   };
 });
 ---
@@ -220,6 +222,7 @@ const cards = products.map((product) => {
                       productId={card.id}
                       price={card.price}
                       cleanName={card.cleanName}
+                      state={card.state}
                     />
                   </div>
                 </article>
