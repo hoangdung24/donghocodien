@@ -18,7 +18,7 @@ function HeroSlideCaption({ slide }: { slide: HeroSlide }) {
     <>
       <div className='absolute inset-0 bg-black/40' />
       <div className='absolute right-4 bottom-8 left-4'>
-        <div className='max-w-md bg-black/65 p-6 backdrop-blur-xs'>
+        <div className='mx-auto max-w-md bg-black/65 p-6 backdrop-blur-xs'>
           <p className='mb-6 text-base leading-relaxed font-light text-stone-100 sm:text-lg lg:text-xl'>
             {slide.title}
           </p>
